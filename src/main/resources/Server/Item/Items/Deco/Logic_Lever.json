@@ -321,8 +321,8 @@
     },
     "InteractionHint": "server.interactionHints.turnon",
     "CustomModelScale": 1,
-    "TextureComputedColor": "#7e7e7e",
-    "ParticleColor": "#7e7e7e",
+    "TextureComputedColor": "#acafb2",
+    "ParticleColor": "#acafb2",
     "BlockEntity": {
       "Components": {
         "LogicGates_Lever": {}

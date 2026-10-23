@@ -556,8 +556,8 @@
       }
     },
     "CustomModelScale": 1,
-    "ParticleColor": "#676767",
-    "TextureComputedColor": "#676767",
+    "ParticleColor": "#c5c8cc",
+    "TextureComputedColor": "#c5c8cc",
     "BlockEntity": {
       "Components": {
         "LogicGates_Lamp": {}

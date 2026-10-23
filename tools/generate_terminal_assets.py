@@ -51,7 +51,7 @@ def body_nodes(kind, on):
         for vector in (node["position"], node["shape"]["offset"], node["shape"]["stretch"]):
             for axis in AXES:
                 vector[axis] *= BODY_SCALE
-        role = ("iron" if i == 1 else "copper" if i == 2 else "wood") if kind == "Lever" \
+        role = ("iron" if i <= 2 else "dark") if kind == "Lever" \
             else ("indicator" if i == 4 else "iron")
         apply_surface(node["shape"], "Logic_" + kind, role, on)
     return nodes

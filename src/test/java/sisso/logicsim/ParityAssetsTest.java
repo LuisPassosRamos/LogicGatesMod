@@ -135,7 +135,7 @@ class ParityAssetsTest {
         return result;
     }
 
-    @Test void paintedWorkshopBodyHasDistinctIronEdgesCopperCurvesAndAnUnlitGrayLens() throws Exception {
+    @Test void minimalBodyUsesRelatedShadesAndAContrastingUnlitGrayLens() throws Exception {
         for (String kind : new String[]{"XOR", "XNOR"}) {
             String directory = "Common/Items/LogicGates/" + (kind.equals("XOR") ? "XorGate" : "XnorGate") + "/Logic_" + kind + "_Gate";
             var image = ImageIO.read(getClass().getResource("/" + directory + "_Texture.png"));
@@ -158,9 +158,9 @@ class ParityAssetsTest {
                 lensDistance += Math.abs(top[channel] - off[channel]);
                 curveDistance += Math.abs(top[channel] - symbol[channel]);
             }
-            assertTrue(edgeDistance > 50, "iron edges must contrast with the painted face");
+            assertTrue(edgeDistance > 30, "light and shadow must keep the silhouette readable");
             assertTrue(lensDistance > 80, "unlit indicator must contrast with the body");
-            assertTrue(curveDistance > 80, "copper XOR curve must remain legible");
+            assertTrue(curveDistance < edgeDistance * 1.5, "the extra curve must stay in the body's color family");
             assertTrue(off[2] - off[0] < 65 && Math.abs(off[0] - off[1]) < 45, "unlit lens remains a muted gray");
             assertEquals("flat", indicator.get("shadingMode").getAsString());
             var uv = body.getAsJsonObject("textureLayout").getAsJsonObject("top").getAsJsonObject("offset");
@@ -169,7 +169,7 @@ class ParityAssetsTest {
                 int red = image.getRGB(uv.get("x").getAsInt() + x, uv.get("y").getAsInt() + y) >> 16 & 255;
                 min = Math.min(min, red); max = Math.max(max, red);
             }
-            assertTrue(max - min > 10, "metal must contain texture detail rather than a flat fill");
+            assertTrue(max - min > 3 && max - min < 100, "sparse shading must remain subtle");
         }
     }
 }

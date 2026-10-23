@@ -38,8 +38,8 @@
     "BlockParticleSetId": "Metal",
     "BlockSoundSetId": "Metal",
     "PhysicalMaterialId": "Metal",
-    "TextureComputedColor": "#a75b4d",
-    "ParticleColor": "#a75b4d",
+    "TextureComputedColor": "#ae7770",
+    "ParticleColor": "#ae7770",
     "Support": {
       "Down": [
         {

@@ -94,8 +94,8 @@
       }
     },
     "CustomModelScale": 1,
-    "TextureComputedColor": "#7e7e7e",
-    "ParticleColor": "#7e7e7e"
+    "TextureComputedColor": "#18191b",
+    "ParticleColor": "#18191b"
   },
   "PlayerAnimationsId": "Block",
   "ItemSoundSetId": "ISS_Items_Metal",

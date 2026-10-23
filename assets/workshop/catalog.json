@@ -3,7 +3,7 @@
   "items": {
     "Logic_AND_Gate": {
       "atlas": "AND",
-      "color": "#687340",
+      "color": "#77845a",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -39,7 +39,7 @@
     },
     "Logic_OR_Gate": {
       "atlas": "OR",
-      "color": "#4776a0",
+      "color": "#67869f",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -75,7 +75,7 @@
     },
     "Logic_NOT_Gate": {
       "atlas": "NOT",
-      "color": "#b88945",
+      "color": "#b29b66",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -111,7 +111,7 @@
     },
     "Logic_NAND_Gate": {
       "atlas": "NAND",
-      "color": "#a75b4d",
+      "color": "#ae7770",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -147,7 +147,7 @@
     },
     "Logic_NOR_Gate": {
       "atlas": "NOR",
-      "color": "#806495",
+      "color": "#927eaa",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -183,7 +183,7 @@
     },
     "Logic_XOR_Gate": {
       "atlas": "XOR",
-      "color": "#42978c",
+      "color": "#6bada4",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -219,7 +219,7 @@
     },
     "Logic_XNOR_Gate": {
       "atlas": "XNOR",
-      "color": "#5d609a",
+      "color": "#7e88b8",
       "category": "Gates",
       "recipe": {
         "Input": [
@@ -255,7 +255,7 @@
     },
     "Logic_Cable": {
       "atlas": "Cable",
-      "color": "#995d36",
+      "color": "#18191b",
       "category": "Components",
       "recipe": {
         "Input": [
@@ -283,7 +283,7 @@
     },
     "Logic_Lever": {
       "atlas": "Lever",
-      "color": "#aaaeb0",
+      "color": "#acafb2",
       "category": "Components",
       "recipe": {
         "Input": [
@@ -315,7 +315,7 @@
     },
     "Logic_Lamp": {
       "atlas": "Lamp",
-      "color": "#c8cbd0",
+      "color": "#c5c8cc",
       "category": "Components",
       "recipe": {
         "Input": [

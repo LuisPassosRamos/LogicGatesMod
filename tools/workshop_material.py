@@ -1,4 +1,4 @@
-"""Map authored workshop material swatches to boxes without changing their physical size.
+"""Map quiet pixel material swatches to boxes without changing their physical size.
 
 Imagegen owns the source pixels. This module only copies the PNG and changes model UVs.
 The atlas has sixteen material cells; sampling their centers tolerates painted seams.
@@ -13,7 +13,7 @@ CATALOG = json.loads((ROOT / "assets/workshop/catalog.json").read_text(encoding=
 if CATALOG["schemaVersion"] != 1:
     raise ValueError("Unsupported presentation catalog")
 ITEMS = CATALOG["items"]
-PATCH_SIZE = 128
+PATCH_SIZE = 256
 FACES = ("back", "right", "front", "left", "top", "bottom")
 
 
@@ -35,19 +35,18 @@ def tile(item_id, column, row, patch_size=PATCH_SIZE):
 
 
 def apply_surface(shape, item_id, role="paint", on=False):
-    # A smaller central lens patch avoids painted border highlights changing the
-    # red/gray signal color. Other materials retain their larger readable detail.
+    # The source has sparse, broad pixel highlights. Keep enough of each swatch
+    # to show those shades, without crossing cell boundaries. The bench keeps
+    # its original authored UVs/materials; its decorative module is independent.
     patch_size = 64 if role == "indicator" else PATCH_SIZE
     for axis in "xyz":
         shape["stretch"][axis] *= shape["settings"]["size"][axis] / patch_size
     shape["settings"]["size"] = dict.fromkeys("xyz", patch_size)
     sides, top, bottom = (2, 0), (1, 0), (3, 0)
-    if role == "casing":
-        sides, top, bottom = (1, 1), (0, 0), (3, 0)
-    elif role == "iron":
+    if role == "iron":
         sides, top, bottom = (1, 1), (0, 1), (3, 3)
-    elif role in ("curve", "inversion", "copper"):
-        sides, top, bottom = (2, 1), (2, 1), (3, 3)
+    elif role in ("curve", "inversion"):
+        sides, top, bottom = (2, 0), (0, 0), (3, 0)
     elif role == "wood":
         sides = top = bottom = (3, 1)
     elif role == "timber":
@@ -84,5 +83,5 @@ def gate_role(name):
         return "wire"
     if name.startswith("port_"):
         return "label"
-    # Painted face, clear iron edges and the existing silhouette distinguish each module.
+    # The body uses one color family. Shape, labels and subtle shades identify it.
     return "casing" if name == "body_1" else "paint"

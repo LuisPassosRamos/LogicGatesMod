@@ -11,4 +11,6 @@ def decorate(item_id, item):
     item.setdefault("Model", item["BlockType"]["CustomModel"])
     item.setdefault("Texture", item["BlockType"]["CustomModelTexture"][0]["Texture"])
     item["Recipe"] = deepcopy(settings["recipe"])
+    item["BlockType"]["TextureComputedColor"] = settings["color"]
+    item["BlockType"]["ParticleColor"] = settings["color"]
     return item

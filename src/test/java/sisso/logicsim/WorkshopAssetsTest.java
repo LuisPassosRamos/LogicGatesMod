@@ -51,6 +51,8 @@ class WorkshopAssetsTest {
         for (var entry : catalog().entrySet()) {
             String id = entry.getKey();
             var item = item(id);
+            assertEquals(entry.getValue().getAsJsonObject().get("color"), item.getAsJsonObject("BlockType").get("ParticleColor"));
+            assertEquals(entry.getValue().getAsJsonObject().get("color"), item.getAsJsonObject("BlockType").get("TextureComputedColor"));
             assertEquals("LogicGates." + entry.getValue().getAsJsonObject().get("category").getAsString(), item.getAsJsonArray("Categories").get(0).getAsString());
             assertTrue(item.getAsJsonObject("TranslationProperties").has("Description"));
             var image = ImageIO.read(getClass().getResource("/Common/" + item.get("Icon").getAsString()));

@@ -52,7 +52,7 @@ def generated_files():
                                  THICKNESS if width == 2 else width,
                                  THICKNESS if depth == 2 else depth))
         for node in nodes:
-            apply_surface(node["shape"], "Logic_Cable", "copper" if node["name"] == "junction" else "wire")
+            apply_surface(node["shape"], "Logic_Cable", "wire")
         result[f"Common/{MODEL_DIR}/Logic_Cable_{mask}.blockymodel"] = {
             "nodes": nodes, "format": "prop", "lod": "auto"
         }
