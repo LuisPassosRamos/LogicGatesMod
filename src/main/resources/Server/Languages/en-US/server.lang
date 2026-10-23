@@ -8,10 +8,10 @@ items.logic_lamp.name = Logic Lamp
 items.logic_lamp.description = Turns on when receiving energy.
 
 items.logic_and_gate.name = Logic AND Gate
-items.logic_and_gate.description = Emits energy when every connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored.
+items.logic_and_gate.description = Emits energy when every connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored. No connected inputs: off.
 
 items.logic_or_gate.name = Logic OR Gate
-items.logic_or_gate.description = Emits energy when any connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored.
+items.logic_or_gate.description = Emits energy when any connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored. No connected inputs: off.
 
 items.logic_not_gate.name = Logic NOT Gate
 items.logic_not_gate.description = Inverts the rear input: off becomes on, on becomes off. Output: front. Side connections are closed. No connected input: off.
@@ -27,3 +27,42 @@ items.logic_xor_gate.description = Emits energy when an odd number of connected 
 
 items.logic_xnor_gate.name = Logic XNOR Gate
 items.logic_xnor_gate.description = Inverts XOR: emits energy when an even number of connected inputs is active (zero or two). A: left; B: right; C: rear. Output: front. Empty inputs are ignored. No connected inputs: off.
+
+logicgates.build = LogicGates {build} | Hytale {hytale}
+logicgates.commands.energy.description = Shows circuit statistics and measured timings.
+logicgates.commands.inspect.description = Inspects a gate at block coordinates without loading sections.
+logicgates.commands.help.description = Explains logic gates, ports and truth tables.
+logicgates.args.x = Block X coordinate
+logicgates.args.y = Block Y coordinate
+logicgates.args.z = Block Z coordinate
+logicgates.args.gate = Gate: AND, OR, NOT, NAND, NOR, XOR or XNOR
+logicgates.args.inputs = Number of connected inputs (1-3; NOT: 1)
+logicgates.energy.noWorlds = LogicGates: no worlds loaded.
+logicgates.energy.world = LogicGates [{world}]: {nodes} nodes; {cables} powered cables; {lamps} lit lamps; {gates} gates ({active} active, {pending} awaiting sections, {feedback} indeterminate feedback); {evaluations} evaluations.
+logicgates.energy.timing = Evaluation ms: last {last}, mean {mean}, p95 {p95}, max {max}; solver last {solver}. Monitoring mean {monitor} ms. Window: {samples} evaluations.
+logicgates.inspect.unloaded = The target section is unavailable. Inspection did not load it.
+logicgates.inspect.notGate = No indexed logic gate at these coordinates. Check the block coordinates and world.
+logicgates.inspect.header = {gate} at {world} ({x}, {y}, {z}); evaluation {evaluation}.
+logicgates.inspect.output = Front output: {direction}; result = {value}.
+logicgates.inspect.input = {label}: {direction}, {state}; neighbor ({x}, {y}, {z}).
+logicgates.direction.north = north (-Z)
+logicgates.direction.east = east (+X)
+logicgates.direction.south = south (+Z)
+logicgates.direction.west = west (-X)
+logicgates.input.absent = empty (ignored)
+logicgates.input.off = connected, signal 0
+logicgates.input.on = connected, signal 1
+logicgates.input.unavailable = section unavailable (not empty)
+logicgates.input.incompatible = incompatible face (not connected)
+logicgates.reason.logic = The output follows the connected inputs and the gate rule. External power at the output does not change this indicator.
+logicgates.reason.no_inputs = No inputs are connected: output is 0, including inverting gates.
+logicgates.reason.section_unavailable = An input section is unavailable: output is held at 0 until it returns.
+logicgates.reason.indeterminate_feedback = Feedback has no determined value under this combinational policy: output is held at 0. This is not a memory or clock.
+logicgates.help.intro = A/B are the sides, C is the rear and the arrow is the only output. NOT only uses C. Connections are horizontal.
+logicgates.help.optional = Empty inputs are ignored; connected signal 0 counts. No inputs: output 0 for every gate. Each face counts separately, even on the same cable network.
+logicgates.help.feedback = Indicator = gate result, not external output power. Unavailable sections or undetermined feedback hold the output at 0. Use /logicinspect x y z to see why.
+logicgates.help.usage = Example: /logichelp --gate=XOR --inputs=3. /logicinspect x y z; console: also specify --world=<name>.
+logicgates.help.invalidGate = Choose AND, OR, NOT, NAND, NOR, XOR or XNOR.
+logicgates.help.invalidInputs = Choose 1, 2 or 3 connected inputs. NOT accepts only 1.
+logicgates.help.table = {gate}: truth table with {inputs} connected; other inputs are empty.
+logicgates.help.row = {inputs} -> {output}
