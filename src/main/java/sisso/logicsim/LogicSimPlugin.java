@@ -9,6 +9,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import sisso.logicsim.components.CableComponent;
 import sisso.logicsim.components.GateComponent;
 import sisso.logicsim.commands.DebugEnergyCommand;
+import sisso.logicsim.commands.InspectGateCommand;
+import sisso.logicsim.commands.LogicHelpCommand;
 import sisso.logicsim.components.LampComponent;
 import sisso.logicsim.components.LeverComponent;
 import sisso.logicsim.interactions.ToggleLogicLeverInteraction;
@@ -47,5 +49,7 @@ public final class LogicSimPlugin extends JavaPlugin {
         getCodecRegistry(Interaction.CODEC).register("LogicGates_ToggleLogicLever",
                 ToggleLogicLeverInteraction.class, ToggleLogicLeverInteraction.CODEC);
         getCommandRegistry().registerCommand(new DebugEnergyCommand());
+        getCommandRegistry().registerCommand(new InspectGateCommand());
+        getCommandRegistry().registerCommand(new LogicHelpCommand());
     }
 }

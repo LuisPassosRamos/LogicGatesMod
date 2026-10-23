@@ -5,6 +5,8 @@ import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Resource;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import sisso.logicsim.circuit.BlockPosition;
+import sisso.logicsim.circuit.CircuitSnapshot;
+import sisso.logicsim.diagnostics.CircuitMetrics;
 import sisso.logicsim.util.BlockComponentAccess.GateTopology;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +29,8 @@ public final class CircuitWorldState implements Resource<ChunkStore> {
     public int pendingGateCount;
     public int feedbackGateCount;
     public long evaluations;
+    public CircuitSnapshot lastSnapshot = CircuitSnapshot.empty();
+    public final CircuitMetrics metrics = new CircuitMetrics();
 
     public void invalidate() { dirty = true; }
 

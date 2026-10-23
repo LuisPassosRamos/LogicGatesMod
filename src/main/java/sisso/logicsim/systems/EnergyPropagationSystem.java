@@ -13,6 +13,7 @@ import sisso.logicsim.LogicSimPlugin;
 import sisso.logicsim.circuit.BlockPosition;
 import sisso.logicsim.circuit.CircuitEvaluator;
 import sisso.logicsim.circuit.CircuitNode;
+import sisso.logicsim.circuit.CircuitSnapshot;
 import sisso.logicsim.util.BlockComponentAccess;
 import sisso.logicsim.util.LogicBlockTypes;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
     public void tick(float dt, int index, Store<ChunkStore> store) {
         var state = store.getResource(LogicSimPlugin.getCircuitStateType());
         World world = store.getExternalData().getWorld();
+        long monitoringStarted = System.nanoTime();
         detectParkedChanges(store, state);
         for (var entry : state.gateTopologies.entrySet()) {
             if (!Objects.equals(entry.getValue(), BlockComponentAccess.gateTopologyIfLoaded(world, entry.getKey()))) {
@@ -35,6 +37,7 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
                 break;
             }
         }
+        state.metrics.recordMonitoring(System.nanoTime() - monitoringStarted);
         if (!state.dirty || state.scheduled) return;
         state.scheduled = true;
         world.execute(() -> {
@@ -71,6 +74,7 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
     }
 
     public static void recalculate(World world) {
+        long started = System.nanoTime();
         var store = world.getChunkStore().getStore();
         var state = store.getResource(LogicSimPlugin.getCircuitStateType());
         state.dirty = false;
@@ -117,7 +121,9 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
                 nodes.put(position, new CircuitNode(kind, false));
             }
         }
+        long solverStarted = System.nanoTime();
         var result = EVALUATOR.evaluate(nodes);
+        long solverNanos = System.nanoTime() - solverStarted;
         result.terminalMasks().forEach((position, mask) -> {
             var node = nodes.get(position);
             boolean on = node.kind() == CircuitNode.Kind.LEVER ? node.sourceOn() : result.lamps().get(position);
@@ -136,6 +142,8 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
         state.activeGateCount = (int) result.gateOutputs().values().stream().filter(Boolean::booleanValue).count();
         state.pendingGateCount = result.pendingGates().size();
         state.feedbackGateCount = result.feedbackGates().size();
+        state.lastSnapshot = new CircuitSnapshot(nodes, result);
         state.evaluations++;
+        state.metrics.recordEvaluation(System.nanoTime() - started, solverNanos);
     }
 }

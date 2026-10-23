@@ -45,6 +45,7 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
     private static final BlockPosition LEVER = p(30, 0);
     private static final BlockPosition LAMP = p(33, 0);
     private final List<String> passed = new ArrayList<>();
+    private Map<String,Object> measurements = Map.of();
 
     public ServerIntegrationPlugin(JavaPluginInit init) { super(init); }
 
@@ -107,17 +108,23 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                         gates.automaticUpdates(world).thenCompose(ignored -> inverters.automaticUpdates(world))
                                 .thenCompose(ignored -> parity.automaticUpdates(world))
                                 .thenCompose(ignored -> automaticUpdates(world))
+                                .thenCompose(ignored -> teachingChecks(world, true))
                                 .whenComplete((ignored, error) -> finish(phase, error));
                     } else {
                         reload(world);
                         new GateServerChecks(passed).reload(world);
                         new InvertingServerChecks(new GateServerChecks(passed), passed).reload(world);
                         new ParityServerChecks(new GateServerChecks(passed), passed).reload(world);
-                        finish(phase, null);
+                        teachingChecks(world, false).whenComplete((ignored,error)->finish(phase,error));
                     }
                 } catch (Throwable error) { finish(phase, error); }
             });
         });
+    }
+
+    private CompletableFuture<Void> teachingChecks(World world, boolean create) {
+        var checks = new TeachingServerChecks(passed);
+        return checks.run(world,create).thenRun(()->measurements=checks.measurements());
     }
 
     private void create(World world) {
@@ -386,7 +393,7 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
     private void finish(String phase, Throwable failure) {
         try {
             var result = Map.of("phase", phase, "passed", failure == null,
-                    "checks", List.copyOf(passed), "error", failure == null ? "" : failure.toString());
+                    "checks", List.copyOf(passed), "measurements", measurements, "error", failure == null ? "" : failure.toString());
             Files.writeString(Path.of("selftest-" + phase + ".json"),
                     new GsonBuilder().setPrettyPrinting().create().toJson(result));
         } catch (Exception error) { error.printStackTrace(); }
