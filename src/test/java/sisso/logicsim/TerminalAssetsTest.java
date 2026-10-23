@@ -138,6 +138,7 @@ class TerminalAssetsTest {
     @Test void enlargedBodiesAndNewArmsOnlyReadOpaquePixelsOfTheWorkshopAtlases() throws Exception {
         for (String kind : new String[]{"Lever", "Lamp"}) {
             var states = definitions(kind);
+            var checkedPixels = new java.util.HashSet<String>();
             for (boolean on : new boolean[]{false, true}) {
                 String textureName = "Logic_" + kind + "_Texture.png";
                 var url = getClass().getResource("/Common/Items/LogicGates/" + kind + "/" + textureName);
@@ -158,6 +159,7 @@ class TerminalAssetsTest {
                             if (mapping.getAsJsonObject("mirror").get("x").getAsBoolean()) u -= w;
                             if (mapping.getAsJsonObject("mirror").get("y").getAsBoolean()) v -= h;
                             assertTrue(u >= 0 && v >= 0 && u + w <= image.getWidth() && v + h <= image.getHeight());
+                            if (!checkedPixels.add(u + ":" + v + ":" + w + ":" + h)) continue;
                             for (int x = u; x < u + w; x++) for (int y = v; y < v + h; y++) {
                                 assertEquals(255, image.getRGB(x, y) >>> 24, kind + " transparent face " + face.getKey());
                             }

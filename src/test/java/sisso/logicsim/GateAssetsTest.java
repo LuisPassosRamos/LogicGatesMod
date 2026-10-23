@@ -104,6 +104,7 @@ class GateAssetsTest {
             var url = getClass().getResource("/Common/" + item.get("Texture").getAsString());
             assertNotNull(url);
             var image = ImageIO.read(url);
+            var checkedPixels = new java.util.HashSet<String>();
             var states = item.getAsJsonObject("BlockType").getAsJsonObject("State").getAsJsonObject("Definitions");
             for (boolean on : new boolean[]{false, true}) for (int mask = 0; mask < 16; mask++) {
                 var state = states.getAsJsonObject(LogicBlockTypes.terminalState(on, mask));
@@ -123,6 +124,9 @@ class GateAssetsTest {
                         if (uv.getAsJsonObject("mirror").get("x").getAsBoolean()) u -= w;
                         if (uv.getAsJsonObject("mirror").get("y").getAsBoolean()) v -= h;
                         assertTrue(u >= 0 && v >= 0 && u + w <= image.getWidth() && v + h <= image.getHeight());
+                        // Every model/face is checked above. Shared swatches need
+                        // exhaustive pixel inspection only once per texture/rule.
+                        if (!checkedPixels.add(u + ":" + v + ":" + w + ":" + h + ":" + indicator + ":" + on)) continue;
                         for (int x = u; x < u + w; x++) for (int y = v; y < v + h; y++) {
                             int color = image.getRGB(x, y);
                             assertEquals(255, color >>> 24);

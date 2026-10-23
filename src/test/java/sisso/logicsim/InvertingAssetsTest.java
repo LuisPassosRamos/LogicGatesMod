@@ -66,6 +66,7 @@ class InvertingAssetsTest {
                     .getAsJsonObject("Soft").get("ItemId").getAsString());
             assertNotNull(json("Common/" + item.get("Model").getAsString()));
             var texture = ImageIO.read(getClass().getResource("/Common/" + item.get("Texture").getAsString()));
+            var checkedPixels = new java.util.HashSet<String>();
             var states = block.getAsJsonObject("State").getAsJsonObject("Definitions");
             assertEquals(kind.equals("NOT") ? 8 : 32, states.size());
             for (var entry : states.entrySet()) {
@@ -110,6 +111,9 @@ class InvertingAssetsTest {
                         if (uv.getAsJsonObject("mirror").get("x").getAsBoolean()) u -= w;
                         if (uv.getAsJsonObject("mirror").get("y").getAsBoolean()) v -= h;
                         assertTrue(u >= 0 && v >= 0 && u + w <= texture.getWidth() && v + h <= texture.getHeight());
+                        // Keep all geometry/UV/shading checks; inspect each shared
+                        // pixel patch once, including both indicator color rules.
+                        if (!checkedPixels.add(u + ":" + v + ":" + w + ":" + h + ":" + indicator + ":" + on)) continue;
                         for (int x = u; x < u + w; x++) for (int y = v; y < v + h; y++) {
                             int color = texture.getRGB(x, y);
                             assertEquals(255, color >>> 24, kind + " transparent face " + node.get("name"));
