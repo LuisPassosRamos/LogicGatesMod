@@ -1,0 +1,25 @@
+{
+  "Name": "server.logicgates.categories.title",
+  "Icon": "Icons/ItemCategories/LogicGates/Category.png",
+  "Order": 4,
+  "Children": [
+    {
+      "Id": "Components",
+      "Name": "server.logicgates.categories.components",
+      "Icon": "Icons/ItemCategories/LogicGates/Components.png",
+      "Order": 0
+    },
+    {
+      "Id": "Gates",
+      "Name": "server.logicgates.categories.gates",
+      "Icon": "Icons/ItemCategories/LogicGates/Gates.png",
+      "Order": 1
+    },
+    {
+      "Id": "Benches",
+      "Name": "server.logicgates.categories.benches",
+      "Icon": "Icons/ItemCategories/LogicGates/Benches.png",
+      "Order": 2
+    }
+  ]
+}

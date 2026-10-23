@@ -4,7 +4,7 @@
     "Description": "server.items.logic_not_gate.description"
   },
   "Categories": [
-    "Blocks.Deco"
+    "LogicGates.Gates"
   ],
   "Model": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_10.blockymodel",
   "Texture": "Items/LogicGates/NotGate/Logic_NOT_Gate_Texture.png",
@@ -119,5 +119,6 @@
     "Type": [
       "Deco"
     ]
-  }
+  },
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_NOT_Gate.png"
 }

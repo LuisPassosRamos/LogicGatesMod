@@ -66,3 +66,10 @@ logicgates.help.invalidGate = Choose AND, OR, NOT, NAND, NOR, XOR or XNOR.
 logicgates.help.invalidInputs = Choose 1, 2 or 3 connected inputs. NOT accepts only 1.
 logicgates.help.table = {gate}: truth table with {inputs} connected; other inputs are empty.
 logicgates.help.row = {inputs} -> {output}
+
+items.logic_workbench.name = LogicGates Workbench
+items.logic_workbench.description = Assemble cables, levers, lamps and logic gates. Craft this workbench in your inventory and interact to open it.
+logicgates.categories.title = LogicGates
+logicgates.categories.components = Components
+logicgates.categories.gates = Logic gates
+logicgates.categories.benches = Workbenches

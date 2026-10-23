@@ -4,7 +4,7 @@
     "Description": "server.items.logic_xor_gate.description"
   },
   "Categories": [
-    "Blocks.Deco"
+    "LogicGates.Gates"
   ],
   "Model": "Items/LogicGates/XorGate/Logic_XOR_Gate_Off_Connections_15.blockymodel",
   "Texture": "Items/LogicGates/XorGate/Logic_XOR_Gate_Texture.png",
@@ -287,5 +287,6 @@
     "Type": [
       "Deco"
     ]
-  }
+  },
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_XOR_Gate.png"
 }

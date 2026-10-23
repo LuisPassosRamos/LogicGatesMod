@@ -1,0 +1,58 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_workbench.name",
+    "Description": "server.items.logic_workbench.description"
+  },
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_Workbench.png",
+  "Categories": [
+    "LogicGates.Benches"
+  ],
+  "Model": "Items/LogicGates/Workbench/Logic_Workbench_Placed.blockymodel",
+  "Texture": "Items/LogicGates/Workbench/Logic_Workbench_Texture.png",
+  "MaxStack": 1,
+  "ItemLevel": 1,
+  "PlayerAnimationsId": "Block",
+  "ItemSoundSetId": "ISS_Blocks_Wood",
+  "Tags": {
+    "Type": [
+      "Bench"
+    ]
+  },
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Items/LogicGates/Workbench/Logic_Workbench_Placed.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/LogicGates/Workbench/Logic_Workbench_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "CustomModelScale": 1,
+    "HitboxType": "Logic_Workbench",
+    "InteractionHitboxType": "Logic_Workbench",
+    "VariantRotation": "NESW",
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer",
+      "AllowRotationKey": true
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Benches"
+      }
+    },
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockParticleSetId": "Wood",
+    "BlockSoundSetId": "Wood",
+    "PhysicalMaterialId": "Wood",
+    "TextureComputedColor": "#97653e",
+    "ParticleColor": "#97653e"
+  }
+}

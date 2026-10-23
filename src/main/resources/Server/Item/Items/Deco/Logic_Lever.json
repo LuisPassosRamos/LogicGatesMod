@@ -1,11 +1,11 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.logic_lever.name"
+    "Name": "server.items.logic_lever.name",
+    "Description": "server.items.logic_lever.description"
   },
-  "Icon": "Icons/ItemsGenerated/logic_lever.png",
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_Lever.png",
   "Categories": [
-    "Blocks.Deco",
-    "Furniture.Lighting"
+    "LogicGates.Components"
   ],
   "BlockType": {
     "Material": "Solid",
@@ -338,5 +338,7 @@
       "Deco"
     ]
   },
-  "ItemSoundSetId": "ISS_Items_Metal"
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "Model": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_0.blockymodel",
+  "Texture": "Items/LogicGates/Lever/Logic_Lever_Texture.png"
 }

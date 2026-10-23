@@ -10,6 +10,7 @@ from workshop_material import atlas, apply_surface, gate_role, ITEMS
 from gate_catalog import GATES
 from art_sources import read_model
 from port_markings import markings
+from item_presentation import decorate
 from asset_io import write_asset
 
 
@@ -128,6 +129,7 @@ def generated_files():
             "PlayerAnimationsId": "Block", "ItemSoundSetId": "ISS_Items_Metal",
             "Tags": {"Type": ["Deco"]}
         }
+        decorate(item_id, files[f"Server/Item/Items/Deco/{item_id}.json"])
     return files
 
 

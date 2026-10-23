@@ -73,6 +73,9 @@ def main():
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     projects = {ROOT / f"assets/blockbench/{kind}/Logic_{kind}_Gate.bbmodel": project(kind) for kind in ("XOR", "XNOR")}
+    source = read_model("Workbench", "Logic_Workbench.blockymodel")
+    texture = RESOURCES / "Common/Items/LogicGates/Workbench/Logic_Workbench_Texture.png"
+    projects[ROOT / "assets/blockbench/Workbench/Logic_Workbench.bbmodel"] = portable(source, texture, "Logic_Workbench", "Workbench")
     for path, data in projects.items():
         content = (json.dumps(data, indent=2) + "\n").encode("utf-8")
         if args.check:

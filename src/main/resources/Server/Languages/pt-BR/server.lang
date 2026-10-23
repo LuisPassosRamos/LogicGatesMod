@@ -57,3 +57,10 @@ logicgates.help.invalidGate = Escolha AND, OR, NOT, NAND, NOR, XOR ou XNOR.
 logicgates.help.invalidInputs = Escolha 1, 2 ou 3 entradas conectadas. NOT aceita apenas 1.
 logicgates.help.table = {gate}: tabela verdade com {inputs} conectadas; demais entradas vazias.
 logicgates.help.row = {inputs} -> {output}
+
+items.logic_workbench.name = Bancada LogicGates
+items.logic_workbench.description = Monte cabos, alavancas, lâmpadas e portas lógicas. Fabrique esta bancada no inventário e interaja para abri-la.
+logicgates.categories.title = LogicGates
+logicgates.categories.components = Componentes
+logicgates.categories.gates = Portas lógicas
+logicgates.categories.benches = Bancadas

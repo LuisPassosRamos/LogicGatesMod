@@ -12,6 +12,7 @@ import math
 from generate_cable_assets import RESOURCES, DIRECTIONS, THICKNESS, box
 from art_sources import read_model
 from workshop_material import atlas, apply_surface
+from item_presentation import decorate
 from asset_io import write_asset
 
 BODY_SCALE = 2
@@ -139,6 +140,7 @@ def generated_files():
                     files[model_path] = generated
                     files[f"Server/Item/Block/Hitboxes/{state['HitboxType']}.json"] = hitboxes(generated)
         block["State"] = {"Definitions": definitions}
+        decorate("Logic_" + kind, item)
         files[item_path] = item
     return files
 

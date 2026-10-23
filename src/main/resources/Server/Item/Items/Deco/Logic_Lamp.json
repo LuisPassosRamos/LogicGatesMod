@@ -1,11 +1,11 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.logic_lamp.name"
+    "Name": "server.items.logic_lamp.name",
+    "Description": "server.items.logic_lamp.description"
   },
-  "Icon": "Icons/ItemsGenerated/logic_lamp.png",
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_Lamp.png",
   "Categories": [
-    "Blocks.Deco",
-    "Furniture.Lighting"
+    "LogicGates.Components"
   ],
   "BlockType": {
     "Material": "Solid",
@@ -575,5 +575,7 @@
     ]
   },
   "ItemSoundSetId": "ISS_Items_Metal",
-  "Scale": 1
+  "Scale": 1,
+  "Model": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+  "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png"
 }

@@ -3,6 +3,7 @@ import argparse
 import json
 from pathlib import Path
 from workshop_material import atlas, apply_surface
+from item_presentation import decorate
 from asset_io import write_asset
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,6 +86,7 @@ def generated_files():
         "Boxes": [{"Min": {"X": 0, "Y": 0, "Z": 0},
                    "Max": {"X": 1, "Y": THICKNESS / 32, "Z": 1}}]
     }
+    decorate("Logic_Cable", result["Server/Item/Items/Deco/Logic_Cable.json"])
     return result
 
 

@@ -1,10 +1,11 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.logic_cable.name"
+    "Name": "server.items.logic_cable.name",
+    "Description": "server.items.logic_cable.description"
   },
-  "Icon": "Icons/ItemsGenerated/logic_cable.png",
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_Cable.png",
   "Categories": [
-    "Blocks.Deco"
+    "LogicGates.Components"
   ],
   "BlockType": {
     "Material": "Solid",
@@ -97,5 +98,7 @@
     "ParticleColor": "#7e7e7e"
   },
   "PlayerAnimationsId": "Block",
-  "ItemSoundSetId": "ISS_Items_Metal"
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "Model": "Items/LogicGates/Cable/Logic_Cable_0.blockymodel",
+  "Texture": "Items/LogicGates/Cable/Logic_Cable_Texture.png"
 }
