@@ -20,6 +20,7 @@ Use um mundo criativo de testes no Hytale 0.7.4. Instale somente o JAR de produ�
 | Bancada manual | Em sobrevivência, fabricar a bancada pelo inventário | Receita na categoria Ferramentas; consome 6 troncos, 4 pedras, 2 cobres e 2 ferros |
 | Bancada colocada | Colocar nas quatro orientações, bloquear a segunda célula, quebrar e recolocar | Ocupa 2 × 1; impede sobreposição; colisão por peça; solta uma bancada e libera ambas as células |
 | Fabricação | Abrir a bancada e testar as dez receitas, falta de materiais, lotes e cancelamento | Abas Componentes/Portas lógicas; custos e tempos corretos; 8 cabos por lote; sem perda/duplicação ao cancelar |
+| AND decorativo | Observar a bancada de perto, mover a câmera e variar a distância | Sem faces piscando no módulo aberto; aparência da bancada preservada |
 | Bancada após reinício | Salvar, encerrar, retornar e abrir a bancada | Modelo, orientação, ocupação e receitas continuam funcionais |
 | Circuito básico | Alavanca → dois cabos → lâmpada; alternar uma vez por clique | Sinal, indicador e luz acompanham cada acionamento |
 | Formas | Pontas, retas, curvas, T e cruzamento | Fios contínuos, sem transparência indevida; vizinhos se ajustam |
@@ -39,7 +40,7 @@ Use um mundo criativo de testes no Hytale 0.7.4. Instale somente o JAR de produ�
 | Ciclos | Remover fonte externa de anel AND/OR; experimentar laço inversor | Sem energia retida; indefinição aparece no diagnóstico e fica desligada |
 | Altura/cantos | Aproximar componentes acima/abaixo ou em diagonal | Sem transmissão; vertical ainda não implementado |
 | Seleção e remoção | Mirar peças/fios, caminhar sobre módulos e quebrar | Colisão compatível, sem cubo invisível; drop correto e vizinho intacto |
-| Aparência | Ver os dez componentes de cima/lado, no sol/sombra | Oficina artesanal; cores e detalhes próprios; ferro/cobre legíveis; lentes cinza escuro ou vermelhas luminosas |
+| Aparência | Ver os dez componentes de cima/lado, no sol/sombra | Uma cor suave por porta, poucas variações de luz/sombra; cabos inteiramente pretos; lentes cinza escuro ou vermelhas luminosas |
 | Sons | Acionar alavanca e observar mudança de lâmpada | Confirmar comportamento sonoro no cliente e registrar divergências |
 | Seções | Afastar-se até sair da área carregada, voltar e cruzar fronteiras com circuito ligado/desligado | Reconstrução sem sinal antigo; afastamento sozinho não prova descarga real |
 | Reinício | Salvar, encerrar completamente e abrir de novo | Alavanca preserva intenção; portas/lâmpadas correspondem ao circuito |
@@ -91,3 +92,11 @@ Roteiro adicional no cliente: selecionar pt-BR e en-US, conferir nomes/acentos e
 A verificação de consumo chama a transação real usada por `CraftingManager.craftItem`, em contêineres nativos e com receitas carregadas do jogo. Não cria uma sessão de jogador nem comprova a interface ou a fila temporizada. **Continuam pendentes no cliente:** abertura/abas e filas, cancelamento/reembolso, inventário/mão, inspeção visual sob iluminação real, drops ao quebrar e sincronização com dois jogadores. A prévia renderizada ajuda a revisar a arte, mas não substitui esse roteiro.
 
 A bancada é fabricada instantaneamente pelo inventário: o `Fieldcraft` nativo de 0.7.4 não admite o atraso de três segundos proposto. As receitas da estação mantêm os tempos planejados. Nenhuma lógica elétrica ou formato persistido dos componentes existentes foi alterado.
+
+## Correção 1.3.1 — texturas simples e AND decorativo
+
+O escopo automatizado inclui os **751 testes JUnit**, agora com contraste em uma mesma família de cor, e **19 testes das ferramentas**. Dois testes novos verificam a borracha preta de todos os cabos/conectores e a ausência de faces externas coplanares sobrepostas no AND decorativo. As 264 variantes aprovadas e as lâmpadas ligadas mantêm a mesma geometria física dos componentes.
+
+`fullCheck` repete os **61 grupos de servidor 0.7.4**, incluindo criação e reinício. O relatório de cada execução identifica os bytes exatos do JAR; consultar o resumo mais recente e `release.json`. A textura da bancada permanece idêntica à de 1.3.0. Os ícones, as fontes XOR/XNOR e os projetos portáteis acompanham as novas texturas.
+
+A prévia dos modelos reais permite revisar a simplificação da arte. A confirmação da cintilação corrigida depende de observar a bancada no cliente, movendo a câmera e variando a distância; permanece no roteiro acima junto da avaliação de aparência sob a iluminação do jogo.

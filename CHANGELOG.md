@@ -4,7 +4,17 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.2.0.
+Nenhuma alteração registrada após 1.3.1.
+
+## [1.3.1] - 2026-10-23
+
+### Corrigido
+- Texturas dos dez componentes simplificadas: uma cor suave por porta, poucos tons de luz/sombra e bases neutras para alavanca e lâmpada.
+- Cabos, junções e conectores inteiramente pretos, com variação discreta de borracha; retirados condutores de cobre visíveis e enfeites pintados.
+- Ícones regenerados a partir dos modelos com as novas texturas; formas, orientação, colisões dos componentes e regras elétricas preservadas.
+- Eliminadas faces sobrepostas entre a base e as paredes do AND aberto na bancada, origem de cintilação por profundidade. Textura e desenho da bancada preservados.
+- Verificações automáticas de borracha preta e de ausência de faces externas coplanares no AND decorativo.
+- Conferência exaustiva de pixels compartilhados reaproveitada entre variantes, mantendo a validação de UVs, cores e materiais de cada face.
 
 ## [1.3.0] - 2026-10-23
 

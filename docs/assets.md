@@ -36,13 +36,15 @@ python tools/model_icons.py
 
 Os sete comandos aceitam `--check`, que confere sem regravar fontes. Arquivos já corretos ficam intocados; arquivos alterados são publicados atomicamente. O renderizador usa somente a biblioteca padrão Python: interpreta caixas, quaternions, UVs e atlas reais, com câmera ortográfica, luz consistente e transparência. A codificação PNG é determinística entre versões de zlib.
 
+Os testes conferem UVs e material em todas as faces de todas as variantes. Como muitas faces compartilham a mesma região do atlas, a inspeção exaustiva dos pixels é reaproveitada por textura, retângulo e regra de cor; cada pixel utilizado continua sendo validado, sem repetir a leitura para cada cópia do modelo.
+
 ## Apresentação e bancada
 
-Todos os componentes usam metal pintado, ferro, cobre e sombras em pixels. Cada porta possui atlas próprio; letras A/B/C, setas, formas e marcas de inversão continuam presentes. Indicadores apagados são cinza escuro; ligados, vermelhos e luminosos.
+Os componentes usam uma linguagem minimalista de pixels, com uma cor suave por porta e variações discretas de luz e sombra. Faixas de cobre, rebites e detalhes pintados foram retirados dos componentes. Cabos, junções e fios conectores usam borracha preta; alavanca e lâmpada têm bases cinza neutro. Cada porta possui atlas próprio; letras A/B/C, setas, formas e marcas de inversão continuam presentes. Indicadores apagados são cinza escuro; ligados, vermelhos e luminosos.
 
 Os 264 modelos da versão 1.2.0 têm sua geometria física protegida por uma referência em `tools/tests/fixtures/approved_geometry.json`. Dezesseis modelos ligados de lâmpada acrescentam somente UVs e material emissivo diferentes. Colisões dos componentes permanecem iguais.
 
-A bancada tem 51 peças, ocupa 2 × 1 blocos e cabe em um bloco de altura. O AND aberto, a placa interna, contatos, tampa removida e ferramentas são decoração. O jogo reserva e remove a segunda célula pelo sistema nativo de fillers. Colisão e seleção acompanham cada peça.
+A bancada tem 51 peças, ocupa 2 × 1 blocos e cabe em um bloco de altura. O AND aberto, a placa interna, contatos, tampa removida e ferramentas são decoração. O jogo reserva e remove a segunda célula pelo sistema nativo de fillers. Colisão e seleção acompanham cada peça. A textura original da bancada foi preservada. Na correção 1.3.1, as paredes do AND aberto passam a começar acima da base, eliminando faces externas coplanares sobrepostas que causavam disputa no buffer de profundidade. Um teste de geometria protege esse encaixe.
 
 O catálogo lógico `src/main/resources/logicgates/gate-catalog.json` conserva tipos, máscaras e regras de simulação. O catálogo da oficina cuida da apresentação e fabricação. A conferência exige categoria, ícone e receita para todos os itens, inclusive os futuros. A categoria criativa tem Componentes, Portas lógicas e Bancadas; a estação oferece Componentes e Portas lógicas.
 
