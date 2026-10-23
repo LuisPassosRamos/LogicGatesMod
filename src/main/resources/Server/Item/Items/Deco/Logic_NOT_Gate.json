@@ -120,5 +120,36 @@
       "Deco"
     ]
   },
-  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_NOT_Gate.png"
+  "Icon": "Icons/ItemsGenerated/LogicGates/Logic_NOT_Gate.png",
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Copper",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Fibre",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Charcoal",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "TimeSeconds": 3,
+    "BenchRequirement": [
+      {
+        "Id": "LogicGates_Workbench",
+        "Type": "Crafting",
+        "Categories": [
+          "LogicGates_Gates"
+        ]
+      }
+    ]
+  }
 }

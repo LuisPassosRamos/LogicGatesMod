@@ -4,57 +4,382 @@
     "Logic_AND_Gate": {
       "atlas": "AND",
       "color": "#687340",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 3,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_OR_Gate": {
       "atlas": "OR",
       "color": "#4776a0",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 3,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_NOT_Gate": {
       "atlas": "NOT",
       "color": "#b88945",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 3,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_NAND_Gate": {
       "atlas": "NAND",
       "color": "#a75b4d",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 3
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 4,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_NOR_Gate": {
       "atlas": "NOR",
       "color": "#806495",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 3
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 4,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_XOR_Gate": {
       "atlas": "XOR",
       "color": "#42978c",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 3
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 4,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_XNOR_Gate": {
       "atlas": "XNOR",
       "color": "#5d609a",
-      "category": "Gates"
+      "category": "Gates",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 3
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 4,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Gates"
+            ]
+          }
+        ]
+      }
     },
     "Logic_Cable": {
       "atlas": "Cable",
       "color": "#995d36",
-      "category": "Components"
+      "category": "Components",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Fibre",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 8,
+        "TimeSeconds": 2,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Components"
+            ]
+          }
+        ]
+      }
     },
     "Logic_Lever": {
       "atlas": "Lever",
       "color": "#aaaeb0",
-      "category": "Components"
+      "category": "Components",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Stick",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 2,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Components"
+            ]
+          }
+        ]
+      }
     },
     "Logic_Lamp": {
       "atlas": "Lamp",
       "color": "#c8cbd0",
-      "category": "Components"
+      "category": "Components",
+      "recipe": {
+        "Input": [
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 1
+          },
+          {
+            "ItemId": "Ingredient_Charcoal",
+            "Quantity": 1
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 2,
+        "BenchRequirement": [
+          {
+            "Id": "LogicGates_Workbench",
+            "Type": "Crafting",
+            "Categories": [
+              "LogicGates_Components"
+            ]
+          }
+        ]
+      }
     },
     "Logic_Workbench": {
       "atlas": "Workbench",
       "color": "#97653e",
-      "category": "Benches"
+      "category": "Benches",
+      "recipe": {
+        "Input": [
+          {
+            "ResourceTypeId": "Wood_Trunk",
+            "Quantity": 6
+          },
+          {
+            "ResourceTypeId": "Rock",
+            "Quantity": 4
+          },
+          {
+            "ItemId": "Ingredient_Bar_Copper",
+            "Quantity": 2
+          },
+          {
+            "ItemId": "Ingredient_Bar_Iron",
+            "Quantity": 2
+          }
+        ],
+        "OutputQuantity": 1,
+        "TimeSeconds": 0,
+        "BenchRequirement": [
+          {
+            "Id": "Fieldcraft",
+            "Type": "Crafting",
+            "Categories": [
+              "Tools"
+            ]
+          }
+        ]
+      }
     }
   }
 }

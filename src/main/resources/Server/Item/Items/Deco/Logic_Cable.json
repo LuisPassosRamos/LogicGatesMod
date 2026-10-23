@@ -100,5 +100,28 @@
   "PlayerAnimationsId": "Block",
   "ItemSoundSetId": "ISS_Items_Metal",
   "Model": "Items/LogicGates/Cable/Logic_Cable_0.blockymodel",
-  "Texture": "Items/LogicGates/Cable/Logic_Cable_Texture.png"
+  "Texture": "Items/LogicGates/Cable/Logic_Cable_Texture.png",
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Copper",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Fibre",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 8,
+    "TimeSeconds": 2,
+    "BenchRequirement": [
+      {
+        "Id": "LogicGates_Workbench",
+        "Type": "Crafting",
+        "Categories": [
+          "LogicGates_Components"
+        ]
+      }
+    ]
+  }
 }
