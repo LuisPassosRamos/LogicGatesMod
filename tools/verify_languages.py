@@ -35,6 +35,16 @@ def check(root):
         for key in json.loads(item.read_text(encoding="utf-8")).get("TranslationProperties", {}).values():
             if key not in base:
                 raise ValueError(f"Missing item translation {key} in {item.name}")
+    def owned_references(value):
+        if isinstance(value, str) and value.startswith("server.logicgates."):
+            yield value
+        elif isinstance(value, dict):
+            for entry in value.values(): yield from owned_references(entry)
+        elif isinstance(value, list):
+            for entry in value: yield from owned_references(entry)
+    for source in (root / "src/main/resources/Server/Item").rglob("*.json"):
+        for key in owned_references(json.loads(source.read_text(encoding="utf-8"))):
+            if key not in base: raise ValueError(f"Missing UI/category translation {key} in {source.name}")
     for source in (root / "src/main/java").rglob("*.java"):
         content = source.read_text(encoding="utf-8")
         keys = re.findall(r'"(server\.logicgates\.[\w.]+)"', content)

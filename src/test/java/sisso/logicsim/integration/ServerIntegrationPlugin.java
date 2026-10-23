@@ -105,6 +105,7 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                         inverters.create(world);
                         var parity = new ParityServerChecks(gates, passed);
                         parity.create(world);
+                        new WorkshopServerChecks(passed).create(world);
                         gates.automaticUpdates(world).thenCompose(ignored -> inverters.automaticUpdates(world))
                                 .thenCompose(ignored -> parity.automaticUpdates(world))
                                 .thenCompose(ignored -> automaticUpdates(world))
@@ -115,6 +116,7 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                         new GateServerChecks(passed).reload(world);
                         new InvertingServerChecks(new GateServerChecks(passed), passed).reload(world);
                         new ParityServerChecks(new GateServerChecks(passed), passed).reload(world);
+                        new WorkshopServerChecks(passed).reload(world);
                         teachingChecks(world, false).whenComplete((ignored,error)->finish(phase,error));
                     }
                 } catch (Throwable error) { finish(phase, error); }

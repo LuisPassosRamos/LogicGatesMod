@@ -100,7 +100,10 @@ val releaseZip by tasks.registering(Zip::class) {
     from(releaseDirectory)
     from("CHANGELOG.md", "README.md")
     from("docs") { into("docs") }
-    from("assets") { include("**/*.md"); into("assets") }
+    from("assets") {
+        include("**/*.md", "**/*.json", "**/*.png", "**/*.bbmodel", "**/*.blockymodel")
+        into("assets")
+    }
     archiveFileName.set("LogicGates-${project.version}.zip")
     destinationDirectory.set(layout.buildDirectory.dir("releases"))
     isPreserveFileTimestamps = false

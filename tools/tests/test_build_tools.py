@@ -60,6 +60,12 @@ class BuildToolsTest(unittest.TestCase):
             archive.writestr("manifest.json", json.dumps({"Version": "1.1.0", "ServerVersion": "=0.7.4"}))
             archive.writestr("logicgates-build.properties", "".join(f"{key}={value}\n" for key, value in info.items()))
             archive.writestr("sisso/logicsim/LogicSimPlugin.class", b"fixture")
+            from workshop_material import ITEMS
+            for item_id, settings in ITEMS.items():
+                icon = f"Icons/LogicGates/{item_id}.png"
+                archive.writestr(f"Server/Item/Items/Fixture/{item_id}.json", json.dumps({"Icon": icon, "Recipe": settings["recipe"]}))
+                archive.writestr("Common/" + icon, b"fixture-icon")
+            archive.writestr("Server/Item/Category/CreativeLibrary/LogicGates.json", "{}")
             for gate in verify_project.CATALOG["gates"]:
                 for state in ("On", "Off"):
                     for mask in range(16):

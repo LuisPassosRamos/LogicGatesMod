@@ -46,8 +46,11 @@ def repository():
 
 
 def assets():
-    for name in ("generate_cable_assets.py", "generate_terminal_assets.py", "generate_gate_assets.py", "sync_gate_projects.py"):
+    for name in ("generate_cable_assets.py", "generate_terminal_assets.py", "generate_gate_assets.py",
+                 "generate_workbench_assets.py", "generate_inventory_assets.py", "sync_gate_projects.py", "model_icons.py"):
         subprocess.run([sys.executable, str(ROOT / "tools" / name), "--check"], cwd=ROOT, check=True)
+    from verify_workshop import check
+    check()
 
 
 def distribution(path):
@@ -75,6 +78,8 @@ def distribution(path):
         originals = {"Common/Items/LogicGates/" + source.relative_to(ROOT / "assets/models").as_posix()
                      for source in (ROOT / "assets/models").rglob("*.blockymodel")}
         require(not originals.intersection(names), "Authoring model packaged")
+        from verify_workshop import packaged
+        packaged(archive)
     print(f"Distribution checked: {path.name}, build {info['buildId']}")
 
 
