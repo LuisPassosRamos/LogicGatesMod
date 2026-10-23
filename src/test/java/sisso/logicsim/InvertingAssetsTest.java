@@ -46,9 +46,9 @@ class InvertingAssetsTest {
         }
     }
 
-    @Test void notUsesTheAndTextureWithoutEditingItsPixelsAndHasOnlyFrontRearVariants() throws Exception {
-        assertArrayEquals(bytes("Common/Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png"),
-                bytes("Common/Items/LogicGates/NotGate/Logic_NOT_Gate_Texture.png"));
+    @Test void notUsesItsOwnWorkshopTextureAndHasOnlyFrontRearVariants() throws Exception {
+        assertFalse(java.util.Arrays.equals(bytes("Common/Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png"),
+                bytes("Common/Items/LogicGates/NotGate/Logic_NOT_Gate_Texture.png")));
         var item = json("Server/Item/Items/Deco/Logic_NOT_Gate.json");
         var states = item.getAsJsonObject("BlockType").getAsJsonObject("State").getAsJsonObject("Definitions");
         assertEquals(8, states.size());

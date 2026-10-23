@@ -1,7 +1,7 @@
 """Generate enlarged lever/lamp bodies, connected models and matching compound hitboxes.
 
-Original models remain the art sources. Only geometry is scaled; texture UV sizes stay
-unchanged. Blockymodel child positions are relative to the parent's shape center.
+Original models remain the art sources. Physical geometry stays approved while UV sizes
+select workshop materials. Child positions are relative to the parent's shape center.
 """
 import argparse
 from copy import deepcopy
@@ -11,6 +11,8 @@ import math
 
 from generate_cable_assets import RESOURCES, DIRECTIONS, THICKNESS, box
 from art_sources import read_model
+from workshop_material import atlas, apply_surface
+from asset_io import write_asset
 
 BODY_SCALE = 2
 AXES = "xyz"
@@ -48,21 +50,21 @@ def body_nodes(kind, on):
         for vector in (node["position"], node["shape"]["offset"], node["shape"]["stretch"]):
             for axis in AXES:
                 vector[axis] *= BODY_SCALE
+        role = ("iron" if i == 1 else "copper" if i == 2 else "wood") if kind == "Lever" \
+            else ("indicator" if i == 4 else "iron")
+        apply_surface(node["shape"], "Logic_" + kind, role, on)
     return nodes
 
 
 def model(kind, on, mask):
     nodes = body_nodes(kind, on)
-    # Opaque, dark 2x2 tiles in the existing component atlases (also opaque in lamp On).
-    uv = (0, 80) if kind == "Lever" else (6, 0)
     for bit, name, x, z, width, depth in DIRECTIONS:
         if not mask & bit:
             continue
         arm = box(len(nodes) + 1, name, x, z,
                   THICKNESS if width == 2 else width,
                   THICKNESS if depth == 2 else depth)
-        for face in arm["shape"]["textureLayout"].values():
-            face["offset"] = dict(zip("xy", uv))
+        apply_surface(arm["shape"], "Logic_" + kind, "wire")
         nodes.append(arm)
     return {"nodes": nodes, "format": "prop", "lod": "auto"}
 
@@ -107,14 +109,19 @@ def visual(kind, on, mask):
         "Light": {"Color": "#f00"} if kind == "Lamp" and on else None
     }
     if kind == "Lamp":
-        texture = f"Logic_Lamp_{'ON_' if on else ''}Texture.png"
-        result["CustomModelTexture"] = [{"Texture": f"Items/LogicGates/Lamp/{texture}", "Weight": 1}]
+        # Preserve the existing off-model paths. On models have identical physical
+        # geometry and select the red cells in the same authored material atlas.
+        suffix = "On_" if on else ""
+        result["CustomModel"] = f"Items/LogicGates/Lamp/Logic_Lamp_{suffix}Connections_{mask}.blockymodel"
+        result["CustomModelTexture"] = [{"Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png", "Weight": 1}]
     return result
 
 
 def generated_files():
     files = {}
     for kind in ("Lever", "Lamp"):
+        texture_path = f"Common/Items/LogicGates/{kind}/Logic_{kind}_Texture.png"
+        files[texture_path] = atlas("Logic_" + kind).read_bytes()
         item_path = f"Server/Item/Items/Deco/Logic_{kind}.json"
         item = read(item_path)
         block = item["BlockType"]
@@ -144,13 +151,12 @@ def main():
     stale = []
     for relative, data in files.items():
         path = RESOURCES / relative
-        content = json.dumps(data, indent=2) + "\n"
+        content = data if isinstance(data, bytes) else (json.dumps(data, indent=2) + "\n").encode("utf-8")
         if args.check:
-            if not path.exists() or path.read_text(encoding="utf-8") != content:
+            if not path.exists() or path.read_bytes() != content:
                 stale.append(relative)
         else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content, encoding="utf-8", newline="\n")
+            write_asset(path, content)
     if stale:
         raise SystemExit("Outdated generated assets: " + ", ".join(stale))
     print(f"{len(files)} terminal assets {'checked' if args.check else 'generated'}")

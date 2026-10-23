@@ -10,24 +10,8 @@
       "nonMonotonic": false,
       "art": {
         "indicator": "7",
-        "red": [
-          16,
-          2
-        ],
-        "gray": [
-          20,
-          22
-        ],
-        "wire": [
-          0,
-          10
-        ],
         "front": 10,
-        "rear": 10,
-        "label_tile": [
-          21,
-          15
-        ]
+        "rear": 10
       }
     },
     {
@@ -39,24 +23,8 @@
       "nonMonotonic": false,
       "art": {
         "indicator": "17",
-        "red": [
-          8,
-          8
-        ],
-        "gray": [
-          24,
-          16
-        ],
-        "wire": [
-          12,
-          12
-        ],
         "front": 12,
-        "rear": 4,
-        "label_tile": [
-          26,
-          12
-        ]
+        "rear": 4
       }
     },
     {
@@ -68,18 +36,6 @@
       "nonMonotonic": true,
       "art": {
         "indicator": "4",
-        "red": [
-          16,
-          2
-        ],
-        "gray": [
-          20,
-          22
-        ],
-        "wire": [
-          0,
-          10
-        ],
         "front": 10,
         "rear": 10,
         "remove": [
@@ -96,11 +52,6 @@
           "10",
           "11",
           "12"
-        ],
-        "texture_source": "Common/Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png",
-        "label_tile": [
-          21,
-          15
         ]
       }
     },
@@ -113,25 +64,9 @@
       "nonMonotonic": true,
       "art": {
         "indicator": "8",
-        "red": [
-          16,
-          2
-        ],
-        "gray": [
-          20,
-          22
-        ],
-        "wire": [
-          0,
-          10
-        ],
         "front": 14,
         "rear": 10,
-        "inversion_node": "7",
-        "label_tile": [
-          21,
-          15
-        ]
+        "inversion_node": "7"
       }
     },
     {
@@ -143,18 +78,6 @@
       "nonMonotonic": true,
       "art": {
         "indicator": "17",
-        "red": [
-          8,
-          8
-        ],
-        "gray": [
-          24,
-          16
-        ],
-        "wire": [
-          12,
-          12
-        ],
         "front": 14,
         "rear": 4,
         "remove": [
@@ -163,11 +86,7 @@
           "4",
           "10"
         ],
-        "add_inversion": true,
-        "label_tile": [
-          26,
-          12
-        ]
+        "add_inversion": true
       }
     },
     {
@@ -180,25 +99,8 @@
       "art": {
         "named_nodes": true,
         "remove": [],
-        "red": [
-          8,
-          8
-        ],
-        "gray": [
-          24,
-          16
-        ],
-        "wire": [
-          12,
-          12
-        ],
         "front": 12,
-        "rear": 4,
-        "metallic": true,
-        "label_tile": [
-          160,
-          416
-        ]
+        "rear": 4
       }
     },
     {
@@ -211,25 +113,8 @@
       "art": {
         "named_nodes": true,
         "remove": [],
-        "red": [
-          8,
-          8
-        ],
-        "gray": [
-          24,
-          16
-        ],
-        "wire": [
-          12,
-          12
-        ],
         "front": 14,
-        "rear": 4,
-        "metallic": true,
-        "label_tile": [
-          160,
-          416
-        ]
+        "rear": 4
       }
     }
   ]

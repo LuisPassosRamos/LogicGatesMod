@@ -93,7 +93,7 @@ class ParityAssetsTest {
             }
             assertEquals(7, curve);
             assertEquals(kind.equals("XNOR") ? 1 : 0, marks);
-            assertArrayEquals(Files.readAllBytes(Path.of("assets/textures/Logic_Parity_Metal_Texture.png")), bytes(directory + "_Texture.png"));
+            assertArrayEquals(Files.readAllBytes(Path.of("assets/textures/workshop/Logic_" + kind + "_Atlas.png")), bytes(directory + "_Texture.png"));
         }
     }
 
@@ -135,7 +135,7 @@ class ParityAssetsTest {
         return result;
     }
 
-    @Test void silverBodyHasReadableShadowsAndTheUnlitIndicatorIsClearlyDarker() throws Exception {
+    @Test void paintedWorkshopBodyHasDistinctIronEdgesCopperCurvesAndAnUnlitGrayLens() throws Exception {
         for (String kind : new String[]{"XOR", "XNOR"}) {
             String directory = "Common/Items/LogicGates/" + (kind.equals("XOR") ? "XorGate" : "XnorGate") + "/Logic_" + kind + "_Gate";
             var image = ImageIO.read(getClass().getResource("/" + directory + "_Texture.png"));
@@ -152,11 +152,15 @@ class ParityAssetsTest {
             var side = averagePatch(image, body, "left");
             var off = averagePatch(image, indicator, "top");
             var symbol = averagePatch(image, curve, "top");
-            double light = (top[0] + top[1] + top[2]) / 3;
-            assertTrue(light > 195, "base must read as light silver");
-            assertTrue(light - (side[0] + side[1] + side[2]) / 3 > 50, "side shading separates the silhouette");
-            assertTrue(light - (off[0] + off[1] + off[2]) / 3 > 75, "unlit indicator must contrast with the body");
-            assertTrue(light - (symbol[0] + symbol[1] + symbol[2]) / 3 > 30, "XOR curve must remain legible");
+            double edgeDistance = 0, lensDistance = 0, curveDistance = 0;
+            for (int channel = 0; channel < 3; channel++) {
+                edgeDistance += Math.abs(top[channel] - side[channel]);
+                lensDistance += Math.abs(top[channel] - off[channel]);
+                curveDistance += Math.abs(top[channel] - symbol[channel]);
+            }
+            assertTrue(edgeDistance > 50, "iron edges must contrast with the painted face");
+            assertTrue(lensDistance > 80, "unlit indicator must contrast with the body");
+            assertTrue(curveDistance > 80, "copper XOR curve must remain legible");
             assertTrue(off[2] - off[0] < 65 && Math.abs(off[0] - off[1]) < 45, "unlit lens remains a muted gray");
             assertEquals("flat", indicator.get("shadingMode").getAsString());
             var uv = body.getAsJsonObject("textureLayout").getAsJsonObject("top").getAsJsonObject("offset");

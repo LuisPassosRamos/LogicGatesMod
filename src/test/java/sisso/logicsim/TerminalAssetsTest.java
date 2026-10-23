@@ -135,11 +135,11 @@ class TerminalAssetsTest {
         }
     }
 
-    @Test void enlargedBodiesAndNewArmsOnlyReadOpaquePixelsOfTheOriginalAtlases() throws Exception {
+    @Test void enlargedBodiesAndNewArmsOnlyReadOpaquePixelsOfTheWorkshopAtlases() throws Exception {
         for (String kind : new String[]{"Lever", "Lamp"}) {
             var states = definitions(kind);
             for (boolean on : new boolean[]{false, true}) {
-                String textureName = "Logic_" + kind + "_" + (kind.equals("Lamp") && on ? "ON_" : "") + "Texture.png";
+                String textureName = "Logic_" + kind + "_Texture.png";
                 var url = getClass().getResource("/Common/Items/LogicGates/" + kind + "/" + textureName);
                 assertNotNull(url);
                 var image = ImageIO.read(url);

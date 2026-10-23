@@ -12,6 +12,7 @@ import uuid
 from generate_cable_assets import ROOT, RESOURCES
 from gate_catalog import GATES
 from art_sources import read_model
+from asset_io import write_asset
 
 FACES = {"north": "back", "south": "front", "west": "left", "east": "right",
          "up": "top", "down": "bottom"}
@@ -21,6 +22,12 @@ def project(kind):
     folder = GATES[kind]["folder"]
     directory = RESOURCES / f"Common/Items/LogicGates/{folder}"
     source = read_model(folder, f"Logic_{kind}_Gate.blockymodel")
+    texture = directory / f"Logic_{kind}_Gate_Texture.png"
+    return portable(source, texture, f"Logic_{kind}_Gate", kind)
+
+
+def portable(source, texture, name, kind):
+    """Keep author boxes/UVs/stretch and embed the actual source texture."""
     elements = []
     for node in source["nodes"]:
         # These prop sources intentionally use independent, unrotated boxes.
@@ -47,11 +54,10 @@ def project(kind):
             "shading_mode": shape["shadingMode"], "double_sided": shape["doubleSided"],
             "faces": faces
         })
-    texture = directory / f"Logic_{kind}_Gate_Texture.png"
     width, height = struct.unpack(">II", texture.read_bytes()[16:24])
     return {
         "meta": {"format_version": "5.0", "model_format": "hytale_prop", "box_uv": False},
-        "name": f"Logic_{kind}_Gate", "resolution": {"width": width, "height": height},
+        "name": name, "resolution": {"width": width, "height": height},
         "visible_box": [1, 1, 0], "elements": elements, "groups": [],
         "outliner": [element["uuid"] for element in elements],
         "textures": [{"name": texture.name, "id": "0", "width": width, "height": height,
@@ -66,16 +72,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    for kind in ("XOR", "XNOR"):
-        path = ROOT / f"assets/blockbench/{kind}/Logic_{kind}_Gate.bbmodel"
-        content = (json.dumps(project(kind), indent=2) + "\n").encode("utf-8")
+    projects = {ROOT / f"assets/blockbench/{kind}/Logic_{kind}_Gate.bbmodel": project(kind) for kind in ("XOR", "XNOR")}
+    for path, data in projects.items():
+        content = (json.dumps(data, indent=2) + "\n").encode("utf-8")
         if args.check:
             if not path.exists() or path.read_bytes() != content:
                 raise SystemExit(f"Outdated Blockbench project: {path}")
         else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(content)
-    print(f"2 editable Blockbench projects {'checked' if args.check else 'generated'}")
+            write_asset(path, content)
+    print(f"{len(projects)} editable Blockbench projects {'checked' if args.check else 'generated'}")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@
 import argparse
 import json
 from pathlib import Path
+from workshop_material import atlas, apply_surface
+from asset_io import write_asset
 
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCES = ROOT / "src/main/resources"
@@ -13,8 +15,7 @@ DIRECTIONS = ((1, "north", 0, -9.5, 2, 13),
               (8, "west", -9.5, 0, 13, 2))
 THICKNESS = 3  # 50% thicker, with the same endpoints at the block edges.
 
-# Reuse six fully opaque 2x2 tiles from the original 16x16 atlas.
-# Keep UV faces 2x2 and stretch their geometry; larger UV faces sample transparent pixels.
+# Placeholder UVs for box construction; workshop_material remaps every published face.
 FACE_TILES = {"back": (0, 0), "right": (0, 2), "front": (2, 0),
               "left": (2, 2), "top": (0, 4), "bottom": (2, 4)}
 
@@ -49,9 +50,12 @@ def generated_files():
                 nodes.append(box(len(nodes) + 1, name, x, z,
                                  THICKNESS if width == 2 else width,
                                  THICKNESS if depth == 2 else depth))
+        for node in nodes:
+            apply_surface(node["shape"], "Logic_Cable", "copper" if node["name"] == "junction" else "wire")
         result[f"Common/{MODEL_DIR}/Logic_Cable_{mask}.blockymodel"] = {
             "nodes": nodes, "format": "prop", "lod": "auto"
         }
+    result[f"Common/{MODEL_DIR}/Logic_Cable_Texture.png"] = atlas("Logic_Cable").read_bytes()
     result["Server/Item/Items/Deco/Logic_Cable.json"] = {
         "TranslationProperties": {"Name": "server.items.logic_cable.name"},
         "Icon": "Icons/ItemsGenerated/logic_cable.png",
@@ -91,13 +95,12 @@ def main():
     stale = []
     for relative, data in generated_files().items():
         path = RESOURCES / relative
-        content = json.dumps(data, indent=2) + "\n"
+        content = data if isinstance(data, bytes) else (json.dumps(data, indent=2) + "\n").encode("utf-8")
         if args.check:
-            if not path.exists() or path.read_text(encoding="utf-8") != content:
+            if not path.exists() or path.read_bytes() != content:
                 stale.append(relative)
         else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content, encoding="utf-8", newline="\n")
+            write_asset(path, content)
     if stale:
         raise SystemExit("Outdated generated assets: " + ", ".join(stale))
     print(f"{len(generated_files())} cable assets {'checked' if args.check else 'generated'}")
