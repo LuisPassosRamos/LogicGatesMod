@@ -1,48 +1,49 @@
 # Arte, modelos e arquivos gerados
 
-## Fontes e destinos
+## Fontes e contratos
 
 | Conteúdo | Fonte mantida | Saída |
 | --- | --- | --- |
-| Cabo | Geometria/UV em `tools/generate_cable_assets.py` e atlas Common existente | 16 máscaras, item e hitbox |
-| Alavanca/lâmpada | Exportações em `assets/models/Lever` e `Lamp`; PNGs runtime em Common | Modelos por potência/máscara, colisões e itens |
-| Sete portas | Exportação em `assets/models/<pasta>` e atlas runtime em Common | Estados conectados, indicadores, colisões e itens |
-| XOR/XNOR metálicos | `assets/textures/Logic_Parity_Metal_Texture.png` e `tools/parity_material.py` | Atlas com nomes próprios e UVs funcionais |
-| Blockbench XOR/XNOR | Exportações em `assets/models/XorGate` e `XnorGate`; PNG Common correspondente | Projetos portáteis em `assets/blockbench/XOR/` e `XNOR/` |
-| Blockbench NAND original | `assets/blockbench/NAND/NAND_port.bbmodel` | Fonte editável preservada; não integra o JAR |
+| Identidade visual e receitas | [Catálogo da oficina](../assets/workshop/catalog.json) | Registro consistente dos onze itens |
+| Texturas | [Atlas e proveniência](../assets/textures/README.md) | Cópias PNG com nomes próprios no runtime |
+| Cabo | `tools/generate_cable_assets.py` | 16 máscaras, item, textura e seleção baixa |
+| Alavanca e lâmpada | Exportações em `assets/models/Lever` e `Lamp` | Modelos por potência/máscara e colisões |
+| Sete portas | `assets/models/<pasta>` e catálogo lógico | 200 estados, indicadores e colisões |
+| Bancada | [Fonte Blockymodel](../assets/models/Workbench/Logic_Workbench.blockymodel) | Modelo, atlas, colisões e bancada nativa |
+| Projeto editável da bancada | [Blockbench](../assets/blockbench/Workbench/Logic_Workbench.bbmodel) | Caixas nomeadas e textura incorporada |
+| Ícones | Modelos e texturas finais, câmera fixa em `tools/model_icons.py` | 11 ícones de 64 × 64 e 4 de 48 × 48 |
 
-As onze exportações originais estão em `assets/models/` e são entradas dos geradores. Elas não são incluídas no JAR. Os modelos em Common são saídas geradas para o jogo. Preservar nomes/caminhos dos recursos já usados pelos mundos. Os projetos `.bbmodel` são de autoria e ficam fora do JAR.
+As fontes `.blockymodel`, os projetos `.bbmodel`, os atlas e os prompts são incluídos no ZIP, fora do JAR. Somente os recursos runtime integram o JAR. Os identificadores dos dez componentes, seus estados salvos e os caminhos anteriores de modelos continuam resolvíveis.
 
 ## Fluxo de edição
 
-1. Abrir o projeto no Blockbench com o [plugin Hytale](https://github.com/JannisX11/hytale-blockbench-plugin).
-2. Trabalhar na escala original; o gerador aplica 2× ao corpo no runtime. Os fios têm espessura 3 e chegam às bordas do bloco.
-3. Exportar para o `.blockymodel` fonte da pasta `assets/models/` correspondente, sem substituir uma variante `_Connections_`.
-4. Para XOR/XNOR, manter caixas independentes, alinhadas aos eixos, orientação identidade e nomes funcionais das peças. Os geradores atuais dependem desse contrato.
-5. Regenerar e executar o build:
+1. Abrir um projeto com o [plugin Hytale do Blockbench](https://github.com/JannisX11/hytale-blockbench-plugin), editar e exportar a fonte em `assets/models/`.
+2. Componentes existentes usam a escala original; os geradores continuam aplicando 2×. A bancada já usa sua escala final: 32 unidades por bloco.
+3. Preservar as caixas independentes e sem rotação nas fontes XOR/XNOR e bancada. Os projetos portáteis são sincronizados a partir dessas exportações; exporte as alterações antes de regenerar.
+4. Alterar atlas fonte e metadados do catálogo, sem editar variantes `_Connections_` ou ícones manualmente.
+5. Regenerar nesta ordem:
 
 ```powershell
 python tools/generate_cable_assets.py
 python tools/generate_terminal_assets.py
 python tools/generate_gate_assets.py
+python tools/generate_workbench_assets.py
+python tools/generate_inventory_assets.py
 python tools/sync_gate_projects.py
+python tools/model_icons.py
 .\gradlew.bat build
 ```
 
-Para XOR/XNOR, a exportação `.blockymodel` é a referência de sincronização. `sync_gate_projects.py` recria os `.bbmodel` portáteis, incorporando a textura. Exporte suas alterações antes de rodá-lo para não perder uma edição existente somente no projeto Blockbench.
+Os sete comandos aceitam `--check`, que confere sem regravar fontes. Arquivos já corretos ficam intocados; arquivos alterados são publicados atomicamente. O renderizador usa somente a biblioteca padrão Python: interpreta caixas, quaternions, UVs e atlas reais, com câmera ortográfica, luz consistente e transparência. A codificação PNG é determinística entre versões de zlib.
 
-`--check` em cada ferramenta não altera arquivos. A conferência compara o conjunto gerado com as fontes e falha quando há divergência; ela é obrigatória em `build`/CI. Os geradores não recriam pixels do atlas metálico. Sua proveniência e prompts ficam em [assets/textures/README.md](../assets/textures/README.md).
+## Apresentação e bancada
 
-## Apresentação e seleção
+Todos os componentes usam metal pintado, ferro, cobre e sombras em pixels. Cada porta possui atlas próprio; letras A/B/C, setas, formas e marcas de inversão continuam presentes. Indicadores apagados são cinza escuro; ligados, vermelhos e luminosos.
 
-Há 16 máscaras laterais para cada componente de quatro faces. Portas têm ligado/desligado por máscara: 32 estados para AND/OR/NAND/NOR/XOR/XNOR; NOT usa somente frente/trás e tem 8 estados. No total são 200 variantes de modelos de portas.
+Os 264 modelos da versão 1.2.0 têm sua geometria física protegida por uma referência em `tools/tests/fixtures/approved_geometry.json`. Dezesseis modelos ligados de lâmpada acrescentam somente UVs e material emissivo diferentes. Colisões dos componentes permanecem iguais.
 
-Os indicadores ficam apagados em cinza e ligados em vermelho luminoso, independentemente de existir um consumidor na saída. XOR/XNOR têm base prateada, símbolos em aço e indicador apagado em ardósia. Colisões e seleção são compostas por peça, acompanhando corpo e fios presentes.
+A bancada tem 51 peças, ocupa 2 × 1 blocos e cabe em um bloco de altura. O AND aberto, a placa interna, contatos, tampa removida e ferramentas são decoração. O jogo reserva e remove a segunda célula pelo sistema nativo de fillers. Colisão e seleção acompanham cada peça.
 
-Os quatro geradores conferem 426 arquivos runtime e dois projetos Blockbench. Testes verificam alinhamento, UVs opacos, colisões, texturas incorporadas e propriedades de luz. Aparência real, inventário/mão, sensação da colisão e abertura interativa no editor continuam no [roteiro manual](validation.md).
+O catálogo lógico `src/main/resources/logicgates/gate-catalog.json` conserva tipos, máscaras e regras de simulação. O catálogo da oficina cuida da apresentação e fabricação. A conferência exige categoria, ícone e receita para todos os itens, inclusive os futuros. A categoria criativa tem Componentes, Portas lógicas e Bancadas; a estação oferece Componentes e Portas lógicas.
 
-## Catálogo e marcações das portas
-
-`src/main/resources/logicgates/gate-catalog.json` centraliza identificadores, pastas, máscaras permitidas e configuração de arte. Java verifica sua correspondência com os tipos/regras do avaliador; os geradores e a auditoria do JAR consomem o mesmo catálogo. Não editar variantes para acrescentar uma porta nova.
-
-`tools/port_markings.py` gera letras A/B/C e seta +X sobre os corpos, mesmo com máscara 0. NOT recebe somente C e seta. As marcações são caixas baixas com colisão/seleção compatível e UVs opacos; não alteram pixels dos PNGs. XOR/XNOR usam traço escuro sobre prata; as demais portas usam patches claros para contraste. As marcações são acrescentadas na geração e não precisam ser desenhadas à mão nos projetos Blockbench.
+Veja [fabricação](crafting.md) e [validação no cliente](validation.md).

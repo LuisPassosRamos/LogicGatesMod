@@ -8,7 +8,7 @@ Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os s
 | --- | --- |
 | `.\gradlew.bat build` | Compila, executa JUnit e testes das ferramentas, confere projeto/assets/JAR e monta o ZIP |
 | `.\gradlew.bat check` | Testes e conferências, sem montar o ZIP de entrega |
-| `.\gradlew.bat verifyGeneratedAssets` | Confere os quatro geradores sem reescrever fontes |
+| `.\gradlew.bat verifyGeneratedAssets` | Confere os sete geradores sem reescrever fontes |
 | `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
 | `.\gradlew.bat benchmarkCircuit` | Mede avaliador em 12 cenários; grava JSON sem limiar artificial de aprovação |
 | `.\gradlew.bat fullCheck` | Build completo e integração real com reinício |
@@ -78,3 +78,5 @@ Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar
 Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica também referências literais em Java e nomes/descrições dos itens. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
 
 O [guia de uso e ensino](teaching.md) descreve comandos e permissões. O [guia de desempenho](performance.md) separa medições do avaliador e do servidor real.
+
+A versão 1.3.0 confere sete geradores, incluindo bancada, categoria e ícones. O ZIP passa a incluir as fontes de arte; o JAR permanece exclusivo de runtime. Veja [arte](assets.md) e [fabricação](crafting.md).

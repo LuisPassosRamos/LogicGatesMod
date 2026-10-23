@@ -6,6 +6,23 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 Nenhuma alteração registrada após 1.2.0.
 
+## [1.3.0] - 2026-10-23
+
+### Adicionado
+- Categoria LogicGates no criativo, com três divisões e ícones próprios dos onze itens.
+- Bancada artesanal de 2 × 1 blocos, com AND aberto, fonte Blockbench e fabricação nativa.
+- Receitas diretas de cobre, ferro e materiais comuns; bancada fabricável instantaneamente no inventário, conforme o Fieldcraft nativo.
+- Renderizador reproduzível dos modelos reais e validação obrigatória de categoria, ícone e receita.
+
+### Alterado
+- Texturas individuais no estilo de oficina Hytale, com cores por porta, ferro claro e cobre.
+- Indicadores cinza escuro desligados e vermelhos luminosos ligados; geometria dos 264 modelos anteriores preservada.
+- ZIP inclui fontes editáveis, atlas, prompts, documentação e JAR verificado; en-US e pt-BR completos.
+
+### Validação
+- Build, geradores, testes de geometria/UV/ícones e integração de receitas/fillers no servidor 0.7.4.
+- Conferência visual, interface/filas de fabricação, drops por quebra e dois jogadores continuam no roteiro do cliente.
+
 ## [1.2.0] - 2026-10-23
 
 ### Ensino e localização

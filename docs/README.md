@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado de referência: versão **1.2.0**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
+Estado de referência: versão **1.3.0**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
 
 ## Uso e manutenção
 
@@ -26,3 +26,5 @@ Estado de referência: versão **1.2.0**, Hytale **0.7.4**. Este índice substit
 | [Conexões entre alturas](roadmap/vertical-connections.md) | Avaliação de viabilidade; implementação pendente |
 
 A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo ficam em `src/main/resources/`. O código de referência legado foi removido depois de verificar que não era dependência do mod. `build/`, caches e mundos locais não são documentação nem fontes do projeto.
+
+- [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.

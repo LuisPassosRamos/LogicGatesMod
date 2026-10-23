@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.2.0**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
+Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.3.0**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
@@ -16,8 +16,8 @@ No Linux/macOS: `bash ./gradlew build`.
 
 O comando compila, executa os testes e confere versões, documentação, traduções, assets gerados e o conteúdo do JAR. Entrega:
 
-- `build/libs/LogicGates-1.2.0.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
-- `build/releases/LogicGates-1.2.0.zip`: JAR, SHA-256, identificação da compilação e documentação consolidada.
+- `build/libs/LogicGates-1.3.0.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
+- `build/releases/LogicGates-1.3.0.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
 - `build/reports/tests/test/index.html`: resultados JUnit.
 
 Instale apenas o JAR de produção, substituindo o anterior para evitar duas cópias do mesmo plugin. Reinicie o servidor/cliente para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar.
@@ -46,3 +46,5 @@ Comece pelo [índice](docs/README.md). Consulte [desenvolvimento e automação](
 Classroom, traduções adicionais e conexões entre alturas estão no planejamento; ainda não integram esta versão. A CI executa as verificações portáveis em Windows e Linux. A integração nativa tem um workflow manual para runner próprio com os assets do jogo.
 
 Para medir o avaliador: `.\gradlew.bat benchmarkCircuit`. Consulte [desempenho](docs/performance.md) para limites e interpretação.
+
+A versão 1.3.0 acrescenta texturas de oficina, ícones dos modelos reais, categoria criativa e a Bancada LogicGates. Veja [fabricação](docs/crafting.md) e [arte editável](docs/assets.md). O ZIP inclui as fontes da bancada e os atlas.

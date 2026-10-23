@@ -2,7 +2,7 @@
 
 ## Automação
 
-`gradlew build` executa JUnit, testes das ferramentas e conferências de versão/changelog, links locais, traduções, quatro geradores e JAR. `gradlew fullCheck` acrescenta o servidor real 0.7.4 em duas fases: criar/atualizar circuitos e reiniciar para reconstruí-los.
+`gradlew build` executa JUnit, testes das ferramentas e conferências de versão/changelog, links locais, traduções, sete geradores e JAR. `gradlew fullCheck` acrescenta o servidor real 0.7.4 em duas fases: criar/atualizar circuitos e reiniciar para reconstruí-los.
 
 Os testes lógicos incluem as 27 combinações de entrada ausente/0/1 nas quatro orientações, conexões diretas/por cabo, multiplicidade por face, terminais, produtores múltiplos, cadeias, ciclos, retirada de fontes e independência da ordem. A integração usa os codecs/assets reais, verifica atualizações automáticas, seções indisponíveis, retorno de seção vazia e reinício completo.
 
@@ -16,7 +16,11 @@ Use um mundo criativo de testes no Hytale 0.7.4. Instale somente o JAR de produ�
 
 | Caso | Procedimento | Resultado esperado |
 | --- | --- | --- |
-| Inventário | Procurar os dez componentes: alavanca, cabo, lâmpada e sete portas | Nomes, ícones/modelos, mão e colocação funcionam |
+| Inventário | Abrir LogicGates no criativo e suas três abas | Dez componentes e uma bancada, ícones fiéis, sem variantes internas duplicadas |
+| Bancada manual | Em sobrevivência, fabricar a bancada pelo inventário | Receita na categoria Ferramentas; consome 6 troncos, 4 pedras, 2 cobres e 2 ferros |
+| Bancada colocada | Colocar nas quatro orientações, bloquear a segunda célula, quebrar e recolocar | Ocupa 2 × 1; impede sobreposição; colisão por peça; solta uma bancada e libera ambas as células |
+| Fabricação | Abrir a bancada e testar as dez receitas, falta de materiais, lotes e cancelamento | Abas Componentes/Portas lógicas; custos e tempos corretos; 8 cabos por lote; sem perda/duplicação ao cancelar |
+| Bancada após reinício | Salvar, encerrar, retornar e abrir a bancada | Modelo, orientação, ocupação e receitas continuam funcionais |
 | Circuito básico | Alavanca → dois cabos → lâmpada; alternar uma vez por clique | Sinal, indicador e luz acompanham cada acionamento |
 | Formas | Pontas, retas, curvas, T e cruzamento | Fios contínuos, sem transparência indevida; vizinhos se ajustam |
 | Desconexão | Remover cabo no meio; recolocar com fonte ligada | Trecho isolado apaga e reconecta automaticamente |
@@ -35,12 +39,12 @@ Use um mundo criativo de testes no Hytale 0.7.4. Instale somente o JAR de produ�
 | Ciclos | Remover fonte externa de anel AND/OR; experimentar laço inversor | Sem energia retida; indefinição aparece no diagnóstico e fica desligada |
 | Altura/cantos | Aproximar componentes acima/abaixo ou em diagonal | Sem transmissão; vertical ainda não implementado |
 | Seleção e remoção | Mirar peças/fios, caminhar sobre módulos e quebrar | Colisão compatível, sem cubo invisível; drop correto e vizinho intacto |
-| Aparência | Ver XOR/XNOR de cima/lado, no sol/sombra | Base prateada, símbolo legível, lente apagada escura e acesa vermelha |
+| Aparência | Ver os dez componentes de cima/lado, no sol/sombra | Oficina artesanal; cores e detalhes próprios; ferro/cobre legíveis; lentes cinza escuro ou vermelhas luminosas |
 | Sons | Acionar alavanca e observar mudança de lâmpada | Confirmar comportamento sonoro no cliente e registrar divergências |
 | Seções | Afastar-se até sair da área carregada, voltar e cruzar fronteiras com circuito ligado/desligado | Reconstrução sem sinal antigo; afastamento sozinho não prova descarga real |
 | Reinício | Salvar, encerrar completamente e abrir de novo | Alavanca preserva intenção; portas/lâmpadas correspondem ao circuito |
 | Dois jogadores | Um alterna/remove/recoloca enquanto outro observa e depois reconecta | Estados visuais e luz consistentes nos dois clientes |
-| Blockbench | Abrir XOR/XNOR, conferir textura, exportar e regenerar | Fontes editáveis correspondem às variantes, sem caminhos pessoais |
+| Blockbench | Abrir XOR/XNOR e bancada, conferir textura, exportar e regenerar | Fontes editáveis correspondem às variantes, sem caminhos pessoais |
 
 A descarga real é comprovada pelo teste de servidor, que remove e recarrega a seção/coluna. No cliente, andar para longe oferece uma verificação prática de retorno, mas a distância por si só não confirma o descarregamento.
 
@@ -68,8 +72,22 @@ A inspeção visual com o cliente e a sincronização em duas máquinas continua
 
 - **745 testes JUnit**, sem falhas, erros ou casos ignorados; **11 testes das ferramentas** aprovados.
 - **53 grupos nativos** aprovados, incluindo os 44 anteriores, leitura das duas línguas, inspeção por snapshot, métricas, parser dos comandos, permissões e reinício.
-- Catálogo compartilhado, 200 estados de modelos de portas e quatro geradores conferidos; onze exportações de autoria fora do JAR.
+- Catálogo compartilhado, 200 estados de modelos de portas e sete geradores conferidos; onze exportações de autoria fora do JAR.
 - Benchmark reproduzível em 12 cenários, descrito em [desempenho](performance.md). A prévia técnica das marcações verifica geometria, sem substituir o cliente.
 - Build e ZIP verificados com documentos incluídos. Consultar `release.json`/SHA-256 do pacote para identificar os bytes exatos após os commits.
 
 Roteiro adicional no cliente: selecionar pt-BR e en-US, conferir nomes/acentos e `/logichelp --gate=XOR --inputs=3`; verificar A/B/C e seta nas quatro rotações, com e sem cabos; usar `/logicinspect x y z` em entrada vazia, cabo 0/1 e circuito com realimentação. Conferir aparência/colisão dos marcadores e toda a sincronização com dois jogadores. Essa validação multiplayer será feita pelo usuário e continua pendente até seu relato.
+
+## Incremento 1.3.0 — oficina, inventário e fabricação
+
+- **751 testes JUnit** e **17 testes das ferramentas** aprovados, sem falhas.
+- **61 grupos no servidor 0.7.4**: 45 na criação e 16 após reinício completo.
+- **471 recursos runtime**, três projetos Blockbench e os sete geradores conferidos. Dezesseis variantes luminosas de lâmpada mantêm a mesma forma das apagadas; as 264 variantes anteriores preservam a geometria aprovada.
+- Onze receitas registradas com ingredientes reais; transação nativa de consumo rejeita falta de material sem retirar itens, consome custos exatos e produz lotes de 8 cabos ou 1 componente.
+- Bancada validada nas quatro orientações: espaço ocupado impede colocação, a segunda célula é reservada, remoção libera os fillers e a bancada persiste após reinício.
+- Categoria e abas carregadas pelo registro real de assets; 64 chaves completas por língua em en-US e pt-BR.
+- ID das fontes verificadas: `1.3.0+173495ebfec5`. Execução nativa: `build/reports/server-integration/20261023-161717-6f44f3/summary.json`. Revisão Git/checksum podem mudar ao compilar os mesmos fontes após os commits; o resumo de cada execução registra o JAR exato testado. Consulte a identificação final em `release.json`.
+
+A verificação de consumo chama a transação real usada por `CraftingManager.craftItem`, em contêineres nativos e com receitas carregadas do jogo. Não cria uma sessão de jogador nem comprova a interface ou a fila temporizada. **Continuam pendentes no cliente:** abertura/abas e filas, cancelamento/reembolso, inventário/mão, inspeção visual sob iluminação real, drops ao quebrar e sincronização com dois jogadores. A prévia renderizada ajuda a revisar a arte, mas não substitui esse roteiro.
+
+A bancada é fabricada instantaneamente pelo inventário: o `Fieldcraft` nativo de 0.7.4 não admite o atraso de três segundos proposto. As receitas da estação mantêm os tempos planejados. Nenhuma lógica elétrica ou formato persistido dos componentes existentes foi alterado.

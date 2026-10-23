@@ -61,3 +61,7 @@ A invalidação atual pode reconstruir o conjunto carregado do mundo, e há veri
 `/logicinspect` executa no contexto do mundo e não carrega seções. Se há avaliação suja, atualiza os sinais derivados antes de responder. `/logicenergy` aguarda a coleta assíncrona dos mundos sem bloqueá-los. `CircuitMetrics` armazena no máximo 256 amostras por categoria; o monitoramento mede detecção de mudanças e a avaliação completa inclui coleta, solução e publicação. Os percentis são calculados somente quando consultados.
 
 `GateCatalog` usa os metadados compartilhados com os geradores. A semântica booleana continua explícita no avaliador Java, com validação contra as classificações do catálogo. A identidade de blocos/componentes e a persistência existente não mudaram.
+
+## Oficina e fabricação (1.3.0)
+
+A bancada usa `BenchBlock` e a interface/fabricação nativa de Hytale. Não participa da indexação elétrica nem acrescenta estado aos componentes de circuito. O catálogo da oficina em `assets/workshop/catalog.json` concentra aparência, ícones, categorias e receitas; o catálogo lógico permanece responsável pelas regras e faces das portas. Os geradores publicam os recursos e o build exige registro completo de todo item novo. Veja [fabricação](crafting.md) e [arte](assets.md).
