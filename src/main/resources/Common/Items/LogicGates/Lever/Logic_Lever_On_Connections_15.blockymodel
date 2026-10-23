@@ -38,8 +38,8 @@
         "textureLayout": {
           "back": {
             "offset": {
-              "x": 342,
-              "y": 342
+              "x": 1262,
+              "y": 280
             },
             "mirror": {
               "x": false,
@@ -60,8 +60,8 @@
           },
           "front": {
             "offset": {
-              "x": 342,
-              "y": 342
+              "x": 1262,
+              "y": 8
             },
             "mirror": {
               "x": false,
@@ -82,8 +82,8 @@
           },
           "top": {
             "offset": {
-              "x": 29,
-              "y": 342
+              "x": 1262,
+              "y": 552
             },
             "mirror": {
               "x": false,

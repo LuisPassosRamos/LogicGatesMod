@@ -36,8 +36,8 @@ def tile(item_id, column, row, patch_size=PATCH_SIZE):
 
 def apply_surface(shape, item_id, role="paint", on=False):
     # The source has sparse, broad pixel highlights. Keep enough of each swatch
-    # to show those shades, without crossing cell boundaries. The bench keeps
-    # its original authored UVs/materials; its decorative module is independent.
+    # to show those shades, without crossing cell boundaries. Composite atlases
+    # append material/letter patches while keeping these source pixels intact.
     patch_size = 64 if role == "indicator" else PATCH_SIZE
     for axis in "xyz":
         shape["stretch"][axis] *= shape["settings"]["size"][axis] / patch_size

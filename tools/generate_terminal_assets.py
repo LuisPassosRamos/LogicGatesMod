@@ -14,6 +14,7 @@ from art_sources import read_model
 from workshop_material import atlas, apply_surface
 from item_presentation import decorate
 from asset_io import write_asset
+from presentation_atlas import apply_lever_labels, lever_texture
 
 BODY_SCALE = 2
 AXES = "xyz"
@@ -54,6 +55,8 @@ def body_nodes(kind, on):
         role = ("iron" if i <= 2 else "dark") if kind == "Lever" \
             else ("indicator" if i == 4 else "iron")
         apply_surface(node["shape"], "Logic_" + kind, role, on)
+        if kind == "Lever" and i == 1:
+            apply_lever_labels(node["shape"])
     return nodes
 
 
@@ -122,7 +125,7 @@ def generated_files():
     files = {}
     for kind in ("Lever", "Lamp"):
         texture_path = f"Common/Items/LogicGates/{kind}/Logic_{kind}_Texture.png"
-        files[texture_path] = atlas("Logic_" + kind).read_bytes()
+        files[texture_path] = lever_texture() if kind == "Lever" else atlas("Logic_" + kind).read_bytes()
         item_path = f"Server/Item/Items/Deco/Logic_{kind}.json"
         item = read(item_path)
         block = item["BlockType"]

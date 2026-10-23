@@ -4,7 +4,7 @@ import json
 
 from project_config import ROOT
 from generate_terminal_assets import hitboxes
-from workshop_material import atlas
+from presentation_atlas import bench_texture
 from item_presentation import decorate
 from asset_io import write_asset
 
@@ -39,7 +39,7 @@ def generated_files():
         }
     }
     decorate("Logic_Workbench", item)
-    return {"Common/" + MODEL: source, "Common/" + TEXTURE: atlas("Logic_Workbench").read_bytes(),
+    return {"Common/" + MODEL: source, "Common/" + TEXTURE: bench_texture(),
             "Server/Item/Block/Hitboxes/Logic_Workbench.json": hitboxes(source),
             "Server/Item/Items/Bench/Logic_Workbench.json": item}
 

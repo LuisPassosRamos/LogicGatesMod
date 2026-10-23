@@ -148,6 +148,9 @@ class WorkshopAssetsTest {
         var source = JsonParser.parseString(Files.readString(Path.of("assets/models/Workbench/Logic_Workbench.blockymodel"))).getAsJsonObject();
         assertEquals(source.getAsJsonArray("nodes").size(), project.getAsJsonArray("elements").size());
         String embedded = project.getAsJsonArray("textures").get(0).getAsJsonObject().get("source").getAsString().split(",", 2)[1];
-        assertArrayEquals(Files.readAllBytes(Path.of("assets/textures/workshop/Logic_Workbench_Atlas.png")), java.util.Base64.getDecoder().decode(embedded));
+        try (var stream = getClass().getResourceAsStream("/Common/Items/LogicGates/Workbench/Logic_Workbench_Texture.png")) {
+            assertNotNull(stream);
+            assertArrayEquals(stream.readAllBytes(), java.util.Base64.getDecoder().decode(embedded));
+        }
     }
 }
