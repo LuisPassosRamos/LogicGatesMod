@@ -10,6 +10,7 @@ Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os s
 | `.\gradlew.bat check` | Testes e conferências, sem montar o ZIP de entrega |
 | `.\gradlew.bat verifyGeneratedAssets` | Confere os quatro geradores sem reescrever fontes |
 | `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
+| `.\gradlew.bat benchmarkCircuit` | Mede avaliador em 12 cenários; grava JSON sem limiar artificial de aprovação |
 | `.\gradlew.bat fullCheck` | Build completo e integração real com reinício |
 | `.\gradlew.bat runServer` | Abre o ambiente de desenvolvimento em `devserver-074/` |
 | `.\gradlew.bat clean` | Remove as saídas em `build/` |
@@ -62,10 +63,18 @@ A limpeza inicial de 23/10/2026 tem uma cópia externa em `../LogicGatesMod-back
 
 ## CI e entrega
 
-O workflow `ci.yml` roda em push, pull request e disparo manual, em Windows e Linux, com Java 25/Python 3.13. Executa `build`, publica o ZIP aprovado e conserva relatórios. O pacote inclui a documentação; seus links locais e checksum também são conferidos. As actions estão fixadas por commit. A resolução inicial das dependências requer rede.
+O repositório próprio é [LuisPassosRamos/LogicGatesMod](https://github.com/LuisPassosRamos/LogicGatesMod), privado. O remote `origin` aponta para ele; `template` preserva a origem do scaffold.
+
+O workflow `ci.yml` roda em push, pull request e disparo manual, em Windows e Linux, com Java 25/Python 3.13. Executa `build benchmarkCircuit`, publica o ZIP aprovado e conserva relatórios. O pacote inclui a documentação; seus links locais e checksum também são conferidos. As actions estão fixadas por commit. A resolução inicial das dependências requer rede.
 
 `server-integration.yml` é manual e requer um runner próprio com o rótulo `hytale-0.7.4`, Java/Python, acesso às dependências e `HYTALE_ASSETS` configurado para o arquivo licenciado. Ele executa `fullCheck` e publica somente resultados/entrega, sem copiar assets ou o servidor do jogo para os artifacts. Não executar automaticamente código de pull requests externos nesse runner.
 
-Os workflows passam a executar no GitHub depois que os arquivos forem enviados ao repositório. A configuração local não cria commits, tags ou releases remotas.
+O push dos commits dispara a CI portável no GitHub. A integração nativa continua dependendo de runner próprio com os assets; `fullCheck` pode ser executado localmente sem instalar um runner. Tags identificam marcos de fonte; o build não cria tags ou releases remotas automaticamente.
 
 Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar o roteiro de cliente e compartilhar o ZIP correspondente. Registre commits por incremento e crie a tag `vX.Y.Z` quando a versão tiver sido aprovada; nenhuma tag é criada automaticamente pelo build.
+
+## Acrescentar outra língua
+
+Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica também referências literais em Java e nomes/descrições dos itens. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
+
+O [guia de uso e ensino](teaching.md) descreve comandos e permissões. O [guia de desempenho](performance.md) separa medições do avaliador e do servidor real.

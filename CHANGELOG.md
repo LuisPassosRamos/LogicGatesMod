@@ -4,7 +4,27 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.1.0.
+Nenhuma alteração registrada após 1.2.0.
+
+## [1.2.0] - 2026-10-23
+
+### Ensino e localização
+
+- Tradução completa pt-BR dos itens, ajuda e diagnósticos, com en-US como base e verificação de chaves/parâmetros entre línguas.
+- Letras A/B/C e seta de saída nos sete módulos, inclusive sem cabos conectados; NOT identifica somente C e saída. Texturas anteriores preservadas.
+- `/logichelp` explica entradas opcionais, paridade, limitações e gera tabelas verdade com 1-3 entradas usando o avaliador real.
+- `/logicinspect x y z` informa orientação, cada entrada física, saída e motivo do resultado: lógica, ausência de entradas, seção indisponível ou realimentação indefinida. Não carrega seções.
+
+### Manutenção e medições
+
+- Catálogo de metadados compartilhado entre Java, geradores e auditoria do JAR; identificadores existentes preservados.
+- Onze exportações originais movidas para `assets/models/`, separadas dos recursos gerados de runtime; fluxo Blockbench atualizado.
+- `/logicenergy` acrescenta tempos da avaliação completa, avaliador e monitoramento; janela limitada a 256 amostras.
+- `benchmarkCircuit` mede mediana, p95 e alocação em linhas, grades, cadeias das sete portas e redes independentes.
+- Novos testes de inspeção, tabelas, idiomas, marcações, métricas e comandos/permissões no servidor real.
+- Repositório próprio e histórico organizado por incrementos; CI portável preparada para execução remota.
+
+Classroom e conexões verticais continuam fora deste incremento. Teste com dois jogadores fica a cargo do usuário.
 
 ## [1.1.0] - 2026-10-23
 

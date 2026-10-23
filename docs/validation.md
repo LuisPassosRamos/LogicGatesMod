@@ -63,3 +63,13 @@ Para cada rodada, registrar: ID, SHA do JAR quando necessário, versão do jogo,
 - Workflows preparados para GitHub; não houve execução remota, commit, push ou criação de release nesta tarefa. A validação desta entrega foi local no Windows.
 
 A inspeção visual com o cliente e a sincronização em duas máquinas continuam manuais. Esta organização não altera a lógica ou a geometria dos componentes.
+
+## Incremento 1.2.0 — ensino e diagnóstico
+
+- **745 testes JUnit**, sem falhas, erros ou casos ignorados; **11 testes das ferramentas** aprovados.
+- **53 grupos nativos** aprovados, incluindo os 44 anteriores, leitura das duas línguas, inspeção por snapshot, métricas, parser dos comandos, permissões e reinício.
+- Catálogo compartilhado, 200 estados de modelos de portas e quatro geradores conferidos; onze exportações de autoria fora do JAR.
+- Benchmark reproduzível em 12 cenários, descrito em [desempenho](performance.md). A prévia técnica das marcações verifica geometria, sem substituir o cliente.
+- Build e ZIP verificados com documentos incluídos. Consultar `release.json`/SHA-256 do pacote para identificar os bytes exatos após os commits.
+
+Roteiro adicional no cliente: selecionar pt-BR e en-US, conferir nomes/acentos e `/logichelp --gate=XOR --inputs=3`; verificar A/B/C e seta nas quatro rotações, com e sem cabos; usar `/logicinspect x y z` em entrada vazia, cabo 0/1 e circuito com realimentação. Conferir aparência/colisão dos marcadores e toda a sincronização com dois jogadores. Essa validação multiplayer será feita pelo usuário e continua pendente até seu relato.

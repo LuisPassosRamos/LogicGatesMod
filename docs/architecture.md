@@ -53,3 +53,11 @@ Somente a intenção da alavanca é fonte autoritativa persistente. Componentes/
 Consultas não forçam carregamento de seções. Qualquer face de entrada relevante indisponível suspende a porta com saída/indicador desligados; indisponível não é uma entrada removida. As laterais fechadas do NOT não o suspendem. Redes deixam de incluir seus trechos descarregados.
 
 A invalidação atual pode reconstruir o conjunto carregado do mundo, e há verificações de holders/topologia por tick. Medir tempo de avaliação, custo em repouso e múltiplos jogadores antes de trocar isso por invalidação localizada. Ainda não há benchmark que justifique uma promessa de capacidade máxima.
+
+## Ensino, inspeção e métricas (1.2.0)
+
+`CircuitSnapshot` mantém uma cópia imutável dos nós e do último resultado concluído por mundo. `diagnostics/` lê esse snapshot sem consultar Hytale: a inspeção identifica A/B/C pela orientação, distingue vazio/0/1/face incompatível/indisponibilidade e informa a razão da saída. As tabelas de ajuda usam o próprio avaliador com entradas explícitas. Nenhum desses dados é persistido.
+
+`/logicinspect` executa no contexto do mundo e não carrega seções. Se há avaliação suja, atualiza os sinais derivados antes de responder. `/logicenergy` aguarda a coleta assíncrona dos mundos sem bloqueá-los. `CircuitMetrics` armazena no máximo 256 amostras por categoria; o monitoramento mede detecção de mudanças e a avaliação completa inclui coleta, solução e publicação. Os percentis são calculados somente quando consultados.
+
+`GateCatalog` usa os metadados compartilhados com os geradores. A semântica booleana continua explícita no avaliador Java, com validação contra as classificações do catálogo. A identidade de blocos/componentes e a persistência existente não mudaram.

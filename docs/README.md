@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado de referência: versão **1.1.0**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
+Estado de referência: versão **1.2.0**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
 
 ## Uso e manutenção
 
@@ -9,6 +9,8 @@ Estado de referência: versão **1.1.0**, Hytale **0.7.4**. Este índice substit
 | [Regras e arquitetura](architecture.md) | Entender o circuito e localizar responsabilidades no código |
 | [Desenvolvimento e automação](development.md) | Compilar, testar, versionar e localizar artefatos |
 | [Arte e arquivos gerados](assets.md) | Editar modelos, texturas e gerar variantes |
+| [Ensino e comandos](teaching.md) | Usar ajuda, tabelas verdade, inspeção e idiomas |
+| [Desempenho](performance.md) | Reproduzir benchmarks e interpretar os tempos |
 | [Validação](validation.md) | Reproduzir testes e conferir aparência, colisão e multiplayer |
 | [Compatibilidade Hytale](reference/hytale-074.md) | Adaptar código e avaliar tutoriais de outras versões |
 | [Fontes externas](reference/sources.md) | Encontrar documentação primária e guias contextualizados |

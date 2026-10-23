@@ -7,10 +7,10 @@ O núcleo de circuitos está implementado. O produto educacional completo ainda 
 ## Prioridades propostas
 
 1. Consolidar o roteiro de cliente, especialmente dois jogadores, orientação, iluminação e colisão.
-2. Melhorar a leitura pedagógica: A/B/C/saída, entradas opcionais, tabelas verdade e mensagens explicativas.
-3. Adicionar português e depois outras línguas, mantendo as mesmas chaves dos itens e traduzindo mensagens de interface/diagnóstico. Hoje existe somente `en-US/server.lang`; o build verifica chaves base e duplicações. Nenhuma tradução nova integra 1.1.0.
+2. Validar no cliente as letras A/B/C/seta, a ajuda com tabelas verdade e a inspeção explicativa acrescentadas em 1.2.0.
+3. Adicionar português e depois outras línguas, mantendo as mesmas chaves dos itens e traduzindo mensagens de interface/diagnóstico. A versão 1.2.0 já inclui en-US/pt-BR e valida igualdade de chaves e parâmetros. Outras línguas podem seguir esse contrato.
 4. Prototipar [Classroom](classroom.md) e validar um exercício simples com alunos/professor antes de ampliar o painel.
-5. Medir circuitos grandes e vários jogadores antes de otimizar invalidação por rede/região. Acrescentar diagnóstico de uma porta específica, distinguindo lógica 0, seção ausente e realimentação indefinida.
+5. Medir circuitos grandes e vários jogadores antes de otimizar invalidação por rede/região. A inspeção de porta e as métricas já existem em 1.2.0; aprofundar medições do servidor e multiplayer antes de otimizar.
 6. Implementar [degraus de cabos](vertical-connections.md) após validar o protótipo físico/visual e suas regras de apoio.
 
 Não há placeholders Java para esses incrementos. Serviços, persistência e UI devem entrar junto com uma funcionalidade testável, mantendo o domínio separado da API do jogo.
