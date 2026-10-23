@@ -129,6 +129,16 @@ tasks.register("fullCheck") {
     group = "verification"
     dependsOn(serverIntegrationTest)
 }
+
+tasks.register<JavaExec>("benchmarkCircuit") {
+    description = "Measures evaluator median/p95 and allocations at 100, 1000 and 10000 components."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("sisso.logicsim.benchmarks.CircuitBenchmark")
+    maxHeapSize = "2g"
+    args(layout.buildDirectory.file("reports/benchmarks/circuit.json").get().asFile.absolutePath)
+}
 tasks.named<JavaExec>("runServer") {
     workingDir(layout.projectDirectory.dir("devserver-074"))
     doFirst { workingDir.mkdirs() }

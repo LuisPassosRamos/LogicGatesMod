@@ -32,10 +32,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
       - name: Build and check (Unix)
         if: runner.os != 'Windows'
-        run: bash ./gradlew --no-daemon build
+        run: bash ./gradlew --no-daemon build benchmarkCircuit
       - name: Build and check (Windows)
         if: runner.os == 'Windows'
-        run: .\gradlew.bat --no-daemon build
+        run: .\gradlew.bat --no-daemon build benchmarkCircuit
       - name: Upload verified distribution
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
