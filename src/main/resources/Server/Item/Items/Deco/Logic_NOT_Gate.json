@@ -1,0 +1,123 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_not_gate.name",
+    "Description": "server.items.logic_not_gate.description"
+  },
+  "Categories": [
+    "Blocks.Deco"
+  ],
+  "Model": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_10.blockymodel",
+  "Texture": "Items/LogicGates/NotGate/Logic_NOT_Gate_Texture.png",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_0.blockymodel",
+    "HitboxType": "Logic_NOT_Gate_Connections_0",
+    "InteractionHitboxType": "Logic_NOT_Gate_Connections_0",
+    "Light": null,
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/LogicGates/NotGate/Logic_NOT_Gate_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "CustomModelScale": 1,
+    "VariantRotation": "NESW",
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer",
+      "AllowRotationKey": true
+    },
+    "RotationYawPlacementOffset": "Ninety",
+    "Gathering": {
+      "Soft": {
+        "IsWeaponBreakable": false,
+        "ItemId": "Logic_NOT_Gate"
+      }
+    },
+    "BlockParticleSetId": "Metal",
+    "BlockSoundSetId": "Metal",
+    "PhysicalMaterialId": "Metal",
+    "TextureComputedColor": "#7e7e7e",
+    "ParticleColor": "#7e7e7e",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockEntity": {
+      "Components": {
+        "LogicGates_Gate": {}
+      }
+    },
+    "State": {
+      "Definitions": {
+        "Off_Connections_0": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_0.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_0",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_0",
+          "Light": null
+        },
+        "Off_Connections_2": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_2.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_2",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_2",
+          "Light": null
+        },
+        "Off_Connections_8": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_8.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_8",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_8",
+          "Light": null
+        },
+        "Off_Connections_10": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_Off_Connections_10.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_10",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_10",
+          "Light": null
+        },
+        "On_Connections_0": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_On_Connections_0.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_0",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_0",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_2": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_On_Connections_2.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_2",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_2",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_8": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_On_Connections_8.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_8",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_8",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_10": {
+          "CustomModel": "Items/LogicGates/NotGate/Logic_NOT_Gate_On_Connections_10.blockymodel",
+          "HitboxType": "Logic_NOT_Gate_Connections_10",
+          "InteractionHitboxType": "Logic_NOT_Gate_Connections_10",
+          "Light": {
+            "Color": "#f00"
+          }
+        }
+      }
+    }
+  },
+  "PlayerAnimationsId": "Block",
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "Tags": {
+    "Type": [
+      "Deco"
+    ]
+  }
+}

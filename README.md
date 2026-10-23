@@ -1,55 +1,40 @@
-# Hytale Plugin Template
+# LogicGates
 
-A ready-to-use starting point for creating Hytale server plugins with Java, _or Kotlin_. If you've
-been using the Asset Editor and want to start writing server-side logic — custom commands, event
-handling, gameplay systems — this is the simplest place to begin.
+Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.1.0**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
 
-## How to start?
+As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
-1. Copy the template by downloading it or using the "Use this template" button.
-2. [Configure or Install the Java SDK](https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env)
-   to use the latest 25 from JetBrains or similar.
-3. Open the project in your favorite IDE, we
-   recommend [IntelliJ IDEA](https://www.jetbrains.com/idea/download).
-4. Optionally, run `./gradlew` if your IDE does not automtically synchronizes.
-5. Run the devserver with the Run Configuration created, or `./gradlew devServer`.
+## Compilar e instalar
 
-> On Windows, use `.\gradlew.bat` instead of `./gradlew`, this script is here to run the
-> Gradle without you needing to install the tooling itself, only the Java is required.
+Requisitos: **JDK 25**, **Python 3.10+** (somente biblioteca padrão) e internet na primeira resolução das dependências. O Gradle 9.2.0 é fornecido pelo wrapper.
 
-With that you will be prompted in the output to authorize your server, and then you can start
-developing your plugin while the server is live reloading the code changes.
+```powershell
+.\gradlew.bat build
+```
 
-From here,
-the [HytaleModding guides](https://hytalemodding.dev/en/docs/guides/plugin/build-and-test) cover
-more details!
+No Linux/macOS: `bash ./gradlew build`.
 
-## Scaffoldit Plugin
+O comando compila, executa os testes e confere versões, documentação, traduções, assets gerados e o conteúdo do JAR. Entrega:
 
-While there are multiple plugins made for Hytale, the template currently uses a zero-boilerplate one
-where you only need the absolute minimum to start. However, you do have access to everything as
-normal if you know what you are doing.
+- `build/libs/LogicGates-1.1.0.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
+- `build/releases/LogicGates-1.1.0.zip`: JAR, SHA-256, identificação da compilação e documentação consolidada.
+- `build/reports/tests/test/index.html`: resultados JUnit.
 
-For in-depth configuration, you can visit the [ScaffoldIt Plugin Docs](https://scaffoldit.dev).
+Instale apenas o JAR de produção, substituindo o anterior para evitar duas cópias do mesmo plugin. Reinicie o servidor/cliente para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar.
 
-## Troubleshooting
+## Desenvolvimento e testes
 
-- **Gradle sync fails in IntelliJ** –
-  _Check that Java 25 is installed and configured under File → Project Structure → SDKs._
-- **Build fails with missing dependencies** –
-  _Run `./gradlew build --refresh-dependencies`. Make sure you have internet access!_
-- **Permission denied on `./gradlew`** –
-  _Run `chmod +x gradlew` (macOS/Linux)._
-- **Hot-reload doesn't work** –
-  _Verify you're using JetBrains Runtime, not a regular JDK._
+```powershell
+.\gradlew.bat fullCheck
+.\gradlew.bat runServer
+```
 
-## Resources
+`fullCheck` acrescenta a integração real: criação, atualizações, descarga/retorno de seções e reinício do servidor. Requer `Assets.zip` de uma instalação local; aceita `HYTALE_ASSETS` ou `-PhytaleAssets="D:/Hytale/Assets.zip"`. Os mundos temporários são isolados dos mundos de desenvolvimento. `runServer` usa `devserver-074/`.
 
-- [Hytale Modding Guides](https://hytalemodding.dev)
-- [Hytale Modding Discord](https://discord.gg/hytalemodding)
-- [ScaffoldIt Plugin Docs](https://scaffoldit.dev)
+O comando `/logicenergy`, com a permissão `sisso.logicgates.debug`, mostra a identificação da compilação e os totais dos circuitos. Ao relatar um problema, informe essa identificação e descreva o circuito.
 
-## License
+## Documentação
 
-Add your own after copying the template, though we recommend using MIT, BSD, or Apache to keep
-the modding community open!
+Comece pelo [índice](docs/README.md). Consulte [desenvolvimento e automação](docs/development.md), [regras e arquitetura](docs/architecture.md), [edição de arte](docs/assets.md), [validação no cliente](docs/validation.md) e [changelog](CHANGELOG.md).
+
+Classroom, traduções adicionais e conexões entre alturas estão no planejamento; ainda não integram esta versão. A CI executa as verificações portáveis em Windows e Linux. A integração nativa tem um workflow manual para runner próprio com os assets do jogo.

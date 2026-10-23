@@ -1,0 +1,342 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_lever.name"
+  },
+  "Icon": "Icons/ItemsGenerated/logic_lever.png",
+  "Categories": [
+    "Blocks.Deco",
+    "Furniture.Lighting"
+  ],
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModelTexture": [
+      {
+        "Weight": 1,
+        "Texture": "Items/LogicGates/Lever/Logic_Lever_Texture.png"
+      }
+    ],
+    "HitboxType": "Logic_Lever_Off_Connections_0",
+    "Flags": {},
+    "Gathering": {
+      "Soft": {
+        "IsWeaponBreakable": false,
+        "ItemId": "Logic_Lever"
+      }
+    },
+    "BlockParticleSetId": "Metal",
+    "BlockSoundSetId": "Metal",
+    "PhysicalMaterialId": "Metal",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        },
+        {
+          "FaceType": "Full",
+          "Filler": []
+        }
+      ]
+    },
+    "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_0.blockymodel",
+    "Interactions": {
+      "Use": "Toggle_LogicLever"
+    },
+    "State": {
+      "Definitions": {
+        "Off": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_0",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_0",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_0": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_0",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_0",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_1": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_1.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_1",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_1",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_2": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_2.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_2",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_2",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_3": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_3.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_3",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_3",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_4": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_4.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_4",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_4",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_5": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_5.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_5",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_5",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_6": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_6.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_6",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_6",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_7": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_7.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_7",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_7",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_8": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_8.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_8",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_8",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_9": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_9.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_9",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_9",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_10": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_10.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_10",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_10",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_11": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_11.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_11",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_11",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_12": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_12.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_12",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_12",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_13": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_13.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_13",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_13",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_14": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_14.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_14",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_14",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "Off_Connections_15": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_Off_Connections_15.blockymodel",
+          "HitboxType": "Logic_Lever_Off_Connections_15",
+          "InteractionHitboxType": "Logic_Lever_Off_Connections_15",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_0",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_0",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_0": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_0",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_0",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_1": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_1.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_1",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_1",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_2": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_2.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_2",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_2",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_3": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_3.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_3",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_3",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_4": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_4.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_4",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_4",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_5": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_5.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_5",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_5",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_6": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_6.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_6",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_6",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_7": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_7.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_7",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_7",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_8": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_8.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_8",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_8",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_9": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_9.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_9",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_9",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_10": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_10.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_10",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_10",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_11": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_11.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_11",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_11",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_12": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_12.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_12",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_12",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_13": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_13.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_13",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_13",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_14": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_14.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_14",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_14",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        },
+        "On_Connections_15": {
+          "CustomModel": "Items/LogicGates/Lever/Logic_Lever_On_Connections_15.blockymodel",
+          "HitboxType": "Logic_Lever_On_Connections_15",
+          "InteractionHitboxType": "Logic_Lever_On_Connections_15",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lever",
+          "Light": null
+        }
+      }
+    },
+    "InteractionHint": "server.interactionHints.turnon",
+    "CustomModelScale": 1,
+    "TextureComputedColor": "#7e7e7e",
+    "ParticleColor": "#7e7e7e",
+    "BlockEntity": {
+      "Components": {
+        "LogicGates_Lever": {}
+      }
+    },
+    "InteractionHitboxType": "Logic_Lever_Off_Connections_0",
+    "InteractionSoundEventId": "SFX_Logic_Lever",
+    "Light": null
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Deco"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Items_Metal"
+}

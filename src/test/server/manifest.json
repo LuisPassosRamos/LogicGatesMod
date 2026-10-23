@@ -1,0 +1,12 @@
+{
+  "Group": "sisso",
+  "Name": "LogicGatesIntegrationTests",
+  "Version": "${modVersion}",
+  "Description": "Isolated server-side tests. Not part of the released mod.",
+  "Main": "sisso.logicsim.integration.ServerIntegrationPlugin",
+  "ServerVersion": "=${hytaleVersion}",
+  "IncludesAssetPack": false,
+  "Dependencies": {
+    "sisso:LogicGates": "=${modVersion}"
+  }
+}

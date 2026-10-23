@@ -1,20 +1,23 @@
 {
-    "Group": "HytaleModding",
-    "Name": "ExamplePlugin",
-    "Version": "0.0.0",
-    "Description": "Description of your plugin",
+    "Group": "sisso",
+    "Name": "LogicGates",
+    "Version": "1.1.0",
+    "Description": "An educational plugin that adds logic gates to Hytale.",
     "Authors": [
         {
-            "Name": "Your Name",
-            "Email": "your.email@example.com",
-            "Url": "https://your-website.com"
+            "Name": "Luis Passos",
+            "Email": "luispassos555@gmail.com",
+            "Url": ""
         }
     ],
-    "Website": "https://your-plugin-website.com",
+    "Website": "",
     "DisabledByDefault": false,
-    "IncludesAssetPack": false,
-    "Dependencies": {},
+    "IncludesAssetPack": true,
+    "Dependencies": {
+        "Hytale:BlockModule": "*",
+        "Hytale:EntityModule": "*"
+    },
     "OptionalDependencies": {},
-    "ServerVersion": "*",
-    "Main": "dev.hytalemodding.ExamplePlugin"
+    "ServerVersion": "=0.7.4",
+    "Main": "sisso.logicsim.LogicSimPlugin"
 }

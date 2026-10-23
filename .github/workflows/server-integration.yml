@@ -1,0 +1,41 @@
+name: Hytale native integration
+
+# A licensed Assets.zip must be provisioned locally on this runner.
+# Do not change this to pull_request: the runner is a trusted local environment.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hytale-native-integration
+  cancel-in-progress: false
+
+jobs:
+  server:
+    runs-on: [self-hosted, hytale-0.7.4]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Full check (Unix)
+        if: runner.os != 'Windows'
+        run: bash ./gradlew --no-daemon fullCheck
+      - name: Full check (Windows)
+        if: runner.os == 'Windows'
+        run: .\gradlew.bat --no-daemon fullCheck
+      - name: Upload verified distribution
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: LogicGates-native-${{ github.sha }}
+          path: build/releases/*.zip
+          if-no-files-found: error
+      - name: Upload reports only
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: reports-native-${{ github.sha }}
+          path: |
+            build/reports/
+            build/test-results/
+          if-no-files-found: ignore

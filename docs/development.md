@@ -1,0 +1,71 @@
+# Desenvolvimento, versões e automação
+
+## Requisitos e comandos
+
+Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os scripts Python usam somente a biblioteca padrão. A dependência `com.hypixel.hytale:Server:0.7.4` é resolvida pelo build; o teste de servidor também exige os assets de uma instalação local do jogo.
+
+| Comando no Windows | Resultado |
+| --- | --- |
+| `.\gradlew.bat build` | Compila, executa JUnit e testes das ferramentas, confere projeto/assets/JAR e monta o ZIP |
+| `.\gradlew.bat check` | Testes e conferências, sem montar o ZIP de entrega |
+| `.\gradlew.bat verifyGeneratedAssets` | Confere os quatro geradores sem reescrever fontes |
+| `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
+| `.\gradlew.bat fullCheck` | Build completo e integração real com reinício |
+| `.\gradlew.bat runServer` | Abre o ambiente de desenvolvimento em `devserver-074/` |
+| `.\gradlew.bat clean` | Remove as saídas em `build/` |
+
+No Linux/macOS, use `bash ./gradlew` no lugar de `.\gradlew.bat`. Para selecionar outro Python: `-PpythonExecutable="C:/Python313/python.exe"`. Os caminhos de executáveis são argumentos separados, inclusive com espaços.
+
+Para a integração, configure `HYTALE_ASSETS` ou execute:
+
+```powershell
+.\gradlew.bat fullCheck -PhytaleAssets="D:/Hytale/Assets.zip"
+```
+
+Depois de `build serverTestJar`, também é possível chamar `python tools/run_server_tests.py --assets "D:/Hytale/Assets.zip"`. `--keep-world` preserva o universo de uma execução aprovada; falhas sempre o preservam para investigação. `--server-jar` seleciona um JAR local, cuja versão é conferida antes de iniciar.
+
+`runServer` mantém a configuração de assets do launcher do ScaffoldIt. O Devtools antigo foi excluído do runtime por incompatibilidade com 0.7.4; recompile e reinicie após alterações Java. O build não regrava o manifest de origem.
+
+## Fonte única de versão
+
+Edite `Version` em `src/main/resources/manifest.json` e registre a mesma versão em [CHANGELOG.md](../CHANGELOG.md). `ServerVersion` é também a fonte única do alvo Hytale, consumida pelo settings Gradle, ferramentas e plugin de integração. Não há uma segunda versão do mod em `gradle.properties`.
+
+- PATCH: correção compatível, por exemplo `1.1.1`.
+- MINOR: funcionalidade compatível, por exemplo `1.2.0`.
+- MAJOR: alteração incompatível de contrato, dados ou uso; documentar migração.
+- Pré-versão: `1.2.0-rc.1` para testes de um incremento ainda não consolidado.
+
+O JAR recebe `logicgates-build.properties`: versão, alvo Hytale, revisão Git, indicador de alterações locais e SHA-256 das fontes/configuração de produção. O ID curto usa `versão+12 caracteres da impressão digital` e aparece na inicialização e em `/logicenergy`. O fingerprint não inclui docs, testes ou mundos. Ele identifica conteúdo de produção; o SHA-256 do JAR identifica o arquivo exato. Revisão/estado Git também podem alterar os bytes do pacote.
+
+`build/release-metadata/release.json` registra esses dados, tamanho e checksum. Mesmo duas compilações ainda chamadas 1.1.0 podem ser distinguidas. Para relatar um teste, informe ID, versão do jogo, cenário e resultado; envie o checksum quando precisar comparar arquivos.
+
+## Pastas e limpeza
+
+| Pasta | Conteúdo e política |
+| --- | --- |
+| `src/main/` | Fontes Java e recursos necessários ao runtime; os caminhos dos assets são contratos |
+| `src/test/` | JUnit, verificações de assets/API e plugin de integração separado |
+| `tools/` | Geradores, identidade de build, verificadores e runner nativo |
+| `assets/` | Projetos de autoria e atlas fonte; não são saída descartável |
+| `docs/` | Documentação mantida e planos explicitamente separados |
+| `.github/workflows/` | Automação portável e integração nativa opcional |
+| `build/libs/` | JAR versionado, JAR de fontes e checksum |
+| `build/releases/` | ZIP de entrega verificado |
+| `build/reports/` e `build/test-results/` | Relatórios atuais, regeneráveis |
+| `build/tmp/server-integration/` | Universos descartáveis, separados de relatórios |
+| `devserver/`, `devserver-074/` | Mundos/configurações locais: preservar; não versionar nem limpar com `clean` |
+| `.gradle/`, `.idea/` | Cache/configuração local, ignorados no Git |
+
+`build/` inteiro é descartável. Não guardar nele artes originais, única cópia de mundos, decisões de projeto ou evidências históricas indispensáveis. O runner remove somente seu universo temporário aprovado e mantém logs/resultados em `build/reports/server-integration/<execução>/`. `clean` remove também esses relatórios; exporte evidências que precisem durar.
+
+A limpeza inicial de 23/10/2026 tem uma cópia externa em `../LogicGatesMod-backups/20261023-polish-before.zip`, fora de `build/` e do repositório. É um resgate local, não uma dependência de build ou um artefato para distribuir.
+
+## CI e entrega
+
+O workflow `ci.yml` roda em push, pull request e disparo manual, em Windows e Linux, com Java 25/Python 3.13. Executa `build`, publica o ZIP aprovado e conserva relatórios. O pacote inclui a documentação; seus links locais e checksum também são conferidos. As actions estão fixadas por commit. A resolução inicial das dependências requer rede.
+
+`server-integration.yml` é manual e requer um runner próprio com o rótulo `hytale-0.7.4`, Java/Python, acesso às dependências e `HYTALE_ASSETS` configurado para o arquivo licenciado. Ele executa `fullCheck` e publica somente resultados/entrega, sem copiar assets ou o servidor do jogo para os artifacts. Não executar automaticamente código de pull requests externos nesse runner.
+
+Os workflows passam a executar no GitHub depois que os arquivos forem enviados ao repositório. A configuração local não cria commits, tags ou releases remotas.
+
+Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar o roteiro de cliente e compartilhar o ZIP correspondente. Registre commits por incremento e crie a tag `vX.Y.Z` quando a versão tiver sido aprovada; nenhuma tag é criada automaticamente pelo build.

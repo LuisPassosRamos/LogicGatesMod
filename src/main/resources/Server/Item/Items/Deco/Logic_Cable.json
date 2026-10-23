@@ -1,0 +1,101 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_cable.name"
+  },
+  "Icon": "Icons/ItemsGenerated/logic_cable.png",
+  "Categories": [
+    "Blocks.Deco"
+  ],
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Items/LogicGates/Cable/Logic_Cable_0.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/LogicGates/Cable/Logic_Cable_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Logic_Cable",
+    "InteractionHitboxType": "Logic_Cable",
+    "Gathering": {
+      "Soft": {
+        "IsWeaponBreakable": false,
+        "ItemId": "Logic_Cable"
+      }
+    },
+    "BlockParticleSetId": "Metal",
+    "BlockSoundSetId": "Metal",
+    "PhysicalMaterialId": "Metal",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockEntity": {
+      "Components": {
+        "LogicGates_Cable": {}
+      }
+    },
+    "State": {
+      "Definitions": {
+        "Connections_0": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_0.blockymodel"
+        },
+        "Connections_1": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_1.blockymodel"
+        },
+        "Connections_2": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_2.blockymodel"
+        },
+        "Connections_3": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_3.blockymodel"
+        },
+        "Connections_4": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_4.blockymodel"
+        },
+        "Connections_5": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_5.blockymodel"
+        },
+        "Connections_6": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_6.blockymodel"
+        },
+        "Connections_7": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_7.blockymodel"
+        },
+        "Connections_8": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_8.blockymodel"
+        },
+        "Connections_9": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_9.blockymodel"
+        },
+        "Connections_10": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_10.blockymodel"
+        },
+        "Connections_11": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_11.blockymodel"
+        },
+        "Connections_12": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_12.blockymodel"
+        },
+        "Connections_13": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_13.blockymodel"
+        },
+        "Connections_14": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_14.blockymodel"
+        },
+        "Connections_15": {
+          "CustomModel": "Items/LogicGates/Cable/Logic_Cable_15.blockymodel"
+        }
+      }
+    },
+    "CustomModelScale": 1,
+    "TextureComputedColor": "#7e7e7e",
+    "ParticleColor": "#7e7e7e"
+  },
+  "PlayerAnimationsId": "Block",
+  "ItemSoundSetId": "ISS_Items_Metal"
+}

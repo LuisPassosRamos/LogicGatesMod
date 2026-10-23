@@ -1,28 +1,18 @@
-rootProject.name = "dev.hytalemodding"
+rootProject.name = "LogicGates"
 
-plugins {
-    // See documentation on https://scaffoldit.dev
-    id("dev.scaffoldit") version "0.2.+"
-}
+plugins { id("dev.scaffoldit") version "0.2.16" }
 
-// Would you like to do a split project?
-// Create a folder named "common", then configure details with `common { }`
+// Exact target is declared once, in the production manifest.
+val targetManifest = file("src/main/resources/manifest.json").readText()
+val targetHytale = Regex("\"ServerVersion\"\\s*:\\s*\"=([^\"]+)\"")
+    .find(targetManifest)?.groupValues?.get(1) ?: error("An exact ServerVersion is required")
 
 hytale {
     usePatchline("release")
-    useVersion("latest")
-
-    repositories {
-        // Any external repositories besides: MavenLocal, MavenCentral, HytaleMaven, and CurseMaven
-    }
-
-    dependencies {
-        // Any external dependency you also want to include
-    }
-
+    useVersion(targetHytale)
     manifest {
-        Group = "HytaleModding"
-        Name = "ExamplePlugin"
-        Main = "dev.hytalemodding.ExamplePlugin"
+        Group = "sisso"
+        Name = "LogicGates"
+        Main = "sisso.logicsim.LogicSimPlugin"
     }
 }

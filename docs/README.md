@@ -1,0 +1,26 @@
+# Documentação do LogicGates
+
+Estado de referência: versão **1.1.0**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
+
+## Uso e manutenção
+
+| Documento | Quando consultar |
+| --- | --- |
+| [Regras e arquitetura](architecture.md) | Entender o circuito e localizar responsabilidades no código |
+| [Desenvolvimento e automação](development.md) | Compilar, testar, versionar e localizar artefatos |
+| [Arte e arquivos gerados](assets.md) | Editar modelos, texturas e gerar variantes |
+| [Validação](validation.md) | Reproduzir testes e conferir aparência, colisão e multiplayer |
+| [Compatibilidade Hytale](reference/hytale-074.md) | Adaptar código e avaliar tutoriais de outras versões |
+| [Fontes externas](reference/sources.md) | Encontrar documentação primária e guias contextualizados |
+| [Changelog](../CHANGELOG.md) | Identificar o que mudou em cada entrega |
+| [Histórico de validação](history/validation.md) | Consultar evidências anteriores sem confundir builds antigas com a atual |
+
+## Planejamento
+
+| Documento | Estado |
+| --- | --- |
+| [Objetivo educacional e prioridades](roadmap/README.md) | Direção do TCC; não é lista de funcionalidades implementadas |
+| [Classroom](roadmap/classroom.md) | Proposta de turmas, matrícula, atividades e entregas |
+| [Conexões entre alturas](roadmap/vertical-connections.md) | Avaliação de viabilidade; implementação pendente |
+
+A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo ficam em `src/main/resources/`. O código de referência legado foi removido depois de verificar que não era dependência do mod. `build/`, caches e mundos locais não são documentação nem fontes do projeto.

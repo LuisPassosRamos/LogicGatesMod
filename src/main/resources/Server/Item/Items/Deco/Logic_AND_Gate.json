@@ -1,0 +1,291 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_and_gate.name",
+    "Description": "server.items.logic_and_gate.description"
+  },
+  "Categories": [
+    "Blocks.Deco"
+  ],
+  "Model": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_15.blockymodel",
+  "Texture": "Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_0.blockymodel",
+    "HitboxType": "Logic_AND_Gate_Connections_0",
+    "InteractionHitboxType": "Logic_AND_Gate_Connections_0",
+    "Light": null,
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "CustomModelScale": 1,
+    "VariantRotation": "NESW",
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer",
+      "AllowRotationKey": true
+    },
+    "RotationYawPlacementOffset": "Ninety",
+    "Gathering": {
+      "Soft": {
+        "IsWeaponBreakable": false,
+        "ItemId": "Logic_AND_Gate"
+      }
+    },
+    "BlockParticleSetId": "Metal",
+    "BlockSoundSetId": "Metal",
+    "PhysicalMaterialId": "Metal",
+    "TextureComputedColor": "#7e7e7e",
+    "ParticleColor": "#7e7e7e",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockEntity": {
+      "Components": {
+        "LogicGates_Gate": {}
+      }
+    },
+    "State": {
+      "Definitions": {
+        "Off_Connections_0": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_0.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_0",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_0",
+          "Light": null
+        },
+        "Off_Connections_1": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_1.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_1",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_1",
+          "Light": null
+        },
+        "Off_Connections_2": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_2.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_2",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_2",
+          "Light": null
+        },
+        "Off_Connections_3": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_3.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_3",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_3",
+          "Light": null
+        },
+        "Off_Connections_4": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_4.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_4",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_4",
+          "Light": null
+        },
+        "Off_Connections_5": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_5.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_5",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_5",
+          "Light": null
+        },
+        "Off_Connections_6": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_6.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_6",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_6",
+          "Light": null
+        },
+        "Off_Connections_7": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_7.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_7",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_7",
+          "Light": null
+        },
+        "Off_Connections_8": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_8.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_8",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_8",
+          "Light": null
+        },
+        "Off_Connections_9": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_9.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_9",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_9",
+          "Light": null
+        },
+        "Off_Connections_10": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_10.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_10",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_10",
+          "Light": null
+        },
+        "Off_Connections_11": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_11.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_11",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_11",
+          "Light": null
+        },
+        "Off_Connections_12": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_12.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_12",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_12",
+          "Light": null
+        },
+        "Off_Connections_13": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_13.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_13",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_13",
+          "Light": null
+        },
+        "Off_Connections_14": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_14.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_14",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_14",
+          "Light": null
+        },
+        "Off_Connections_15": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_Off_Connections_15.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_15",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_15",
+          "Light": null
+        },
+        "On_Connections_0": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_0.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_0",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_0",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_1": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_1.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_1",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_1",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_2": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_2.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_2",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_2",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_3": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_3.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_3",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_3",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_4": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_4.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_4",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_4",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_5": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_5.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_5",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_5",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_6": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_6.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_6",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_6",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_7": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_7.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_7",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_7",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_8": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_8.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_8",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_8",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_9": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_9.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_9",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_9",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_10": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_10.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_10",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_10",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_11": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_11.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_11",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_11",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_12": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_12.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_12",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_12",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_13": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_13.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_13",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_13",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_14": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_14.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_14",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_14",
+          "Light": {
+            "Color": "#f00"
+          }
+        },
+        "On_Connections_15": {
+          "CustomModel": "Items/LogicGates/AndGate/Logic_AND_Gate_On_Connections_15.blockymodel",
+          "HitboxType": "Logic_AND_Gate_Connections_15",
+          "InteractionHitboxType": "Logic_AND_Gate_Connections_15",
+          "Light": {
+            "Color": "#f00"
+          }
+        }
+      }
+    }
+  },
+  "PlayerAnimationsId": "Block",
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "Tags": {
+    "Type": [
+      "Deco"
+    ]
+  }
+}

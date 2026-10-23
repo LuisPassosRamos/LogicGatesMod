@@ -1,0 +1,12 @@
+{
+  "Parent": "SFX_Attn_Quiet",
+  "Layers": [
+    {
+      "Files": [
+        "Sounds/LogicGates/Logic_Lever.ogg"
+      ],
+      "Volume": 1
+    }
+  ],
+  "Volume": 1
+}

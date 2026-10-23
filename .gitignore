@@ -1,46 +1,27 @@
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Reproducible outputs and local runtimes
+/build/
+/.gradle/
+/.kotlin/
+/devserver/
+/devserver-074/
 
-### IntelliJ IDEA ###
-.idea
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/*.xml
-.idea/libraries/
-*.iws
-*.iml
-*.ipr
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# Editors
+.idea/
 .vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
 
-### Mac OS ###
+# Generated Python bytecode and OS metadata
+__pycache__/
+*.py[cod]
 .DS_Store
+Thumbs.db
 
-### Gradle ###
-.gradle
-.kotlin
-devserver
-/.idea/
+# Private local configuration
+.env
+.env.*
+!.env.example

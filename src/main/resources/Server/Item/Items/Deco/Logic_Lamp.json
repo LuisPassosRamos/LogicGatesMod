@@ -1,0 +1,579 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.logic_lamp.name"
+  },
+  "Icon": "Icons/ItemsGenerated/logic_lamp.png",
+  "Categories": [
+    "Blocks.Deco",
+    "Furniture.Lighting"
+  ],
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Logic_Lamp_Connections_0",
+    "Flags": {},
+    "Gathering": {
+      "Soft": {
+        "IsWeaponBreakable": false,
+        "ItemId": "Logic_Lamp"
+      }
+    },
+    "BlockParticleSetId": "Metal",
+    "BlockSoundSetId": "Metal",
+    "PhysicalMaterialId": "Metal",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        },
+        {
+          "FaceType": "Full",
+          "Filler": []
+        }
+      ],
+      "Up": []
+    },
+    "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+    "State": {
+      "Definitions": {
+        "Off": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_0": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_1": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_1.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_1",
+          "InteractionHitboxType": "Logic_Lamp_Connections_1",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_2": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_2.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_2",
+          "InteractionHitboxType": "Logic_Lamp_Connections_2",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_3": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_3.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_3",
+          "InteractionHitboxType": "Logic_Lamp_Connections_3",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_4": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_4.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_4",
+          "InteractionHitboxType": "Logic_Lamp_Connections_4",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_5": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_5.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_5",
+          "InteractionHitboxType": "Logic_Lamp_Connections_5",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_6": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_6.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_6",
+          "InteractionHitboxType": "Logic_Lamp_Connections_6",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_7": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_7.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_7",
+          "InteractionHitboxType": "Logic_Lamp_Connections_7",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_8": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_8.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_8",
+          "InteractionHitboxType": "Logic_Lamp_Connections_8",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_9": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_9.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_9",
+          "InteractionHitboxType": "Logic_Lamp_Connections_9",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_10": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_10.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_10",
+          "InteractionHitboxType": "Logic_Lamp_Connections_10",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_11": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_11.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_11",
+          "InteractionHitboxType": "Logic_Lamp_Connections_11",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_12": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_12.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_12",
+          "InteractionHitboxType": "Logic_Lamp_Connections_12",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_13": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_13.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_13",
+          "InteractionHitboxType": "Logic_Lamp_Connections_13",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_14": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_14.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_14",
+          "InteractionHitboxType": "Logic_Lamp_Connections_14",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off_Connections_15": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_15.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_15",
+          "InteractionHitboxType": "Logic_Lamp_Connections_15",
+          "InteractionHint": "server.interactionHints.turnon",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": null,
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_0": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_0.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHitboxType": "Logic_Lamp_Connections_0",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_1": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_1.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_1",
+          "InteractionHitboxType": "Logic_Lamp_Connections_1",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_2": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_2.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_2",
+          "InteractionHitboxType": "Logic_Lamp_Connections_2",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_3": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_3.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_3",
+          "InteractionHitboxType": "Logic_Lamp_Connections_3",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_4": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_4.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_4",
+          "InteractionHitboxType": "Logic_Lamp_Connections_4",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_5": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_5.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_5",
+          "InteractionHitboxType": "Logic_Lamp_Connections_5",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_6": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_6.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_6",
+          "InteractionHitboxType": "Logic_Lamp_Connections_6",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_7": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_7.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_7",
+          "InteractionHitboxType": "Logic_Lamp_Connections_7",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_8": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_8.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_8",
+          "InteractionHitboxType": "Logic_Lamp_Connections_8",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_9": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_9.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_9",
+          "InteractionHitboxType": "Logic_Lamp_Connections_9",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_10": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_10.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_10",
+          "InteractionHitboxType": "Logic_Lamp_Connections_10",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_11": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_11.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_11",
+          "InteractionHitboxType": "Logic_Lamp_Connections_11",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_12": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_12.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_12",
+          "InteractionHitboxType": "Logic_Lamp_Connections_12",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_13": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_13.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_13",
+          "InteractionHitboxType": "Logic_Lamp_Connections_13",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_14": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_14.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_14",
+          "InteractionHitboxType": "Logic_Lamp_Connections_14",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "On_Connections_15": {
+          "CustomModel": "Items/LogicGates/Lamp/Logic_Lamp_Connections_15.blockymodel",
+          "HitboxType": "Logic_Lamp_Connections_15",
+          "InteractionHitboxType": "Logic_Lamp_Connections_15",
+          "InteractionHint": "server.interactionHints.turnoff",
+          "InteractionSoundEventId": "SFX_Logic_Lamp",
+          "Light": {
+            "Color": "#f00"
+          },
+          "CustomModelTexture": [
+            {
+              "Texture": "Items/LogicGates/Lamp/Logic_Lamp_ON_Texture.png",
+              "Weight": 1
+            }
+          ]
+        }
+      }
+    },
+    "CustomModelScale": 1,
+    "ParticleColor": "#676767",
+    "TextureComputedColor": "#676767",
+    "BlockEntity": {
+      "Components": {
+        "LogicGates_Lamp": {}
+      }
+    },
+    "InteractionHitboxType": "Logic_Lamp_Connections_0",
+    "InteractionHint": "server.interactionHints.turnon",
+    "InteractionSoundEventId": "SFX_Logic_Lamp",
+    "Light": null
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Deco"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "Scale": 1
+}

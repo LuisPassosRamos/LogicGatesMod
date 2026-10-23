@@ -1,0 +1,29 @@
+items.logic_lever.name = Logic Lever
+items.logic_lever.description = Emits energy when activated.
+
+items.logic_cable.name = Logic Cable
+items.logic_cable.description = Transmits logic energy.
+
+items.logic_lamp.name = Logic Lamp
+items.logic_lamp.description = Turns on when receiving energy.
+
+items.logic_and_gate.name = Logic AND Gate
+items.logic_and_gate.description = Emits energy when every connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored.
+
+items.logic_or_gate.name = Logic OR Gate
+items.logic_or_gate.description = Emits energy when any connected input is active. A: left; B: right; C: rear. Output: front. Empty inputs are ignored.
+
+items.logic_not_gate.name = Logic NOT Gate
+items.logic_not_gate.description = Inverts the rear input: off becomes on, on becomes off. Output: front. Side connections are closed. No connected input: off.
+
+items.logic_nand_gate.name = Logic NAND Gate
+items.logic_nand_gate.description = Inverts AND: emits energy unless every connected input is active. A: left; B: right; C: rear. Output: front. No connected inputs: off.
+
+items.logic_nor_gate.name = Logic NOR Gate
+items.logic_nor_gate.description = Inverts OR: emits energy when every connected input is off. A: left; B: right; C: rear. Output: front. No connected inputs: off.
+
+items.logic_xor_gate.name = Logic XOR Gate
+items.logic_xor_gate.description = Emits energy when an odd number of connected inputs is active (one or three). A: left; B: right; C: rear. Output: front. Empty inputs are ignored. No connected inputs: off.
+
+items.logic_xnor_gate.name = Logic XNOR Gate
+items.logic_xnor_gate.description = Inverts XOR: emits energy when an even number of connected inputs is active (zero or two). A: left; B: right; C: rear. Output: front. Empty inputs are ignored. No connected inputs: off.
