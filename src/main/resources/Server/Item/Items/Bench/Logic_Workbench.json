@@ -37,6 +37,39 @@
       "RotationMode": "FacingPlayer",
       "AllowRotationKey": true
     },
+    "Bench": {
+      "Type": "Crafting",
+      "Id": "LogicGates_Workbench",
+      "Categories": [
+        {
+          "Id": "LogicGates_Components",
+          "Icon": "Icons/CraftingCategories/LogicGates/Components.png",
+          "Name": "server.logicgates.categories.components"
+        },
+        {
+          "Id": "LogicGates_Gates",
+          "Icon": "Icons/CraftingCategories/LogicGates/Gates.png",
+          "Name": "server.logicgates.categories.gates"
+        }
+      ],
+      "LocalOpenSoundEventId": "SFX_Workbench_Open",
+      "LocalCloseSoundEventId": "SFX_Workbench_Close",
+      "CompletedSoundEventId": "SFX_Workbench_Craft",
+      "FailedSoundEventId": "SFX_Generic_Crafting_Failed"
+    },
+    "BlockEntity": {
+      "Components": {
+        "BenchBlock": {}
+      }
+    },
+    "State": {
+      "Definitions": {
+        "CraftCompleted": {
+          "Looping": true
+        },
+        "CraftCompletedInstant": {}
+      }
+    },
     "Gathering": {
       "Breaking": {
         "GatherType": "Benches"

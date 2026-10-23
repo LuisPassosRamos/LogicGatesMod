@@ -38,8 +38,6 @@ def generated_files():
             "TextureComputedColor": "#97653e", "ParticleColor": "#97653e"
         }
     }
-    for key in ("Bench", "BlockEntity", "State"):
-        item["BlockType"].pop(key, None)
     decorate("Logic_Workbench", item)
     return {"Common/" + MODEL: source, "Common/" + TEXTURE: atlas("Logic_Workbench").read_bytes(),
             "Server/Item/Block/Hitboxes/Logic_Workbench.json": hitboxes(source),
