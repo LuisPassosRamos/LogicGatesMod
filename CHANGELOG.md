@@ -4,7 +4,15 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.3.1.
+Nenhuma alteração registrada após 1.3.2.
+
+## [1.3.2] - 2026-10-23
+
+### Alterado
+- Carcaça, tampa removida e lente do AND decorativo da bancada reutilizam exatamente os pixels dos materiais do AND colocado no chão. Madeira, ferramentas e contatos internos são preservados.
+- Marcações ON/OFF impressas na base da alavanca, nas faces frontal, traseira e superior, alinhadas aos extremos da haste. Sem novas peças, colisões ou alterações elétricas.
+- Atlas de bancada e alavanca compilados a partir das artes existentes e das letras em pixels, sem modificar os PNGs fonte.
+- Ícones regenerados; projeção dos UVs da face superior corrigida para corresponder ao modelo no Blockbench/Hytale.
 
 ## [1.3.1] - 2026-10-23
 

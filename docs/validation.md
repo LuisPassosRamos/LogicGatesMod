@@ -22,6 +22,8 @@ Use um mundo criativo de testes no Hytale 0.7.4. Instale somente o JAR de produ�
 | Fabricação | Abrir a bancada e testar as dez receitas, falta de materiais, lotes e cancelamento | Abas Componentes/Portas lógicas; custos e tempos corretos; 8 cabos por lote; sem perda/duplicação ao cancelar |
 | AND decorativo | Observar a bancada de perto, mover a câmera e variar a distância | Sem faces piscando no módulo aberto; aparência da bancada preservada |
 | Bancada após reinício | Salvar, encerrar, retornar e abrir a bancada | Modelo, orientação, ocupação e receitas continuam funcionais |
+| Identificação da alavanca | Observar ON/OFF na base por cima e pelos lados; alternar a haste e girar a câmera | Letras legíveis e alinhadas às duas posições; colisão e funcionamento preservados |
+| AND da bancada | Comparar o AND colocado no chão com carcaça e tampa aberta da bancada | Mesmo verde, sombras e lente cinza; contatos internos e restante da bancada preservados |
 | Circuito básico | Alavanca → dois cabos → lâmpada; alternar uma vez por clique | Sinal, indicador e luz acompanham cada acionamento |
 | Formas | Pontas, retas, curvas, T e cruzamento | Fios contínuos, sem transparência indevida; vizinhos se ajustam |
 | Desconexão | Remover cabo no meio; recolocar com fonte ligada | Trecho isolado apaga e reconecta automaticamente |
@@ -100,3 +102,9 @@ O escopo automatizado inclui os **751 testes JUnit**, agora com contraste em uma
 `fullCheck` repete os **61 grupos de servidor 0.7.4**, incluindo criação e reinício. O relatório de cada execução identifica os bytes exatos do JAR; consultar o resumo mais recente e `release.json`. A textura da bancada permanece idêntica à de 1.3.0. Os ícones, as fontes XOR/XNOR e os projetos portáteis acompanham as novas texturas.
 
 A prévia dos modelos reais permite revisar a simplificação da arte. A confirmação da cintilação corrigida depende de observar a bancada no cliente, movendo a câmera e variando a distância; permanece no roteiro acima junto da avaliação de aparência sob a iluminação do jogo.
+
+## Correção 1.3.2 — AND da bancada e identificação da alavanca
+
+O build verifica a igualdade dos pixels do AND nas peças decorativas, a preservação integral das fontes nas duas texturas compiladas, a legibilidade ON/OFF em todas as máscaras/estados e os eixos UV dos ícones. As 264 variantes dos componentes mantêm a geometria física aprovada; a bancada mantém as mesmas 51 peças e colisões.
+
+A conferência no cliente deve observar as duas faces da alavanca, a borda superior da base e o alinhamento da haste em ON/OFF. Comparar a bancada com um AND colocado ao lado, incluindo iluminação e ausência de cintilação. O relatório `fullCheck` e o `release.json` identificam o JAR exato validado.

@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado de referência: versão **1.3.1**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
+Estado de referência: versão **1.3.2**, Hytale **0.7.4**. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`. As referências técnicas úteis foram consolidadas; textos extensos copiados de sites e instruções já superadas foram retirados.
 
 ## Uso e manutenção
 

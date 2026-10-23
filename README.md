@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.3.1**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
+Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.3.2**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
@@ -16,8 +16,8 @@ No Linux/macOS: `bash ./gradlew build`.
 
 O comando compila, executa os testes e confere versões, documentação, traduções, assets gerados e o conteúdo do JAR. Entrega:
 
-- `build/libs/LogicGates-1.3.1.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
-- `build/releases/LogicGates-1.3.1.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
+- `build/libs/LogicGates-1.3.2.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
+- `build/releases/LogicGates-1.3.2.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
 - `build/reports/tests/test/index.html`: resultados JUnit.
 
 Instale apenas o JAR de produção, substituindo o anterior para evitar duas cópias do mesmo plugin. Reinicie o servidor/cliente para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar.
@@ -47,4 +47,4 @@ Classroom, traduções adicionais e conexões entre alturas estão no planejamen
 
 Para medir o avaliador: `.\gradlew.bat benchmarkCircuit`. Consulte [desempenho](docs/performance.md) para limites e interpretação.
 
-A versão 1.3.1 simplifica as texturas: uma cor suave por porta, luz e sombra discretas, cabos pretos e ícones atualizados. Corrige faces sobrepostas no AND decorativo da Bancada LogicGates. A categoria criativa e as receitas continuam disponíveis. Veja [fabricação](docs/crafting.md) e [arte editável](docs/assets.md). O ZIP inclui as fontes da bancada e os atlas.
+A versão 1.3.2 aplica os mesmos materiais do AND colocado no chão à carcaça e à tampa do módulo aberto da bancada. A alavanca recebe marcações ON/OFF na base. Texturas, modelos e colisões dos componentes são preservados; os ícones acompanham a apresentação atual. Veja [arte editável](docs/assets.md) e [validação](docs/validation.md).
