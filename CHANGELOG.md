@@ -15,6 +15,7 @@ Nenhuma alteração registrada após 1.3.1.
 - Eliminadas faces sobrepostas entre a base e as paredes do AND aberto na bancada, origem de cintilação por profundidade. Textura e desenho da bancada preservados.
 - Verificações automáticas de borracha preta e de ausência de faces externas coplanares no AND decorativo.
 - Conferência exaustiva de pixels compartilhados reaproveitada entre variantes, mantendo a validação de UVs, cores e materiais de cada face.
+- Plugin de integração recompilado quando a versão do mod ou do jogo muda; versões incompatíveis são rejeitadas antes de iniciar o servidor.
 
 ## [1.3.0] - 2026-10-23
 

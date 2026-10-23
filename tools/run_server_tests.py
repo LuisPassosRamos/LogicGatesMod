@@ -22,6 +22,16 @@ def remove_test_universe(work):
     shutil.rmtree(target)
 
 
+def validate_test_plugin(path, mod_version, hytale_version):
+    """Reject a stale integration plugin before booting a server that cannot load it."""
+    with zipfile.ZipFile(path) as archive:
+        manifest = json.loads(archive.read("manifest.json"))
+    if (manifest.get("Version") != mod_version
+            or manifest.get("ServerVersion") != "=" + hytale_version
+            or manifest.get("Dependencies", {}).get("sisso:LogicGates") != "=" + mod_version):
+        raise ValueError("Integration plugin version is stale; run gradlew serverTestJar again.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--production-jar", type=Path, default=production_jar())
@@ -53,6 +63,10 @@ def main():
     for path in (server, assets, production, test_mod):
         if not path.is_file():
             raise SystemExit(f"Missing {path}; run gradlew build serverTestJar.")
+    try:
+        validate_test_plugin(test_mod, config["version"], target_version)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
     java_home = os.environ.get("JAVA_HOME")
     java = str(Path(java_home) / "bin" / ("java.exe" if os.name == "nt" else "java")) if java_home else shutil.which("java")
     if not java:

@@ -95,7 +95,7 @@ A bancada é fabricada instantaneamente pelo inventário: o `Fieldcraft` nativo 
 
 ## Correção 1.3.1 — texturas simples e AND decorativo
 
-O escopo automatizado inclui os **751 testes JUnit**, agora com contraste em uma mesma família de cor, e **19 testes das ferramentas**. Dois testes novos verificam a borracha preta de todos os cabos/conectores e a ausência de faces externas coplanares sobrepostas no AND decorativo. As 264 variantes aprovadas e as lâmpadas ligadas mantêm a mesma geometria física dos componentes.
+O escopo automatizado inclui os **751 testes JUnit**, agora com contraste em uma mesma família de cor, e **20 testes das ferramentas**. Três testes novos verificam a borracha preta de todos os cabos/conectores, a ausência de faces externas coplanares sobrepostas no AND decorativo e a rejeição de plugins de integração com versão incompatível antes de iniciar o servidor. As 264 variantes aprovadas e as lâmpadas ligadas mantêm a mesma geometria física dos componentes.
 
 `fullCheck` repete os **61 grupos de servidor 0.7.4**, incluindo criação e reinício. O relatório de cada execução identifica os bytes exatos do JAR; consultar o resumo mais recente e `release.json`. A textura da bancada permanece idêntica à de 1.3.0. Os ícones, as fontes XOR/XNOR e os projetos portáteis acompanham as novas texturas.
 

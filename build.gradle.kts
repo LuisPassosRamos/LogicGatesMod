@@ -74,6 +74,8 @@ tasks.register<Jar>("serverTestJar") {
     description = "Packages the isolated integration plugin matching the production version."
     group = "verification"
     dependsOn(tasks.testClasses)
+    inputs.property("modVersion", project.version.toString())
+    inputs.property("hytaleVersion", targetHytale)
     from(sourceSets.test.get().output) { include("sisso/logicsim/integration/**") }
     from("src/test/server") {
         include("manifest.json")

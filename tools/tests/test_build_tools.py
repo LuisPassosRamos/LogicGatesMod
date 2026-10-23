@@ -21,6 +21,21 @@ class BuildToolsTest(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.config = {"version": "1.1.0", "hytaleVersion": "0.7.4"}
 
+    def test_native_plugin_rejects_stale_version_dependency_or_game_before_boot(self):
+        path = self.root / "integration.jar"
+        current = {"Version": "1.3.1", "ServerVersion": "=0.7.4",
+                   "Dependencies": {"sisso:LogicGates": "=1.3.1"}}
+        for change in ({}, {"Version": "1.3.0"}, {"ServerVersion": "=0.7.3"},
+                       {"Dependencies": {"sisso:LogicGates": "=1.3.0"}}):
+            with self.subTest(change=change):
+                with zipfile.ZipFile(path, "w") as archive:
+                    archive.writestr("manifest.json", json.dumps({**current, **change}))
+                if change:
+                    with self.assertRaisesRegex(ValueError, "plugin version is stale"):
+                        run_server_tests.validate_test_plugin(path, "1.3.1", "0.7.4")
+                else:
+                    run_server_tests.validate_test_plugin(path, "1.3.1", "0.7.4")
+
     def fixture_sources(self):
         for name in ("src/main/java/Plugin.java", "src/main/resources/manifest.json", "build.gradle.kts",
                      "settings.gradle.kts", "gradle.properties", "tools/build_info.py", "tools/project_config.py"):
