@@ -10,6 +10,7 @@ import json
 import math
 
 from generate_cable_assets import RESOURCES, DIRECTIONS, THICKNESS, box
+from art_sources import read_model
 
 BODY_SCALE = 2
 AXES = "xyz"
@@ -20,9 +21,8 @@ def read(relative):
 
 
 def body_nodes(kind, on):
-    directory = f"Common/Items/LogicGates/{kind}"
     suffix = "_On" if kind == "Lever" and on else ""
-    original = read(f"{directory}/Logic_{kind}{suffix}.blockymodel")
+    original = read_model(kind, f"Logic_{kind}{suffix}.blockymodel")
     if kind == "Lever":
         nodes = [deepcopy(n) for n in original["nodes"] if n["id"] != "4"]
     else:

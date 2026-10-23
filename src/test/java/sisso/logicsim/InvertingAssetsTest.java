@@ -79,7 +79,7 @@ class InvertingAssetsTest {
                         + ".json").getAsJsonArray("Boxes");
                 int bodyCount = kind.equals("NOT") ? 10 : kind.equals("NAND") ? 5 :
                         kind.equals("XOR") || kind.equals("XNOR") ? 21 : 14;
-                assertEquals(bodyCount + Integer.bitCount(mask), nodes.size());
+                assertEquals(bodyCount + (kind.equals("NOT") ? 8 : 23) + Integer.bitCount(mask), nodes.size());
                 assertEquals(nodes.size(), boxes.size());
                 int indicators = 0;
                 for (int i = 0; i < nodes.size(); i++) {

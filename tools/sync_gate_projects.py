@@ -10,15 +10,17 @@ import struct
 import uuid
 
 from generate_cable_assets import ROOT, RESOURCES
+from gate_catalog import GATES
+from art_sources import read_model
 
 FACES = {"north": "back", "south": "front", "west": "left", "east": "right",
          "up": "top", "down": "bottom"}
 
 
 def project(kind):
-    folder = "XorGate" if kind == "XOR" else "XnorGate"
+    folder = GATES[kind]["folder"]
     directory = RESOURCES / f"Common/Items/LogicGates/{folder}"
-    source = json.loads((directory / f"Logic_{kind}_Gate.blockymodel").read_text(encoding="utf-8"))
+    source = read_model(folder, f"Logic_{kind}_Gate.blockymodel")
     elements = []
     for node in source["nodes"]:
         # These prop sources intentionally use independent, unrotated boxes.

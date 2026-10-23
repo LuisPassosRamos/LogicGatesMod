@@ -91,7 +91,7 @@ final class GateServerChecks {
                         default -> 14;
                     };
                     check(rotated.getDetailBoxes().length == pieces
-                            + Integer.bitCount(mask), "gate hitbox matches actual pieces");
+                            + (id.equals(LogicBlockTypes.NOT_ID) ? 8 : 23) + Integer.bitCount(mask), "gate hitbox matches actual pieces");
                 }
             }
         }

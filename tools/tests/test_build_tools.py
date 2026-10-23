@@ -60,8 +60,11 @@ class BuildToolsTest(unittest.TestCase):
             archive.writestr("manifest.json", json.dumps({"Version": "1.1.0", "ServerVersion": "=0.7.4"}))
             archive.writestr("logicgates-build.properties", "".join(f"{key}={value}\n" for key, value in info.items()))
             archive.writestr("sisso/logicsim/LogicSimPlugin.class", b"fixture")
-            for index in range(200):
-                archive.writestr(f"Common/Items/LogicGates/AndGate/Test_Connections_{index}.blockymodel", "{}")
+            for gate in verify_project.CATALOG["gates"]:
+                for state in ("On", "Off"):
+                    for mask in range(16):
+                        if mask & ~gate["allowedMask"] == 0:
+                            archive.writestr(f"Common/Items/LogicGates/{gate['folder']}/{gate['itemId']}_{state}_Connections_{mask}.blockymodel", "{}")
             if extra:
                 archive.writestr(extra, b"forbidden")
         return jar

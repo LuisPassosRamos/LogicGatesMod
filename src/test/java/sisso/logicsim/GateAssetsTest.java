@@ -57,7 +57,7 @@ class GateAssetsTest {
                 var nodes = json("Common/" + state.get("CustomModel").getAsString()).getAsJsonArray("nodes");
                 var boxes = json("Server/Item/Block/Hitboxes/" + state.get("HitboxType").getAsString()
                         + ".json").getAsJsonArray("Boxes");
-                assertEquals((kind.equals("AND") ? 4 : 14) + Integer.bitCount(mask), nodes.size());
+                assertEquals((kind.equals("AND") ? 4 : 14) + 23 + Integer.bitCount(mask), nodes.size());
                 assertEquals(nodes.size(), boxes.size());
                 int actualMask = 0;
                 for (int i = 0; i < nodes.size(); i++) {

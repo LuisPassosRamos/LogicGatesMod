@@ -12,6 +12,8 @@ from urllib.parse import unquote
 
 from project_config import ROOT, configuration, production_jar
 from build_info import identity
+from gate_catalog import CATALOG, model_count
+from verify_languages import check as check_languages
 
 REMOVED_CLASSES = ("EnergyNodeComponent", "ToggleSourceComponent", "BlockContextAware")
 
@@ -39,18 +41,8 @@ def repository():
             target = unquote(target.split("#", 1)[0].strip("<>"))
             require(not re.match(r"[A-Za-z]:", target), f"Machine-specific link in {document.relative_to(ROOT)}")
             require((document.parent / target).exists(), f"Broken link in {document.relative_to(ROOT)}: {target}")
-    # All item names/descriptions must have a base translation; duplicate keys are rejected.
-    lang = ROOT / "src/main/resources/Server/Languages/en-US/server.lang"
-    keys = []
-    for line in lang.read_text(encoding="utf-8").splitlines():
-        if "=" in line and not line.lstrip().startswith("#"):
-            keys.append("server." + line.split("=", 1)[0].strip())
-    require(len(keys) == len(set(keys)), "Duplicate base translation keys")
-    for item in (ROOT / "src/main/resources/Server/Item/Items").rglob("*.json"):
-        translations = json.loads(item.read_text(encoding="utf-8")).get("TranslationProperties", {})
-        for key in translations.values():
-            require(key in keys, f"Missing translation {key} in {item.name}")
-    print(f"Repository checked: version {config['version']}, {len(documents)} documents, {len(keys)} translation keys")
+    keys = check_languages(ROOT)
+    print(f"Repository checked: version {config['version']}, {len(documents)} documents, {keys} translation keys")
 
 
 def assets():
@@ -75,10 +67,14 @@ def distribution(path):
             require(not name.endswith((".bbmodel", ".py", ".bak")), f"Authoring file packaged: {name}")
             require("/integration/" not in name and not name.endswith("Test.class"), f"Test class packaged: {name}")
             require(not any(name.endswith(f"/{old}.class") for old in REMOVED_CLASSES), f"Placeholder packaged: {name}")
-        gates = [n for n in names if n.endswith('.blockymodel') and '_Connections_' in n
-                 and any('/' + folder + '/' in n for folder in
-                         ('AndGate', 'OrGate', 'NotGate', 'NandGate', 'NorGate', 'XorGate', 'XnorGate'))]
-        require(len(gates) == 200, f"Expected 200 gate variants, got {len(gates)}")
+        expected = {f"Common/Items/LogicGates/{gate['folder']}/{gate['itemId']}_{state}_Connections_{mask}.blockymodel"
+                    for gate in CATALOG["gates"] for state in ("On", "Off") for mask in range(16)
+                    if mask & ~gate["allowedMask"] == 0}
+        require(len(expected) == model_count(), "Gate catalog has duplicate model identifiers")
+        require(expected.issubset(names), f"Missing generated gate models: {sorted(expected - set(names))}")
+        originals = {"Common/Items/LogicGates/" + source.relative_to(ROOT / "assets/models").as_posix()
+                     for source in (ROOT / "assets/models").rglob("*.blockymodel")}
+        require(not originals.intersection(names), "Authoring model packaged")
     print(f"Distribution checked: {path.name}, build {info['buildId']}")
 
 

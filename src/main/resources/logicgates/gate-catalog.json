@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "gates": [
+    {
+      "kind": "AND",
+      "itemId": "Logic_AND_Gate",
+      "folder": "AndGate",
+      "allowedMask": 15,
+      "inverting": false,
+      "nonMonotonic": false,
+      "art": {
+        "indicator": "7",
+        "red": [
+          16,
+          2
+        ],
+        "gray": [
+          20,
+          22
+        ],
+        "wire": [
+          0,
+          10
+        ],
+        "front": 10,
+        "rear": 10,
+        "label_tile": [
+          21,
+          15
+        ]
+      }
+    },
+    {
+      "kind": "OR",
+      "itemId": "Logic_OR_Gate",
+      "folder": "OrGate",
+      "allowedMask": 15,
+      "inverting": false,
+      "nonMonotonic": false,
+      "art": {
+        "indicator": "17",
+        "red": [
+          8,
+          8
+        ],
+        "gray": [
+          24,
+          16
+        ],
+        "wire": [
+          12,
+          12
+        ],
+        "front": 12,
+        "rear": 4,
+        "label_tile": [
+          26,
+          12
+        ]
+      }
+    },
+    {
+      "kind": "NOT",
+      "itemId": "Logic_NOT_Gate",
+      "folder": "NotGate",
+      "allowedMask": 10,
+      "inverting": true,
+      "nonMonotonic": true,
+      "art": {
+        "indicator": "4",
+        "red": [
+          16,
+          2
+        ],
+        "gray": [
+          20,
+          22
+        ],
+        "wire": [
+          0,
+          10
+        ],
+        "front": 10,
+        "rear": 10,
+        "remove": [
+          "2",
+          "3"
+        ],
+        "indicators": [
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "texture_source": "Common/Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png",
+        "label_tile": [
+          21,
+          15
+        ]
+      }
+    },
+    {
+      "kind": "NAND",
+      "itemId": "Logic_NAND_Gate",
+      "folder": "NandGate",
+      "allowedMask": 15,
+      "inverting": true,
+      "nonMonotonic": true,
+      "art": {
+        "indicator": "8",
+        "red": [
+          16,
+          2
+        ],
+        "gray": [
+          20,
+          22
+        ],
+        "wire": [
+          0,
+          10
+        ],
+        "front": 14,
+        "rear": 10,
+        "inversion_node": "7",
+        "label_tile": [
+          21,
+          15
+        ]
+      }
+    },
+    {
+      "kind": "NOR",
+      "itemId": "Logic_NOR_Gate",
+      "folder": "NorGate",
+      "allowedMask": 15,
+      "inverting": true,
+      "nonMonotonic": true,
+      "art": {
+        "indicator": "17",
+        "red": [
+          8,
+          8
+        ],
+        "gray": [
+          24,
+          16
+        ],
+        "wire": [
+          12,
+          12
+        ],
+        "front": 14,
+        "rear": 4,
+        "remove": [
+          "2",
+          "3",
+          "4",
+          "10"
+        ],
+        "add_inversion": true,
+        "label_tile": [
+          26,
+          12
+        ]
+      }
+    },
+    {
+      "kind": "XOR",
+      "itemId": "Logic_XOR_Gate",
+      "folder": "XorGate",
+      "allowedMask": 15,
+      "inverting": false,
+      "nonMonotonic": true,
+      "art": {
+        "named_nodes": true,
+        "remove": [],
+        "red": [
+          8,
+          8
+        ],
+        "gray": [
+          24,
+          16
+        ],
+        "wire": [
+          12,
+          12
+        ],
+        "front": 12,
+        "rear": 4,
+        "metallic": true,
+        "label_tile": [
+          160,
+          416
+        ]
+      }
+    },
+    {
+      "kind": "XNOR",
+      "itemId": "Logic_XNOR_Gate",
+      "folder": "XnorGate",
+      "allowedMask": 15,
+      "inverting": true,
+      "nonMonotonic": true,
+      "art": {
+        "named_nodes": true,
+        "remove": [],
+        "red": [
+          8,
+          8
+        ],
+        "gray": [
+          24,
+          16
+        ],
+        "wire": [
+          12,
+          12
+        ],
+        "front": 14,
+        "rear": 4,
+        "metallic": true,
+        "label_tile": [
+          160,
+          416
+        ]
+      }
+    }
+  ]
+}

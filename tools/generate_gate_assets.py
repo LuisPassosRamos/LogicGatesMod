@@ -7,31 +7,9 @@ from generate_cable_assets import RESOURCES, THICKNESS, box
 from generate_terminal_assets import BODY_SCALE, hitboxes, read
 from parity_material import ATLAS, apply_surface
 
-# Legacy gates use opaque 2x2 tiles in their original atlases. XOR/XNOR use
-# separate 64x64 material patches configured in parity_material.py.
-GATES = {
-    "AND": {"folder": "AndGate", "indicator": "7", "red": (16, 2),
-            "gray": (20, 22), "wire": (0, 10), "front": 10, "rear": 10},
-    "OR": {"folder": "OrGate", "indicator": "17", "red": (8, 8),
-           "gray": (24, 16), "wire": (12, 12), "front": 12, "rear": 4},
-    "NOT": {"folder": "NotGate", "indicator": "4", "red": (16, 2),
-            "gray": (20, 22), "wire": (0, 10), "front": 10, "rear": 10,
-            "remove": ("2", "3"), "indicators": tuple(str(i) for i in range(4, 13)),
-            "allowed_mask": 10,
-            "texture_source": "Common/Items/LogicGates/AndGate/Logic_AND_Gate_Texture.png"},
-    "NAND": {"folder": "NandGate", "indicator": "8", "red": (16, 2),
-             "gray": (20, 22), "wire": (0, 10), "front": 14, "rear": 10,
-             "inversion_node": "7"},
-    "NOR": {"folder": "NorGate", "indicator": "17", "red": (8, 8),
-            "gray": (24, 16), "wire": (12, 12), "front": 14, "rear": 4,
-            "remove": ("2", "3", "4", "10"), "add_inversion": True},
-    "XOR": {"folder": "XorGate", "named_nodes": True, "remove": (), "red": (8, 8),
-            "gray": (24, 16), "wire": (12, 12), "front": 12, "rear": 4,
-            "metallic": True},
-    "XNOR": {"folder": "XnorGate", "named_nodes": True, "remove": (), "red": (8, 8),
-             "gray": (24, 16), "wire": (12, 12), "front": 14, "rear": 4,
-             "metallic": True}
-}
+from gate_catalog import GATES
+from art_sources import read_model
+from port_markings import markings
 
 
 def map_tile(shape, tile):
@@ -43,7 +21,7 @@ def map_tile(shape, tile):
 
 def body_nodes(kind, on):
     settings = GATES[kind]
-    original = read(f"Common/Items/LogicGates/{settings['folder']}/Logic_{kind}_Gate.blockymodel")
+    original = read_model(settings["folder"], f"Logic_{kind}_Gate.blockymodel")
     result = []
 
     def flatten(node, parent_center):
@@ -99,6 +77,9 @@ def body_nodes(kind, on):
 def model(kind, on, mask):
     nodes = body_nodes(kind, on)
     settings = GATES[kind]
+    # Markings use the cable's opaque dark material, with no emissive state.
+    tile = settings["label_tile"]
+    nodes.extend(markings(kind, len(nodes) + 1, tile))
     # Attach at the actual silhouette, including the OR gate's concave rear center.
     arms = ((1, "input_a", 0, -13, THICKNESS, 6),
             (2, "output", (16 + settings["front"]) / 2, 0, 16 - settings["front"], THICKNESS),
@@ -116,7 +97,7 @@ def model(kind, on, mask):
 
 
 def visual(kind, on, mask):
-    item = f"Logic_{kind}_Gate"
+    item = GATES[kind]["item_id"]
     state = f"{'On' if on else 'Off'}_Connections_{mask}"
     return {
         "CustomModel": f"Items/LogicGates/{GATES[kind]['folder']}/{item}_{state}.blockymodel",
@@ -129,7 +110,7 @@ def visual(kind, on, mask):
 def generated_files():
     files = {}
     for kind, settings in GATES.items():
-        item_id = f"Logic_{kind}_Gate"
+        item_id = settings["item_id"]
         texture = f"Items/LogicGates/{settings['folder']}/{item_id}_Texture.png"
         if "texture_source" in settings:
             files["Common/" + texture] = (RESOURCES / settings["texture_source"]).read_bytes()

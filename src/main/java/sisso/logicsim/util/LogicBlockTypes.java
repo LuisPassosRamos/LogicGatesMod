@@ -9,13 +9,13 @@ public final class LogicBlockTypes {
     public static final String LEVER_ID = "Logic_Lever";
     public static final String LAMP_ID = "Logic_Lamp";
     public static final String CABLE_ID = "Logic_Cable";
-    public static final String AND_ID = "Logic_AND_Gate";
-    public static final String OR_ID = "Logic_OR_Gate";
-    public static final String NOT_ID = "Logic_NOT_Gate";
-    public static final String NAND_ID = "Logic_NAND_Gate";
-    public static final String NOR_ID = "Logic_NOR_Gate";
-    public static final String XOR_ID = "Logic_XOR_Gate";
-    public static final String XNOR_ID = "Logic_XNOR_Gate";
+    public static final String AND_ID = GateCatalog.get(CircuitNode.Kind.AND).itemId();
+    public static final String OR_ID = GateCatalog.get(CircuitNode.Kind.OR).itemId();
+    public static final String NOT_ID = GateCatalog.get(CircuitNode.Kind.NOT).itemId();
+    public static final String NAND_ID = GateCatalog.get(CircuitNode.Kind.NAND).itemId();
+    public static final String NOR_ID = GateCatalog.get(CircuitNode.Kind.NOR).itemId();
+    public static final String XOR_ID = GateCatalog.get(CircuitNode.Kind.XOR).itemId();
+    public static final String XNOR_ID = GateCatalog.get(CircuitNode.Kind.XNOR).itemId();
 
     private LogicBlockTypes() { }
 
@@ -31,13 +31,7 @@ public final class LogicBlockTypes {
         if (isLogicLever(type)) return CircuitNode.Kind.LEVER;
         if (isLogicCable(type)) return CircuitNode.Kind.CABLE;
         if (isLogicLamp(type)) return CircuitNode.Kind.LAMP;
-        if (matches(type, AND_ID)) return CircuitNode.Kind.AND;
-        if (matches(type, OR_ID)) return CircuitNode.Kind.OR;
-        if (matches(type, NOT_ID)) return CircuitNode.Kind.NOT;
-        if (matches(type, NAND_ID)) return CircuitNode.Kind.NAND;
-        if (matches(type, NOR_ID)) return CircuitNode.Kind.NOR;
-        if (matches(type, XOR_ID)) return CircuitNode.Kind.XOR;
-        if (matches(type, XNOR_ID)) return CircuitNode.Kind.XNOR;
+        for (var gate : GateCatalog.gates()) if (matches(type, gate.itemId())) return gate.kind();
         return null;
     }
 
