@@ -4,7 +4,7 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.1.
+- Em 24/10/2026, usuário confirmou abertura de `/classroom`, dez cliques com atualização, fechamento e reabertura com reset no build `1.4.0-rc.1+43804c498938`, pt-BR. Captura preservada; demais cenários de cliente mantidos como pendentes.
 
 ## [1.4.0-rc.1] - 2026-10-24
 
@@ -14,7 +14,7 @@ Nenhuma alteração registrada após 1.4.0-rc.1.
 - O plano aprovado registra os contratos futuros de turmas, ingresso, matrícula, SQLite, atividades, entregas e avaliação, separados da prova de interface.
 
 ### Validação
-- Abertura, interação, renderização, fechamento e reabertura no cliente 0.7.4 permanecem pendentes. Testes sem cliente e inicialização do servidor não aprovam a interface.
+- Na entrega inicial, os testes no cliente estavam pendentes. A confirmação posterior do fluxo central em pt-BR está registrada acima; testes sem cliente e inicialização do servidor não aprovam a interface.
 - Turmas, vínculos, persistência e painéis completos serão implementados após a prova mínima no cliente. Circuitos, IDs, codecs e arte existente preservados.
 
 ## [1.3.3] - 2026-10-23

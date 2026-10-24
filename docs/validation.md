@@ -4,7 +4,9 @@
 
 A pré-versão acrescenta somente `/classroom`, página de prova com contador no servidor, atualização parcial e fechamento. Builders/codecs reais são exercitados por JUnit; Python confere traduções `.ui` e documentos no pacote. A integração nativa confere traduções e registro do comando antes/depois de reiniciar, sem cliente.
 
-**Validação no cliente: pendente.** Executar o [roteiro Classroom](classroom.md) e registrar o ID do JAR testado antes de iniciar os painéis de turmas. Resultados de build/servidor não aprovam renderização, clique, atualização ou fechamento no cliente. As evidências históricas de circuitos abaixo preservam sua versão e seu escopo original.
+**Fluxo central confirmado pelo usuário em 24/10/2026**, build `1.4.0-rc.1+43804c498938`, Hytale 0.7.4, pt-BR: abertura de `/classroom`, dez cliques com atualização em todos, fechamento, reabertura pelo comando e reset do contador. A [captura e o roteiro](classroom.md) preservam a evidência. A imagem mostra contador 10, textos legíveis e a identidade da compilação.
+
+Esc, reconexão, en-US, acesso sem OP, substituição de página e isolamento com dois jogadores continuam sem confirmação específica. A resolução/escala completa não foi informada. A prova central permite iniciar o incremento 1; não equivale à aprovação dos casos restantes nem de telas futuras. As evidências históricas de circuitos abaixo preservam sua versão e seu escopo original.
 
 ## Automação
 

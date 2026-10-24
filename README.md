@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.1**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Inclui a primeira página de prova do Classroom, pendente de validação no cliente.
+Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.1**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Inclui a primeira página de prova do Classroom, com fluxo central confirmado no cliente em pt-BR.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
@@ -44,7 +44,7 @@ No console, acrescente `--world=nome` à inspeção. Veja o [guia de ensino](doc
 
 Comece pelo [índice](docs/README.md). Consulte [desenvolvimento e automação](docs/development.md), [regras e arquitetura](docs/architecture.md), [edição de arte](docs/assets.md), [validação no cliente](docs/validation.md) e [changelog](CHANGELOG.md).
 
-Classroom está no incremento 0: a página mínima precisa ser validada no cliente antes de implementar turmas, membros e SQLite. O [plano aprovado](docs/roadmap/classroom.md) separa as entregas posteriores. Conexões entre alturas continuam no planejamento. A CI executa as verificações portáveis em Windows e Linux. A integração nativa tem um workflow manual para runner próprio com os assets do jogo.
+Classroom está no incremento 0: abertura, dez cliques, fechamento e reabertura com reset foram confirmados pelo usuário em pt-BR no build `1.4.0-rc.1+43804c498938`. O [registro de validação](docs/classroom.md) separa os casos ainda pendentes. O [plano aprovado](docs/roadmap/classroom.md) prevê turmas, membros e SQLite nas próximas entregas. Conexões entre alturas continuam no planejamento. A CI executa as verificações portáveis em Windows e Linux. A integração nativa tem um workflow manual para runner próprio com os assets do jogo.
 
 Para medir o avaliador: `.\gradlew.bat benchmarkCircuit`. Consulte [desempenho](docs/performance.md) para limites e interpretação.
 

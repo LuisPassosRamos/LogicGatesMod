@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.1**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom tem apenas a prova mínima de interface, pendente de teste no cliente. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.1**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom tem a prova mínima de interface com fluxo central confirmado no cliente em pt-BR; os demais casos permanecem discriminados no roteiro. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
 
 ## Uso e manutenção
 

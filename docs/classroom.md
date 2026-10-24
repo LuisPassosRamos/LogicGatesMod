@@ -12,7 +12,9 @@ A página mostra descrição, contador, botão **Incrementar contador**, botão 
 
 ## Roteiro obrigatório no cliente
 
-**Estado: pendente de execução no cliente.** Este roteiro não foi aprovado por compilação, JUnit ou inicialização do servidor. Não expandir as telas antes de registrar a prova mínima.
+**Fluxo central confirmado pelo usuário em 24/10/2026**, no build `1.4.0-rc.1+43804c498938`, Hytale 0.7.4, pt-BR: abriu `/classroom`, clicou dez vezes com atualização em todas, fechou, reabriu pelo comando e confirmou o contador resetado. A captura abaixo mostra contador 10, rótulos legíveis e o mesmo build ID. Isso permite iniciar o incremento 1; Esc, reconexão, en-US, jogador sem OP e dois jogadores continuam sem confirmação específica. A resolução/escala completa não foi informada.
+
+![Classroom em pt-BR com contador 10 e build ID visível](evidence/classroom/2026-10-24-probe-pt-BR.png)
 
 | Caso | Procedimento | Esperado |
 | --- | --- | --- |
@@ -37,4 +39,4 @@ Registrar por rodada: data, Hytale 0.7.4, versão/build ID mostrado na página, 
 - Python verifica chaves/parâmetros dos dois idiomas, referências `%server.logicgates.*` em `.ui` e presença dos documentos no JAR distribuído.
 - A integração nativa confere carregamento das traduções e registro de `/classroom` pelo caminho exclusivo de jogadores, antes/depois de reiniciar. Não abre a página em um cliente.
 
-Após o roteiro aprovado, registrar a identidade do JAR e iniciar o incremento 1: turma persistida e autorização docente. O plano completo permanece na branch, com seus critérios e pendências explícitos.
+A prova central acima libera o incremento 1: turma persistida e autorização docente. Os demais casos continuam no roteiro para as próximas rodadas. O plano completo permanece na branch, com seus critérios e pendências explícitos.

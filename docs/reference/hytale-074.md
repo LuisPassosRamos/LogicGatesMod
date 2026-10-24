@@ -37,7 +37,7 @@ A pré-versão 1.4.0-rc.1 implementa a primeira página Classroom com documentos
 
 O codec recebe somente a ação; o contador atualizado pelo servidor usa `TextSpans` e mensagem traduzida. Bindings bloqueiam a interação até a resposta; ações desconhecidas recebem atualização vazia. Páginas tratam interação; HUD serve à exibição. Os arquivos não são HTML/CSS/JSX.
 
-A página ainda precisa da prova no cliente: [abrir, clicar, atualizar, fechar e reabrir](../classroom.md). Builders/codecs exercitados em teste e servidor iniciado não validam o layout. Criar os painéis completos somente após registrar essa prova.
+O usuário confirmou [abertura, dez cliques com atualização, fechamento e reabertura com reset](../classroom.md) em pt-BR no build `1.4.0-rc.1+43804c498938`, em 24/10/2026. A captura comprova apresentação do contador 10 e build ID; os demais casos permanecem separados no roteiro. Essa prova central libera o incremento de turma persistida. Builders/codecs exercitados em teste e servidor iniciado não substituem o teste das novas telas no cliente.
 
 ## Mudança de versão
 

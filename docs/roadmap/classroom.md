@@ -4,7 +4,7 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.1 implementa somente o incremento 0:** `/classroom`, documento `.ui`, eventos de incrementar/fechar, contador transitório por página e en-US/pt-BR. Compilação, testes e servidor sem cliente não comprovam renderização ou interação. A prova no cliente precisa ser registrada antes de expandir as telas. Consulte o [roteiro Classroom](../classroom.md).
+**1.4.0-rc.1 implementa somente o incremento 0:** `/classroom`, documento `.ui`, eventos de incrementar/fechar, contador transitório por página e en-US/pt-BR. O usuário confirmou o fluxo central no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. Isso libera o incremento 1; os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
 
 Turmas, vínculos, permissões docentes, diretório de jogadores, SQLite, atividades, entregas e avaliações **ainda não estão implementados**. Não há banco ou dados educacionais nesta pré-versão. Não criar serviços/tabelas fictícios para antecipá-los.
 
