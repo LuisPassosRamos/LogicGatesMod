@@ -4,7 +4,7 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.4 contém o MVP administrativo (incrementos 0–3) para validação no cliente:** prova, turma, ingresso por solicitação/convite, matrícula, membros e mensagem. O usuário confirmou os fluxos centrais de rc.1/rc.2 em pt-BR. A abertura de rc.3 falhou por seletor de âncora incompatível; rc.4 corrige esse transporte. As telas e a experiência com duas contas aguardam o [roteiro de rc.4](../classroom.md). Implementação não equivale a aprovação manual.
+**1.4.0-rc.4 contém o MVP administrativo (incrementos 0–3), com fluxos centrais confirmados em pt-BR:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O próximo incremento é o polimento da tela atual e atualização automática de permissões, em rc.5.
 
 O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. Atividades, entregas e avaliação continuam conceituais, sem tabelas/telas antecipadas. Veja [contratos futuros](classroom-learning-contracts.md).
 

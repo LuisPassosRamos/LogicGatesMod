@@ -1,6 +1,6 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.4**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **A rc.3 desconectou o cliente ao abrir a página; rc.4 corrige os comandos de âncora e aguarda nova validação com professor e aluno em en-US/pt-BR.** Os relatos de rc.1/rc.2 aprovam os cenários históricos abaixo, sem aprovar automaticamente esta compilação.
+Disponível em **1.4.0-rc.4**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente.
 
 ## Instalar e autorizar
 
@@ -58,7 +58,7 @@ Antes de instalar uma atualização, encerre o servidor normalmente e copie o di
 
 ## Roteiro de cliente — rc.4
 
-**Estado: pendente.** Use duas contas e registre build ID, data, idioma, resolução/escala e resultado de cada caso.
+**Estado: confirmação parcial em pt-BR.** Consulte as [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) antes de repetir cenários. Use duas contas e registre build ID, data, idioma, resolução/escala e resultado de cada caso.
 
 | Cenário | Resultado esperado |
 | --- | --- |
