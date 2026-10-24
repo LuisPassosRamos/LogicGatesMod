@@ -31,11 +31,13 @@ Eventos tradicionais e eventos ECS usam registros distintos. O índice de entida
 
 Seção indisponível não é ar. Não carregar vizinhos para satisfazer uma avaliação elétrica. Após recarga, reconstruir índices e sinais em vez de confiar no visual salvo.
 
-## UI futura
+## Custom UI — incremento 0
 
-O material disponível descreve Custom UI controlada pelo servidor, documentos `.ui`, páginas interativas, `UICommandBuilder`, bindings e eventos. Isso oferece um caminho para Classroom, mas não há uma interface Classroom implementada nem um protótipo de página validado no cliente deste projeto.
+A pré-versão 1.4.0-rc.1 implementa a primeira página Classroom com documentos `.ui`, `InteractiveCustomUIPage`, `UICommandBuilder`, `UIEventBuilder` e `PageManager.openCustomPage`. As assinaturas foram conferidas na dependência 0.7.4; layouts e estilos de referência foram inspecionados nos assets locais. `AbstractPlayerCommand` abre a página no contexto do mundo; `CustomPageLifetime.CanDismiss` permite dispensa e o botão usa `close()`.
 
-Ao iniciar esse incremento, conferir as assinaturas reais de `InteractiveCustomUIPage`, `UIEventBuilder`, `PlayerRef` e o gerenciador de páginas no JAR 0.7.4. Páginas tratam interação; HUD deve ser usado para exibição. Os arquivos não são HTML/CSS/JSX. Validar primeiro abrir, clicar, atualizar e fechar uma página mínima; só depois criar o painel completo.
+O codec recebe somente a ação; o contador atualizado pelo servidor usa `TextSpans` e mensagem traduzida. Bindings bloqueiam a interação até a resposta; ações desconhecidas recebem atualização vazia. Páginas tratam interação; HUD serve à exibição. Os arquivos não são HTML/CSS/JSX.
+
+A página ainda precisa da prova no cliente: [abrir, clicar, atualizar, fechar e reabrir](../classroom.md). Builders/codecs exercitados em teste e servidor iniciado não validam o layout. Criar os painéis completos somente após registrar essa prova.
 
 ## Mudança de versão
 

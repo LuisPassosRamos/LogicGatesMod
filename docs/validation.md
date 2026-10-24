@@ -1,5 +1,11 @@
 # Validação e relato de testes
 
+## Classroom — 1.4.0-rc.1
+
+A pré-versão acrescenta somente `/classroom`, página de prova com contador no servidor, atualização parcial e fechamento. Builders/codecs reais são exercitados por JUnit; Python confere traduções `.ui` e documentos no pacote. A integração nativa confere traduções e registro do comando antes/depois de reiniciar, sem cliente.
+
+**Validação no cliente: pendente.** Executar o [roteiro Classroom](classroom.md) e registrar o ID do JAR testado antes de iniciar os painéis de turmas. Resultados de build/servidor não aprovam renderização, clique, atualização ou fechamento no cliente. As evidências históricas de circuitos abaixo preservam sua versão e seu escopo original.
+
 ## Automação
 
 `gradlew build` executa JUnit, testes das ferramentas e conferências de versão/changelog, links locais, traduções, sete geradores e JAR. `gradlew fullCheck` acrescenta o servidor real 0.7.4 em duas fases: criar/atualizar circuitos e reiniciar para reconstruí-los.

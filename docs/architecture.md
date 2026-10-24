@@ -34,7 +34,8 @@ Entradas aceitam cabo, alavanca ou saída de outra porta. Saídas alimentam cabo
 | `util/LogicBlockTypes` | Identificadores e estados dos blocos |
 | `util/BuildInfo` | Identificação da compilação empacotada |
 | `interactions/` | Acionamento da alavanca |
-| `commands/` | Ajuda `/logichelp`, inspeção `/logicinspect` e diagnóstico `/logicenergy` |
+| `commands/` | Ajuda `/logichelp`, inspeção `/logicinspect`, diagnóstico `/logicenergy` e abertura de `/classroom` |
+| `classroom/ui/` | Páginas Custom UI de Classroom; incremento 0 com estado transitório por abertura |
 
 `CircuitWorldState` é transitório e pertence ao ChunkStore de um mundo, acessado na thread apropriada. O índice acompanha entidades ativas e holders estacionados em seções carregadas. Mudanças na orientação e na disponibilidade das faces invalidam a avaliação, inclusive quando uma seção vazia retorna.
 
@@ -65,3 +66,11 @@ A invalidação atual pode reconstruir o conjunto carregado do mundo, e há veri
 ## Oficina e fabricação (1.3.0)
 
 A bancada usa `BenchBlock` e a interface/fabricação nativa de Hytale. Não participa da indexação elétrica nem acrescenta estado aos componentes de circuito. O catálogo da oficina em `assets/workshop/catalog.json` concentra aparência, ícones, categorias e receitas; o catálogo lógico permanece responsável pelas regras e faces das portas. Os geradores publicam os recursos e o build exige registro completo de todo item novo. Veja [fabricação](crafting.md) e [arte](assets.md).
+
+## Classroom — incremento 0 (1.4.0-rc.1)
+
+`ClassroomCommand` usa `AbstractPlayerCommand`, que despacha no contexto do mundo do jogador. Abre uma nova `ClassroomProbePage` com `CustomPageLifetime.CanDismiss`. O documento fica em `Common/UI/Custom/Pages/LogicGates/ClassroomProbe.ui` e reutiliza estilos nativos de `Common.ui`.
+
+Bindings enviam somente `Action` pelo codec próprio da página. O contador é mantido pelo servidor e a atualização altera `#Counter.TextSpans` por mensagem traduzida, sem reconstruir o documento ou os bindings. Eventos desconhecidos recebem atualização vazia para liberar a interface; fechamento/dispensa encerra a instância. Cada jogador/abertura tem estado independente e não persistente.
+
+Os testes capturam o transporte e exercitam builders/codecs reais; renderização e interação dependem do [roteiro no cliente](classroom.md). Domínio educacional e SQLite só entram após essa prova. O [plano aprovado](roadmap/classroom.md) define sua separação em serviços, repositórios e adaptadores; o núcleo de circuitos permanece independente.

@@ -1,6 +1,6 @@
 # Ensino, idiomas e comandos
 
-Este guia descreve a camada de ajuda da versão 1.2.0. Não há Classroom, turmas ou armazenamento de alunos neste incremento.
+Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.1 acrescenta somente uma página de prova Classroom; turmas e armazenamento de alunos ainda não existem.
 
 ## Orientação e leitura
 
@@ -42,6 +42,8 @@ A razão da porta distingue lógica normal, ausência de entradas, seção indis
 
 ## Diagnóstico e idiomas
 
+`/classroom`, disponível a jogadores sem permissão especial, abre a página de prova com contador e fechamento. Cada abertura começa em zero. Consulte o [roteiro Classroom](classroom.md); sua aprovação exige teste no cliente, separado da validação do circuito.
+
 `/logicenergy`, com `sisso.logicgates.debug`, informa versão/ID, totais por mundo e tempos em milissegundos. O monitoramento e a avaliação têm janelas limitadas; p95 não significa tempo máximo. Consulte [desempenho](performance.md).
 
-Itens, ajuda e diagnósticos usam o mecanismo nativo de tradução, com en-US e pt-BR. Selecione o idioma correspondente no cliente e reinicie/reconecte se necessário para recarregar traduções. Na validação manual, conferir termos e acentos nas duas línguas. Logs técnicos não são a interface do aluno.
+Itens, ajuda, diagnósticos e a página Classroom usam o mecanismo nativo de tradução, com en-US e pt-BR. Selecione o idioma correspondente no cliente e reinicie/reconecte se necessário para recarregar traduções. Na validação manual, conferir termos e acentos nas duas línguas. Logs técnicos não são a interface do aluno.

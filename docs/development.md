@@ -76,7 +76,9 @@ Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar
 
 ## Acrescentar outra língua
 
-Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica também referências literais em Java e nomes/descrições dos itens. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
+Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica referências literais em Java, nomes/descrições dos itens e referências `%server.logicgates.*` nos documentos `.ui`. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
+
+Os documentos Custom UI ficam em `src/main/resources/Common/UI/Custom/`. A auditoria de distribuição exige sua presença no JAR. Testes de builders, eventos e codecs não interpretam o layout no cliente: executar também o [roteiro Classroom](classroom.md) antes de expandir as telas. A primeira prova não usa SQLite; o contrato de dados futuro está no [plano aprovado](roadmap/classroom.md).
 
 O [guia de uso e ensino](teaching.md) descreve comandos e permissões. O [guia de desempenho](performance.md) separa medições do avaliador e do servidor real.
 

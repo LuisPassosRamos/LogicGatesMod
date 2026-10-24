@@ -1,48 +1,73 @@
-# Classroom — proposta, ainda não implementada
+# Classroom — plano aprovado e estado dos incrementos
 
-## Visão do usuário
+Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d33a2b5`). Trabalho em `codex/classroom-ui`, sem merge em `main`. Os desenhos fornecidos orientam o fluxo; a lista de várias turmas e a capacidade de 30 alunos não são requisitos deste MVP.
 
-Classroom será a interface de turmas dentro do jogo. A comparação é uma guilda: o professor cria/administra a turma; alunos são membros. O professor terá acesso às atividades que publica, poderá definir a mensagem do dia exibida ao aluno ao entrar e abrir a ficha de cada aluno, com matrícula e entregas. O ingresso deve admitir convite ou entrada pela interface; regras exatas ainda precisam ser definidas.
+## Estado real
 
-O projeto já oferece simulação independente da API e testes suficientes para servir como base técnica. A UI e o domínio educacional ainda precisam ser construídos. A existência das classes Custom UI torna a proposta viável, mas não equivale a um painel pronto ou a um fluxo comprovado no cliente.
+**1.4.0-rc.1 implementa somente o incremento 0:** `/classroom`, documento `.ui`, eventos de incrementar/fechar, contador transitório por página e en-US/pt-BR. Compilação, testes e servidor sem cliente não comprovam renderização ou interação. A prova no cliente precisa ser registrada antes de expandir as telas. Consulte o [roteiro Classroom](../classroom.md).
 
-## Fluxos propostos
+Turmas, vínculos, permissões docentes, diretório de jogadores, SQLite, atividades, entregas e avaliações **ainda não estão implementados**. Não há banco ou dados educacionais nesta pré-versão. Não criar serviços/tabelas fictícios para antecipá-los.
 
-- Professor: criar turma → configurar nome/mensagem → convidar ou aprovar alunos → publicar atividades → abrir aluno/matrícula → consultar entregas e feedback.
-- Aluno: ver turmas/convites → solicitar entrada ou aceitar convite → ler mensagem/atividades → montar circuito → entregar → consultar retorno.
-- Administração: autorizar quem pode criar turmas e manter acesso/backup dos dados.
+## Regras confirmadas
 
-Permissão técnica de professor e vínculo com a turma são verificações do servidor. Esconder um botão não substitui autorização. Um aluno não deve promover a si mesmo alterando dados enviados pela UI.
+- Autorização docente pela permissão nativa `sisso.logicgates.classroom.teach`; cada operação também exige responsabilidade pela turma. `/classroom` será acessível a qualquer jogador.
+- Cada UUID tem um único vínculo ativo no servidor: professor responsável ou aluno. A autorização docente por si só não cria vínculo nem permite consultar outra turma.
+- Duas entradas: convite individual pelo professor e solicitação pela lista pública de turmas.
+- Nos dois caminhos, o aluno informa a matrícula e o professor confirma ou corrige antes de efetivar o ingresso. Aceitar convite não cria vínculo automaticamente.
+- Matrícula textual obrigatória, única entre alunos ativos da turma; preservar zeros à esquerda. UUID é identidade técnica; nome é apresentação. Matrícula não é autenticação.
+- SQLite local compartilhado por todos os mundos, separado dos componentes de jogador e dos dados de circuito.
 
-## Domínio e persistência sugeridos
+O professor abre diretamente sua turma, com lista de alunos à esquerda e detalhes à direita. Contadores e botões de atividades/entregas entram junto das respectivas funções. O aluno recebe primeiro apenas ingresso e consulta básica; o painel pedagógico completo depende de referências próprias.
 
-| Entidade | Dados iniciais |
+## Sequência e critérios
+
+| Incremento | Entrega | Critério |
+| --- | --- | --- |
+| 0 | Página mínima com contador e fechamento | Abrir, clicar, atualizar, fechar, dispensar e reabrir no cliente 0.7.4, nos dois idiomas |
+| 1 | Professor cria/edita nome e descrição da turma; painel vazio e SQLite | Reinício preserva dados; segunda turma e acesso indevido são recusados |
+| 2 | Lista pública, solicitações, convites, conferência de matrícula, membros e ficha básica | Dois caminhos convergem para o mesmo vínculo; concorrência e reconexão cobertas |
+| 3 | Mensagem do dia, correção de matrícula, remoção/saída e refinamento visual | Permissões, navegação e persistência verificadas com professor e aluno |
+| 4 | Publicação e detalhes de atividades versionadas | Definir contrato de publicação antes de implementar |
+| 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Escolher formato da entrega e fluxo de correção antes de implementar |
+
+A página de prova evolui para a entrada real após validação do incremento 0. Cada incremento inclui código, testes relevantes, documentação e commits por assunto. Usar pré-versões de `1.4.0`; tags são marcos explícitos de aprovação. Preservar circuitos, IDs, codecs, mundos e aparência. Novas portas e conexões verticais estão fora deste trabalho.
+
+## Interfaces, domínio e persistência
+
+As páginas Hytale convertem eventos em operações de aplicação; domínio e interfaces de repositório não dependem da API do jogo. Consultas privadas e alterações verificam identidade, autorização e vínculo no servidor. Receber um ID pela UI não concede acesso. Textos de usuário são literais; textos da interface e erros terão en-US e pt-BR.
+
+O fluxo de ingresso é `solicitação com matrícula → conferência → aprovação → vínculo`. Um convite acrescenta `convite → aceite e matrícula` antes da conferência. IDs de turma, jogador, vínculo e processo de ingresso são UUIDs. Convites usam jogadores online ou já conhecidos pelo Classroom, com último nome conhecido para apresentação.
+
+Persistência planejada para o incremento 1:
+
+- `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com os recursos nativos necessários; validar resolução e execução do JAR distribuído em Java 25/Windows/Linux ao introduzir a dependência.
+- Repositórios específicos e transação única para aprovar ingresso, conferir matrícula e garantir vínculo ativo único. Duas aprovações simultâneas devem resultar em um único vínculo.
+- Acesso ao banco em executor dedicado. Respostas de UI retornam ao contexto do mundo e revalidam sessão/referência antes de publicar.
+- Esquema versionado, testes de migração/rollback e procedimento de backup/restauração antes de usar dados reais. Banco incompatível ou falha de migração torna Classroom indisponível; preservar os arquivos e manter circuitos funcionando.
+
+## Padrões aceitos com o plano
+
+- Lista pública: nome, descrição e professor. Matrículas, fichas e solicitações ficam restritas aos envolvidos.
+- Pendências não ocupam uma turma; a primeira aprovação efetiva encerra os demais processos de ingresso do jogador.
+- Convites sobrevivem a reinício até aceite, recusa, cancelamento ou perda de elegibilidade.
+- Matrícula: 1–64 caracteres após remoção de espaços nas extremidades; preservar capitalização e conteúdo interno. A unicidade considera vínculos ativos.
+- Saída/remoção encerra vínculo e preserva seu registro. Exclusão de turma, transferência de professor e múltiplos responsáveis ficam para depois.
+- Mensagem do dia no painel e, quando preenchida, no chat após a conexão do membro.
+
+## Contratos conceituais posteriores
+
+| Contrato | Conteúdo mínimo |
 | --- | --- |
-| Turma | ID, nome, professor responsável, mensagem do dia, configuração de ingresso |
-| Matrícula/vínculo | Turma, UUID do jogador, matrícula textual, papel e estado do vínculo |
-| Convite/solicitação | Turma, destinatário/solicitante, estado e validade |
-| Atividade | ID, turma, versão, título, enunciado e critérios |
-| Entrega | Atividade, aluno, revisão, data, referência/snapshot e estado |
-| Avaliação | Entrega/revisão, feedback, casos esperados/observados e autor |
+| Atividade | ID, turma, versão publicada, título e enunciado |
+| Entrega | ID, atividade/versão, aluno, revisão, instante e referência a conteúdo versionado |
+| Avaliação | Revisão avaliada, professor, feedback e resultado |
 
-UUID é identidade técnica; nome é apresentação. Matrícula deve ser texto, preservando zeros à esquerda. Definir unicidade por instituição/turma ou globalmente, além de quem pode atribuí-la. Não usar a matrícula como segredo de autenticação.
+Esses contratos não definem ainda coordenadas, seleção de área ou snapshot/prefab. A escolha precisa garantir uma revisão reproduzível e a experiência do professor. A implementação futura usará um adaptador para conteúdo versionado, sem acoplar Classroom ao circuito vivo. Não criar tabelas, botões ou telas de entrega antes dessa decisão.
 
-Turmas/atividades pertencem a um repositório compartilhado do servidor, não apenas ao componente do jogador. Recomenda-se separar serviço de domínio, interface de repositório, persistência e páginas Hytale. SQLite é uma opção a avaliar para um servidor; JSON pode servir a um protótipo pequeno com gravação segura. Nenhuma escolha/dependência foi implementada. O esquema deve ser versionado, com backups e migrações antes de receber dados reais.
+Avaliação automática virá depois do feedback manual. Deve usar snapshots/casos esperados sem acionar o circuito vivo do aluno; indisponibilidade de seção é falha de contexto, não resposta lógica incorreta. Proteção de bancadas, instâncias, arquivamento e retenção definitiva exigem seus próprios contratos futuros.
 
-A mensagem do dia pode ser uma página/aviso na entrada, com HUD apenas para exibição breve se necessário. Definir se aparece a cada conexão, por turma ativa ou somente quando a mensagem muda. Evitar armazenar dados pessoais além do necessário ao vínculo pedagógico.
+## Validação por camada
 
-## Sequência de implementação sugerida
-
-1. Página mínima: abrir pelo jogo, receber evento, atualizar texto e fechar; validar em 0.7.4.
-2. Turmas/vínculos persistidos: criar, entrar por convite/aprovação, listar membros e mensagem do dia; testes de autorização e reinício.
-3. Atividades e ficha de aluno: matrícula, lista de atividades e estados de entrega.
-4. Primeira entrega simples com revisão e feedback manual. Escolher coordenadas, área congelada ou snapshot/prefab antes de programar o contrato.
-5. Avaliação automática de um exercício pequeno usando o avaliador puro, sem mudar o circuito vivo do aluno.
-
-O incremento inicial não precisa de NPC tutor, mundo gerado ou instâncias. Bancadas delimitadas no mesmo mundo podem servir ao piloto; isolamento, carregamento assíncrono e retorno do jogador precisam de projeto próprio se forem introduzidas instâncias.
-
-## Decisões ainda abertas
-
-Quem pode ser professor; número de turmas por professor/aluno; convite versus ingresso por código/aprovação; escopo da matrícula; tratamento de alunos offline; formato/versionamento das entregas; avaliação manual/automática; proteção das bancadas; arquivamento de turma e retenção dos dados.
-
-Essas decisões não bloqueiam a prova mínima de Custom UI. Elas devem ser resolvidas antes dos respectivos fluxos, sem criar implementações fictícias no núcleo de circuitos.
+- Automatizado: autorização/responsabilidade, vínculo único entre papéis, matrícula vazia/duplicada e `00123`, processos de ingresso, persistência/reinício, migração, rollback e concorrência.
+- Integração Hytale: comando, codecs, traduções, recursos no JAR e inicialização dos serviços. `check`/`build` por incremento e `fullCheck` na revisão final.
+- Cliente: interação, renderização, listas, rolagem, formulários, erros, navegação, dois idiomas, professor/aluno e reconexão. Registrar build ID, cenário e resultado; iniciar o servidor nunca aprova a interface.
