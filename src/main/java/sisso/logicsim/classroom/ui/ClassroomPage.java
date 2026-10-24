@@ -91,17 +91,16 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             try { world.execute(() -> {
                 if (!active(ref,store)) return;
                 if (!access.current(stamp)) { busy=false; refresh(ref,store,false,null); return; }
-                validatedAccess = stamp;
                 if (failure != null) {
+                    validatedAccess = stamp;
                     failed(ref,store,failure);
                     if (refreshPending) refresh(ref,store,false,null);
                     return;
                 }
                 busy = false;
-                boolean fields = model.apply(screen,reset);
-                var c = new UICommandBuilder(); var e = new UIEventBuilder(); render(c,e,fields);
-                c.set("#Status.TextSpans",status != null ? status : ClassroomScreenRenderer.status(model,!fields));
-                if (!access.current(stamp)) { refresh(ref,store,false,null); return; }
+                var c = new UICommandBuilder(); var e = new UIEventBuilder();
+                if (!renderResponse(stamp,screen,reset,status,c,e)) { refresh(ref,store,false,null); return; }
+                validatedAccess = stamp;
                 publish(ref,store,c,e);
                 if (refreshPending) refresh(ref,store,false,null);
             }); } catch (RuntimeException stoppedWorld) { dispose(); }
@@ -179,6 +178,15 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         });
     }
     /** Rendering is independent from the session/authorization callbacks. */
+    boolean renderResponse(ClassroomPageAccess.Stamp stamp,Screen screen,boolean reset,Message status,UICommandBuilder c,UIEventBuilder e) {
+        if (!access.current(stamp)) return false;
+        // A query can finish before the queued permission handler runs. Consume revocation here too.
+        discardRevokedDraft(c);
+        boolean fields=model.apply(screen,reset);
+        render(c,e,fields);
+        c.set("#Status.TextSpans",status!=null ? status : ClassroomScreenRenderer.status(model,!fields));
+        return access.current(stamp);
+    }
     void render(UICommandBuilder c, UIEventBuilder e, boolean resetFields) {
         controls(c,false);
         ClassroomScreenRenderer.render(model,c,e,resetFields);
