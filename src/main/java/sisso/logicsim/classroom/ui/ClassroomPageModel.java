@@ -14,6 +14,7 @@ final class ClassroomPageModel {
     Object selected;
     long editRevision;
     boolean confirming;
+    void revoked() { screen = null; selected = null; confirming = false; editRevision = 0; }
     boolean teacher() { return screen != null && screen.home().member() != null && screen.home().member().role() == Role.TEACHER; }
     boolean interested(Change change, UUID actor) {
         if (actor.equals(change.player())) return true;

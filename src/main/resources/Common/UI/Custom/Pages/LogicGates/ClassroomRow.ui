@@ -1,13 +1,19 @@
 Button {
-  Anchor: (Height: 76, Bottom: 6);
-  LayoutMode: Top;
-  Padding: (Full: 10);
+  Anchor: (Height: 116, Bottom: 6);
+  LayoutMode: Left;
+  Padding: (Full: 8);
   Background: (Color: #233047);
   Style: (
     Default: (Background: (Color: #233047)),
     Hovered: (Background: (Color: #30445f)),
     Pressed: (Background: (Color: #3b577a))
   );
-  Label #RowName { Anchor: (Height: 25); Style: (FontSize: 17, Wrap: true, TextColor: #ffffff); }
-  Label #RowInfo { Anchor: (Height: 32); Style: (FontSize: 14, Wrap: true, TextColor: #a9bad0); }
+  Group #SelectionMark { Visible: false; Anchor: (Width: 4, Right: 8); Background: (Color: #7cb7ee); }
+  Group {
+    FlexWeight: 1;
+    LayoutMode: Top;
+    Label #RowName { Anchor: (Height: 40); Style: (FontSize: 17, Wrap: true, TextColor: #ffffff); }
+    Label #RowInfo { Anchor: (Height: 36); Style: (FontSize: 14, Wrap: true, TextColor: #b4c4d8); }
+    Label #RowStamp { Visible: false; Anchor: (Height: 20); Style: (FontSize: 11, TextColor: #9daec2); }
+  }
 }

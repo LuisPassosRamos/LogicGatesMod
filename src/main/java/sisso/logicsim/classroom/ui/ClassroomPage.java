@@ -11,8 +11,6 @@ import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
-import com.hypixel.hytale.server.core.ui.Anchor;
-import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
@@ -25,9 +23,6 @@ import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import sisso.logicsim.util.BuildInfo;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import static sisso.logicsim.util.LogicMessages.text;
 
 /** Native UI adapter. Every mutation goes through server policies and uses the revision presented by this page. */
@@ -37,9 +32,11 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private final ClassroomRuntime runtime;
     private final World world;
     final ClassroomPageModel model = new ClassroomPageModel();
+    final ClassroomPageAccess access = new ClassroomPageAccess();
+    private ClassroomPageAccess.Stamp validatedAccess = access.current();
     private boolean busy = true, refreshPending;
     private volatile boolean dismissed;
-    private AutoCloseable subscription;
+    private AutoCloseable subscription, authorizationSubscription;
     private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings"};
 
     public ClassroomPage(PlayerRef playerRef, ClassroomRuntime runtime, World world) {
@@ -57,6 +54,17 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         controls(c,true);
     }
     public void load(Ref<EntityStore> ref, Store<EntityStore> store) {
+        if (authorizationSubscription == null) {
+            authorizationSubscription = runtime.listenAuthorization(playerRef.getUuid(), allowed -> {
+                access.changed(allowed); // Invalidates old callbacks before scheduling any world work.
+                try { world.execute(() -> {
+                    if (!active(ref,store)) { dispose(); return; }
+                    var c = new UICommandBuilder(); discardRevokedDraft(c); controls(c,true);
+                    publish(ref,store,c,new UIEventBuilder());
+                    if (busy) refreshPending = true; else refresh(ref,store,false,null);
+                }); } catch (RuntimeException stoppedWorld) { dispose(); }
+            });
+        }
         if (subscription == null) {
             subscription = runtime.listen(playerRef.getUuid(), change -> {
                 try { world.execute(() -> {
@@ -77,15 +85,23 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     }
     private void refresh(Ref<EntityStore> ref, Store<EntityStore> store, boolean reset, Message status) {
         busy = true; refreshPending = false;
-        var waiting = new UICommandBuilder(); controls(waiting,true); publish(ref,store,waiting,new UIEventBuilder());
+        var waiting = new UICommandBuilder(); discardRevokedDraft(waiting); controls(waiting,true); publish(ref,store,waiting,new UIEventBuilder());
+        var stamp = access.current();
         runtime.screen(playerRef.getUuid(),model.kind,model.query,model.page).whenComplete((screen,failure) -> {
             try { world.execute(() -> {
                 if (!active(ref,store)) return;
-                if (failure != null) { failed(ref,store,failure); return; }
+                if (!access.current(stamp)) { busy=false; refresh(ref,store,false,null); return; }
+                validatedAccess = stamp;
+                if (failure != null) {
+                    failed(ref,store,failure);
+                    if (refreshPending) refresh(ref,store,false,null);
+                    return;
+                }
                 busy = false;
                 boolean fields = model.apply(screen,reset);
                 var c = new UICommandBuilder(); var e = new UIEventBuilder(); render(c,e,fields);
-                c.set("#Status.TextSpans",status != null ? status : reset ? text("classroom.ready") : text("classroom.refreshed"));
+                c.set("#Status.TextSpans",status != null ? status : ClassroomScreenRenderer.status(model,!fields));
+                if (!access.current(stamp)) { refresh(ref,store,false,null); return; }
                 publish(ref,store,c,e);
                 if (refreshPending) refresh(ref,store,false,null);
             }); } catch (RuntimeException stoppedWorld) { dispose(); }
@@ -94,7 +110,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     @Override public void handleDataEvent(Ref<EntityStore> ref, Store<EntityStore> store, ActionEvent event) {
         if (!active(ref,store)) return;
         if ("Close".equals(event.action)) { dispose(); close(); return; }
-        if (busy || event.action == null) { acknowledge(ref,store); return; }
+        if (busy || !access.current(validatedAccess) || event.action == null) { acknowledge(ref,store); return; }
         if (model.screen == null && !"Reload".equals(event.action)) { acknowledge(ref,store); return; }
         switch (event.action) {
             case "Reload" -> refresh(ref,store,true,null);
@@ -150,120 +166,40 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         else { model.confirming=true; var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,false); c.set("#Status.TextSpans",text("classroom.confirmHint")); publish(ref,store,c,e); }
     }
     private void run(Ref<EntityStore> ref,Store<EntityStore> store,CompletableFuture<?> operation) {
+        var stamp = access.current();
         busy=true; var c=new UICommandBuilder(); controls(c,true); c.set("#Status.TextSpans",text("classroom.saving")); publish(ref,store,c,new UIEventBuilder());
         operation.whenComplete((value,failure) -> {
             try { world.execute(() -> {
                 if (!active(ref,store)) return;
+                if (!access.current(stamp)) { busy=false; refresh(ref,store,false,null); return; }
                 if (failure != null) failed(ref,store,failure);
                 else refresh(ref,store,true,text("classroom.done"));
+                if (failure != null && refreshPending) refresh(ref,store,false,null);
             }); } catch (RuntimeException stoppedWorld) { dispose(); }
         });
     }
-    /** Applies only changed regions; field values are sent solely for explicit reload/navigation/selection. */
-    void render(UICommandBuilder c,UIEventBuilder e,boolean resetFields) {
-        var home=model.screen.home(); var classroom=home.classroom(); boolean teacher=model.teacher();
-        boolean linked=home.member()!=null, settings=model.kind==Kind.SETTINGS;
-        c.set("#Navigation.Visible",true); c.set("#Details.Visible",true); c.set("#NoAccess.Visible",false);
-        c.set("#NavClass.Text",teacher ? text("classroom.nav.class") : linked ? text("classroom.nav.myClass") : text("classroom.nav.browse"));
-        c.set("#NavIntakes.Visible",!linked || teacher); c.set("#NavInvite.Visible",teacher);
-        c.set("#NavSettings.Visible",teacher || !linked && home.canTeach());
-        c.set("#NavSettings.Text",linked ? text("classroom.nav.settings") : text("classroom.create"));
-        c.set("#HeaderTitle.TextSpans",classroom==null ? text("classroom.title") : Message.raw(classroom.name()));
-        height(c,"#HeaderTitle",classroom==null ? 34 : Math.max(34,((classroom.name().codePointCount(0,classroom.name().length())+29)/30)*28),0);
-        c.set("#HeaderInfo.TextSpans",classroom==null ? text("classroom.oneClass") : teacher
-                ? text("classroom.classInfo").param("teacher",home.teacherName()).param("count",model.screen.studentCount())
-                : text("classroom.studentInfo").param("teacher",home.teacherName()).param("enrollment",home.member().enrollment()));
-        boolean list=model.kind!=Kind.SETTINGS && model.kind!=Kind.DETAIL;
-        c.set("#ListPanel.Visible",list); c.set("#SearchBar.Visible",model.kind==Kind.BROWSE || model.kind==Kind.PLAYERS);
-        c.set("#Empty.Visible",model.screen.rows().items().isEmpty());
-        c.set("#Page.TextSpans",text("classroom.page").param("page",model.page+1));
-        c.clear("#Rows");
-        int n=0;
-        for (Object row:model.screen.rows().items()) {
-            c.append("#Rows",ROW_LAYOUT); String selector="#Rows["+n+++"]";
-            String name=switch(row) { case Summary s->s.name(); case Profile p->p.name(); case Member m->m.name(); case Intake i->teacher?i.studentName():i.classroomName(); default->""; };
-            Message info=switch(row) { case Summary s->Message.raw(s.teacherName()); case Profile p->Message.raw(p.id().toString()); case Member m->Message.raw(m.enrollment()); case Intake i->stateText(i.state()); default->Message.raw(""); };
-            c.set(selector+" #RowName.TextSpans",Message.raw(name)); c.set(selector+" #RowInfo.TextSpans",info);
-            e.addEventBinding(CustomUIEventBindingType.Activating,selector,EventData.of("Action","Select").append("Target",ClassroomPageModel.id(row).toString()));
-        }
-        c.set("#Form.Visible",settings); c.set("#MessageEditor.Visible",settings && classroom!=null);
-        c.set("#Actions.Visible",!settings);
-        c.set("#Save.Text",classroom==null ? text("classroom.create") : text("classroom.save"));
-        c.set("#DetailTitle.Visible",!settings); c.set("#DetailMeta.Visible",!settings); c.set("#DescriptionText.Visible",!settings);
-        c.set("#MessageDisplay.Visible",!settings && classroom!=null && !classroom.message().isEmpty());
-        if (classroom!=null) literal(c,"#MessageText",classroom.message());
-        c.set("#EnrollmentForm.Visible",false);
-        for (String action:new String[]{"Primary","Secondary","Danger","CancelConfirm"}) c.set("#"+action+".Visible",false);
-        String enrollment="";
-        if (!settings) {
-            Message title=classroom==null ? text("classroom.selectHint") : Message.raw(classroom.name());
-            Message meta=classroom==null ? text("classroom.ingressHint") : Message.raw(home.teacherName());
-            String description=classroom==null ? "" : classroom.description();
-            switch (model.selected) {
-                case Summary s -> { title=Message.raw(s.name()); meta=Message.raw(s.teacherName()); description=s.description(); action(c,"Primary",text("classroom.request")); c.set("#EnrollmentForm.Visible",true); }
-                case Profile p -> { title=Message.raw(p.name()); meta=Message.raw(p.id().toString()); description=""; action(c,"Primary",text("classroom.invite")); }
-                case Member m -> {
-                    title=Message.raw(m.name()); meta=memberText(m); description=""; enrollment=m.enrollment(); c.set("#EnrollmentForm.Visible",true);
-                    action(c,"Primary",text("classroom.correct")); action(c,"Danger",model.confirming?text("classroom.confirmRemove"):text("classroom.remove"));
-                }
-                case Intake i -> {
-                    title=Message.raw(teacher?i.studentName():i.classroomName());
-                    meta=text("classroom.intakeInfo").param("state",stateText(i.state())).param("enrollment",i.enrollment()==null?"":i.enrollment()).param("uuid",i.studentId().toString());
-                    description=""; enrollment=i.enrollment()==null?"":i.enrollment();
-                    if (teacher && i.state()==State.REQUESTED) { action(c,"Primary",text("classroom.approve")); c.set("#EnrollmentForm.Visible",true); }
-                    else if (!teacher && i.state()==State.INVITED) { action(c,"Primary",text("classroom.accept")); c.set("#EnrollmentForm.Visible",true); }
-                    if (i.state()==State.INVITED || i.state()==State.REQUESTED) action(c,"Secondary",teacher && i.state()==State.REQUESTED ? text("classroom.reject") : !teacher && i.state()==State.INVITED ? text("classroom.decline") : text("classroom.cancel"));
-                }
-                case null, default -> { }
-            }
-            if (model.kind==Kind.DETAIL) { meta=memberText(home.member()); action(c,"Danger",model.confirming?text("classroom.confirmLeave"):text("classroom.leave")); }
-            c.set("#DetailTitle.TextSpans",title); c.set("#DetailMeta.TextSpans",meta); literal(c,"#DescriptionText",description);
-            String rawTitle=title.getRawText();
-            height(c,"#DetailTitle",rawTitle==null ? 64 : Math.max(40,((rawTitle.codePointCount(0,rawTitle.length())+19)/20)*28),8);
-            c.set("#CancelConfirm.Visible",model.confirming);
-        }
-        if (resetFields) {
-            c.set("#Name.Value",classroom==null?"":classroom.name()); c.set("#Description.Value",classroom==null?"":classroom.description());
-            c.set("#Message.Value",classroom==null?"":classroom.message()); c.set("#Enrollment.Value",enrollment); c.set("#Search.Value",model.query);
-        }
+    /** Rendering is independent from the session/authorization callbacks. */
+    void render(UICommandBuilder c, UIEventBuilder e, boolean resetFields) {
         controls(c,false);
-        c.set("#Previous.Disabled",model.page==0); c.set("#Next.Disabled",!model.screen.rows().hasNext());
+        ClassroomScreenRenderer.render(model,c,e,resetFields);
     }
-    private static Message memberText(Member m) {
-        return text("classroom.memberInfo").param("name",m.name()).param("enrollment",m.enrollment()).param("uuid",m.playerId().toString())
-                .param("date",DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneOffset.UTC).format(Instant.ofEpochMilli(m.joinedAt())));
-    }
-    private static void literal(UICommandBuilder c,String selector,String content) {
-        c.set(selector+".TextSpans",Message.raw(content));
-        int lines=content.lines().mapToInt(line->Math.max(1,(line.codePointCount(0,line.length())+29)/30)).sum();
-        height(c,selector,Math.max(40,lines*24+12),12);
-    }
-    private static void height(UICommandBuilder c,String selector,int height,int bottom) {
-        // Hytale 0.7.4 resolves Anchor as a whole markup property, not Anchor.Height.
-        var anchor=new Anchor();
-        anchor.setHeight(Value.of(height));
-        anchor.setBottom(Value.of(bottom));
-        c.setObject(selector+".Anchor",anchor);
-    }
-    private static void action(UICommandBuilder c,String selector,Message label) { c.set("#"+selector+".Visible",true); c.set("#"+selector+".Text",label); }
     private static void controls(UICommandBuilder c,boolean disabled) { for(String control:OPERATIONS) c.set(control+".Disabled",disabled); }
     private static void bind(UIEventBuilder e,String selector,String action) { e.addEventBinding(CustomUIEventBindingType.Activating,selector,EventData.of("Action",action)); }
-    private static Message stateText(State state) {
-        return switch(state) {
-            case INVITED->text("classroom.state.invited"); case REQUESTED->text("classroom.state.requested");
-            case APPROVED->text("classroom.state.approved"); case REJECTED->text("classroom.state.rejected");
-            case DECLINED->text("classroom.state.declined"); case CANCELLED->text("classroom.state.cancelled"); case SUPERSEDED->text("classroom.state.superseded");
-        };
-    }
     private void failed(Ref<EntityStore> ref,Store<EntityStore> store,Throwable failure) {
         busy=false; var c=new UICommandBuilder(); controls(c,false); c.set("#Status.TextSpans",error(failure));
         if (unwrap(failure) instanceof ClassroomException ex && ex.reason()==ClassroomException.Reason.FORBIDDEN) {
-            model.screen=null; model.selected=null; c.clear("#Rows");
-            c.set("#Navigation.Visible",false); c.set("#ListPanel.Visible",false); c.set("#Details.Visible",true);
-            for(String panel:new String[]{"Form","EnrollmentForm","Actions","MessageDisplay","DetailTitle","DetailMeta","DescriptionText"}) c.set("#"+panel+".Visible",false);
-            c.set("#NoAccess.Visible",true); c.set("#HeaderTitle.TextSpans",text("classroom.title")); c.set("#HeaderInfo.TextSpans",text("classroom.oneClass"));
+            model.revoked(); ClassroomScreenRenderer.denied(c);
+        }
+        if (model.screen!=null) {
+            c.set("#Previous.Disabled",model.page==0);
+            c.set("#Next.Disabled",!model.screen.rows().hasNext());
         }
         publish(ref,store,c,new UIEventBuilder());
+    }
+    private void discardRevokedDraft(UICommandBuilder c) {
+        if (access.consumeRevocation() && (model.teacher() || model.kind==Kind.SETTINGS)) {
+            model.revoked(); ClassroomScreenRenderer.denied(c);
+        }
     }
     static Message error(Throwable failure) {
         Throwable cause=unwrap(failure);
@@ -289,6 +225,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private void dispose() {
         dismissed=true;
         if(subscription!=null) { try { subscription.close(); } catch(Exception ignored) { } subscription=null; }
+        if(authorizationSubscription!=null) { try { authorizationSubscription.close(); } catch(Exception ignored) { } authorizationSubscription=null; }
     }
     @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store) { dispose(); }
     public static final class ActionEvent {

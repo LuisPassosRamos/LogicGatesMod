@@ -1,3 +1,5 @@
+import java.util.UUID
+
 val sourceManifest = file("src/main/resources/manifest.json").readText()
 fun manifestValue(key: String): String = Regex("\"$key\"\\s*:\\s*\"([^\"]+)\"")
     .find(sourceManifest)?.groupValues?.get(1) ?: error("Missing $key in manifest.json")
@@ -163,6 +165,22 @@ tasks.register<JavaExec>("benchmarkCircuit") {
     mainClass.set("sisso.logicsim.benchmarks.CircuitBenchmark")
     maxHeapSize = "2g"
     args(layout.buildDirectory.file("reports/benchmarks/circuit.json").get().asFile.absolutePath)
+}
+
+tasks.register<JavaExec>("prepareClassroomUiFixture") {
+    description = "Creates a new isolated Classroom database for UI testing; requires classroomFixtureTeacher/Student UUIDs."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("sisso.logicsim.classroom.ClassroomUiFixture")
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+    doFirst {
+        val teacher = providers.gradleProperty("classroomFixtureTeacher").orNull
+            ?: error("Supply -PclassroomFixtureTeacher=<your teacher UUID>")
+        val student = providers.gradleProperty("classroomFixtureStudent").orNull
+            ?: error("Supply -PclassroomFixtureStudent=<your student UUID>")
+        args(layout.buildDirectory.dir("classroom-ui-fixtures/${UUID.randomUUID()}").get().asFile.absolutePath, teacher, student)
+    }
 }
 tasks.named<JavaExec>("runServer") {
     jvmArgs("--enable-native-access=ALL-UNNAMED")
