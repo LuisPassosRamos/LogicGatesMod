@@ -17,7 +17,7 @@ Decisões confirmadas: refinar a estrutura atual e atualizar permissões automat
 | CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
 | CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado. Captura rc.6 confirma visão geral e rótulos de paginação; rc.7 corrige a orientação do rodapé vazio, incluindo páginas posteriores esvaziadas e prioridade de mensagens. Demais telas/interações aguardam cliente. |
 | CL-03 Autorização automática | Implementado e com revogação automática relatada após rc.7. rc.8 indexa assinaturas por UUID e ignora eventos sem mudança efetiva. Restauração e transporte otimizado aguardam cliente. |
-| CL-04 Verificar e entregar | rc.7 possui rodada preservada. rc.8 tem regressões direcionadas aprovadas; fullCheck, benchmark comparativo e identidade final serão registrados em [validação](../validation.md). |
+| CL-04 Verificar e entregar | rc.8 aprovada localmente: 824 JUnit, 37 Python, 78 verificações nativas e benchmark comparativo. Evidências e identidade em [validação](../validation.md); CI remota separada. |
 | CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Multiplayer e revogação automática relatados após rc.7. O [roteiro rc.8](../classroom-rc8-acceptance.md) retesta carregamento inicial, bindings, campos e demais casos pendentes. |
 
 Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.

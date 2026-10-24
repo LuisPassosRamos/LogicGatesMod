@@ -1,0 +1,227 @@
+{
+  "buildId": "1.4.0-rc.8+e3a834923f93",
+  "at": "2026-10-24T18:20:56.517711800Z",
+  "java": "25.0.3",
+  "os": "Windows 11",
+  "transport": "incremental",
+  "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+  "cases": [
+    {
+      "scenario": "first-query-after-ready",
+      "MEMBERSMs": 12.1567,
+      "INTAKESMs": 7.3928,
+      "PLAYERSMs": 6.9215,
+      "SETTINGSMs": 3.6987,
+      "runtimeInitializationAndHomeMs": 70.9253
+    },
+    {
+      "scenario": "query-MEMBERS",
+      "size": 25,
+      "samples": 25,
+      "medianMs": 5.0449,
+      "p95Ms": 6.1581
+    },
+    {
+      "scenario": "query-INTAKES",
+      "size": 25,
+      "samples": 25,
+      "medianMs": 4.7176,
+      "p95Ms": 5.2365
+    },
+    {
+      "scenario": "query-PLAYERS",
+      "size": 25,
+      "samples": 25,
+      "medianMs": 4.2878,
+      "p95Ms": 4.8523
+    },
+    {
+      "scenario": "query-SETTINGS",
+      "size": 25,
+      "samples": 25,
+      "medianMs": 3.1706,
+      "p95Ms": 3.7243
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 25,
+      "totalMs": 107.0984,
+      "p95Ms": 100.5484,
+      "failures": 0
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 100,
+      "totalMs": 433.5818,
+      "p95Ms": 413.0479,
+      "failures": 0
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 250,
+      "totalMs": 1030.2266,
+      "p95Ms": 980.5869,
+      "failures": 0
+    },
+    {
+      "scenario": "unchanged-member-refresh",
+      "size": 20,
+      "samples": 25,
+      "medianMs": 1.5615,
+      "p95Ms": 3.0683,
+      "commands": 0,
+      "bindings": 0,
+      "packetBytes": 59
+    },
+    {
+      "scenario": "member-selection",
+      "size": 20,
+      "samples": 25,
+      "medianMs": 0.9092,
+      "p95Ms": 1.3806,
+      "commands": 5,
+      "bindings": 0,
+      "packetBytes": 574
+    },
+    {
+      "scenario": "individual-permission-change",
+      "size": 10,
+      "samples": 25,
+      "medianMs": 0.0012,
+      "p95Ms": 0.0022,
+      "permissionChecksPerEvent": 1,
+      "callbacksPerEvent": 1
+    },
+    {
+      "scenario": "unchanged-group-permission",
+      "size": 10,
+      "samples": 25,
+      "medianMs": 0.0021,
+      "p95Ms": 0.0033,
+      "permissionChecksPerEvent": 10,
+      "callbacksPerEvent": 0
+    },
+    {
+      "scenario": "changed-group-permission",
+      "size": 10,
+      "samples": 25,
+      "medianMs": 0.0103,
+      "p95Ms": 0.0187,
+      "permissionChecksPerEvent": 10,
+      "callbacksPerEvent": 10
+    },
+    {
+      "scenario": "individual-permission-change",
+      "size": 100,
+      "samples": 25,
+      "medianMs": 8.0E-4,
+      "p95Ms": 9.0E-4,
+      "permissionChecksPerEvent": 1,
+      "callbacksPerEvent": 1
+    },
+    {
+      "scenario": "unchanged-group-permission",
+      "size": 100,
+      "samples": 25,
+      "medianMs": 0.0082,
+      "p95Ms": 0.0084,
+      "permissionChecksPerEvent": 100,
+      "callbacksPerEvent": 0
+    },
+    {
+      "scenario": "changed-group-permission",
+      "size": 100,
+      "samples": 25,
+      "medianMs": 0.0288,
+      "p95Ms": 0.038,
+      "permissionChecksPerEvent": 100,
+      "callbacksPerEvent": 100
+    },
+    {
+      "scenario": "individual-permission-change",
+      "size": 500,
+      "samples": 25,
+      "medianMs": 4.0E-4,
+      "p95Ms": 6.0E-4,
+      "permissionChecksPerEvent": 1,
+      "callbacksPerEvent": 1
+    },
+    {
+      "scenario": "unchanged-group-permission",
+      "size": 500,
+      "samples": 25,
+      "medianMs": 0.0148,
+      "p95Ms": 0.0165,
+      "permissionChecksPerEvent": 500,
+      "callbacksPerEvent": 0
+    },
+    {
+      "scenario": "changed-group-permission",
+      "size": 500,
+      "samples": 25,
+      "medianMs": 0.1058,
+      "p95Ms": 0.1156,
+      "permissionChecksPerEvent": 500,
+      "callbacksPerEvent": 500
+    },
+    {
+      "scenario": "individual-permission-change",
+      "size": 1000,
+      "samples": 25,
+      "medianMs": 3.0E-4,
+      "p95Ms": 3.0E-4,
+      "permissionChecksPerEvent": 1,
+      "callbacksPerEvent": 1
+    },
+    {
+      "scenario": "unchanged-group-permission",
+      "size": 1000,
+      "samples": 25,
+      "medianMs": 0.0318,
+      "p95Ms": 0.04,
+      "permissionChecksPerEvent": 1000,
+      "callbacksPerEvent": 0
+    },
+    {
+      "scenario": "changed-group-permission",
+      "size": 1000,
+      "samples": 25,
+      "medianMs": 0.2112,
+      "p95Ms": 0.2457,
+      "permissionChecksPerEvent": 1000,
+      "callbacksPerEvent": 1000
+    },
+    {
+      "scenario": "unrelated-page-data-change",
+      "size": 10,
+      "samples": 25,
+      "medianMs": 0.7785,
+      "p95Ms": 0.9429,
+      "callbacksPerChange": 1
+    },
+    {
+      "scenario": "unrelated-page-data-change",
+      "size": 100,
+      "samples": 25,
+      "medianMs": 0.8616,
+      "p95Ms": 0.9995,
+      "callbacksPerChange": 1
+    },
+    {
+      "scenario": "unrelated-page-data-change",
+      "size": 500,
+      "samples": 25,
+      "medianMs": 0.8881,
+      "p95Ms": 1.2796,
+      "callbacksPerChange": 1
+    },
+    {
+      "scenario": "unrelated-page-data-change",
+      "size": 1000,
+      "samples": 25,
+      "medianMs": 1.0521,
+      "p95Ms": 1.5864,
+      "callbacksPerChange": 1
+    }
+  ]
+}

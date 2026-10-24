@@ -2,6 +2,8 @@
 
 **Pendente no cliente.** Após a rc.7, o usuário [relatou multiplayer e revogação automática](evidence/classroom/2026-10-24-rc7-multiplayer-report.md), além de demora apenas na primeira interação de cada personagem. A rc.8 reduz notificações e pacotes redundantes; os ensaios isolados não aprovam sua renderização. As evidências anteriores permanecem históricas. Atividades seguem somente documentadas.
 
+Candidata automatizada: **`1.4.0-rc.8+e3a834923f93`**, com checksum e [evidência registrados](validation.md#desempenho-e-atualização-incremental--rc8).
+
 Instalar somente o JAR rc.8, com o servidor/save encerrado, substituindo o antigo. Preservar banco e mundos. Registrar build ID, idioma, resolução e escala. Executar em pt-BR/en-US, 1280×720 e 1920×1080 com escala padrão. Capturar resultados representativos e todas as falhas, sem registrar cada clique.
 
 | Caso | Aceite esperado | Evidência pedida |

@@ -76,7 +76,19 @@ A [linha de base rc.7](evidence/classroom/2026-10-24-rc7-performance.json), buil
 
 A rc.7 reenviava 182 comandos e 20 bindings (17.613 bytes) numa atualização idêntica de lista com 20 linhas. Um evento de grupo com 1.000 assinaturas percorria os assinantes repetidamente, com mediana de aproximadamente 8,6 ms e 1.000 callbacks mesmo sem mudança efetiva. Uma alteração sem relação com as outras páginas também alcançava todos os callbacks antes de filtrarem no mundo. São cenários sintéticos com callbacks simples; não representam o custo completo de mil clientes.
 
-A rc.8 corrige os três desperdícios: índice por UUID e comparação de autorização efetiva, filtro imutável antes do agendamento no mundo, agrupamento limitado de rajadas e transporte incremental com linhas/bindings conservados. Resultados finais da comparação serão registrados junto da candidata. O cache de transporte pertence à página, guarda somente suas propriedades/linhas atuais e é liberado com a instância; assinaturas são removidas ao fechar/desconectar/encerrar. Não cresce com cada atualização nem executa trabalho periódico por jogador em repouso.
+A rc.8 corrige os três desperdícios: índice por UUID e comparação de autorização efetiva, filtro imutável antes do agendamento no mundo, agrupamento limitado de rajadas e transporte incremental com linhas/bindings conservados. A [medição rc.8](evidence/classroom/2026-10-24-rc8-performance.json), build `1.4.0-rc.8+e3a834923f93`, preserva os resultados finais locais:
+
+| Caso sintético | rc.7 | rc.8 |
+| --- | --- | --- |
+| Atualização idêntica, 20 linhas | 182 comandos, 20 bindings, 17.613 bytes | 0 comandos, 0 bindings, confirmação de 59 bytes |
+| Grupo sem mudança efetiva, 1.000 contas abertas | 1.000 callbacks; mediana 8,615 ms | 0 callbacks; mediana 0,032 ms |
+| Grupo com mudança efetiva, 1.000 contas abertas | 1.000 callbacks; mediana 7,996 ms | 1.000 callbacks; mediana 0,211 ms |
+| Mudança não relacionada às outras 999 páginas | 1.000 callbacks | 1 callback |
+| Rajada de 250 consultas de membros, p95 | 1.067,448 ms | 980,587 ms |
+
+Os callbacks de permissões são contadores simples no ensaio: tempos de despacho não incluem consultar/reconstruir mil páginas reais. A redução do pacote vale para atualização sem mudança; uma primeira consulta, troca de contexto ou lista alterada continua enviando os dados necessários. O caso de seleção isola a alteração dos detalhes preservando campos (`resetFields=false`); o clique real também repõe os valores dos campos, custo adicional intencional que não foi incluído nesse caso. O transporte reduz bytes e reconstruções no cliente; sua comparação de estado acrescenta trabalho Java e nem todo p95 de montagem diminuiu. Nenhum ganho uniforme de CPU/FPS é inferido dessa medição.
+
+A fila de I/O continua demonstrando espera sob rajada. Seu algoritmo e as consultas SQL não mudaram; a diferença de tempo entre essas duas execuções não é uma otimização de banco comprovada. Inicialização e primeiras consultas possuem amostra separada e podem variar com JIT, filesystem e carga da máquina. As duas versões tiveram zero falhas nas rajadas de 25/100/250 pedidos medidas. A CI executa o mesmo harness em Windows/Linux, com relatórios separados que não devem ser comparados como se fossem a mesma máquina. O cache de transporte pertence à página, guarda somente suas propriedades/linhas atuais e é liberado com a instância; assinaturas são removidas ao fechar/desconectar/encerrar. Não cresce com cada atualização nem executa trabalho periódico por jogador em repouso.
 
 ### Limites e impacto prolongado
 
