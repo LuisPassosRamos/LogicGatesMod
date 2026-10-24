@@ -172,7 +172,8 @@ final class ClassroomScreenRenderer {
     private static double glyph(int cp,int font) {
         if (Character.getType(cp)==Character.NON_SPACING_MARK) return 0;
         if (" ilI.,:;'!|".indexOf(cp)>=0) return font*.4;
-        if (cp=='W' || cp=='M' || cp>0x024f) return font;
+        if (cp=='\t') return font*2.6;
+        if ("WMwm@%".indexOf(cp)>=0 || cp>0x024f) return font;
         return font*(Character.isUpperCase(cp)?.8:.65);
     }
     private static String shortText(String value,int limit) {

@@ -10,6 +10,7 @@ Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os s
 | `.\gradlew.bat check` | Testes e conferências, sem montar o ZIP de entrega |
 | `.\gradlew.bat verifyGeneratedAssets` | Confere os sete geradores sem reescrever fontes |
 | `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
+| `.\gradlew.bat prepareClassroomUiFixture -PclassroomFixtureTeacher=<UUID> -PclassroomFixtureStudent=<UUID>` | Gera banco sintético novo para UI em ambiente separado; instruções no roteiro rc.5 |
 | `.\gradlew.bat benchmarkCircuit` | Mede avaliador em 12 cenários; grava JSON sem limiar artificial de aprovação |
 | `.\gradlew.bat benchmarkServer` | Mede monitoramento e publicação em seções reais; requer os assets locais |
 | `.\gradlew.bat fullCheck` | Build completo e integração real com reinício |
@@ -79,6 +80,8 @@ Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar
 Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica referências literais em Java, nomes/descrições dos itens e referências `%server.logicgates.*` nos documentos `.ui`. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
 
 Os documentos Custom UI ficam em `src/main/resources/Common/UI/Custom/`. A auditoria de distribuição exige sua presença no JAR. Testes de builders, eventos e codecs não interpretam o layout no cliente: executar também o [roteiro Classroom](classroom.md) antes de expandir as telas. Fluxos centrais de rc.1/rc.2 foram confirmados em pt-BR. A abertura do MVP rc.3 falhou no cliente por `.Anchor.Height`; rc.4 usa o codec nativo de `Anchor` completo e acrescenta regressão de transporte. A rodada com professor/aluno, listas, matrícula, convite e mensagem permanece necessária.
+
+Os fluxos centrais da rc.4 foram depois confirmados em pt-BR, conforme as [evidências do cliente](evidence/classroom/2026-10-24-rc4-client.md). A rc.5 altera apresentação e reação visual a permissões; executar o [roteiro específico](classroom-rc5-acceptance.md). O gerador de massa usa o serviço/repositório real e recusa destinos existentes. Fica apenas no classpath de teste; nem o gerador nem o banco entram no JAR/ZIP. Usar um save/servidor com diretório de dados independente: outro mundo no mesmo servidor compartilha o banco. Nunca carregar a massa sobre a turma real.
 
 SQLite JDBC 3.53.4.0 está fixado no Gradle e incorporado por `classroomRuntime`, com licenças e recursos nativos, sem empacotar Hytale. `test` depende do JAR e inclui uma execução isolada do driver no pacote final, também na matriz Windows/Linux. Os testes, o runner nativo e `runServer` habilitam `--enable-native-access=ALL-UNNAMED` no Java 25. Banco, backup e recuperação são descritos no [guia Classroom](classroom.md); não guardar a única cópia de dados em `build/`.
 

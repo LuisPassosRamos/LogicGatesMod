@@ -47,6 +47,10 @@ O cliente 0.7.4 recusou `#HeaderTitle.Anchor.Height` e desconectou na rc.3. Para
 
 Na rc.4, a regressão de transporte exercita todos os tipos de tela e seleção, com textos longos e multilinha; confere as propriedades `Height`/`Bottom` no objeto serializado e impede o retorno de `.Anchor.*`. Esse teste não implementa o interpretador de UI do cliente.
 
+### Eventos de permissão
+
+PermissionsModule 0.7.4 altera o provedor e depois despacha os tipos concretos `PlayerPermissionChangeEvent.PermissionsAdded/PermissionsRemoved`, `PlayerGroupEvent.Added/Removed` e `GroupPermissionChangeEvent.Added/Removed`. Concessão/remoção de OP passa por vínculo com `hytale:Admin`. As classes homônimas `PlayerPermissionChangeEvent.GroupAdded/GroupRemoved` existem, mas não são os tipos despachados por esses métodos; registrar apenas a classe base não substitui conferir o despacho concreto. Classroom rc.5 registra os seis eventos usados e reavalia a permissão efetiva, incluindo permissões vindas de grupos e curingas. A integração nativa verifica o caminho real até o runtime; ainda não renderiza páginas.
+
 ## Mudança de versão
 
 Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.

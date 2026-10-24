@@ -4,7 +4,19 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.4.
+Nenhuma alteração registrada após 1.4.0-rc.5.
+
+## [1.4.0-rc.5] - 2026-10-24
+
+### Classroom — polimento e autorização automática
+- Mantidas as abas e a organização lista/ficha. Busca ampliada, paginação com contador em linha própria, metadados separados, conteúdo vazio oculto e seleção identificada. Matrícula, confirmações e Salvar ficam fora da área rolável.
+- Fichas conservam o texto completo; listas apresentam resumos. Histórico identifica tipo, situação e instante de criação UTC. Mensagens de estado e listas vazias são específicas do contexto, em en-US/pt-BR.
+- Eventos nativos de permissões individuais, grupos/OP e permissões de grupo revalidam páginas abertas sem consultas periódicas. Canal próprio não altera dados nem reenvia a mensagem do dia.
+- Gerações de autorização invalidam respostas antigas. Revogação descarta rascunhos docentes; restauração carrega os dados persistidos. Atualizações com autorização inalterada preservam campos e revisões apresentados.
+- Regressões de transporte, ciclo de autorização, isolamento de notificações, paginação e preservação de dados; integração real exercita os seis eventos nativos.
+- `prepareClassroomUiFixture` cria um banco sintético novo, por serviços de produção, para testar listas extensas em servidor/save isolado. Gerador e dados não entram no JAR de produção.
+- Evidências da rc.4 consolidadas: usuário confirmou fluxos centrais em pt-BR e bloqueio de alterações após revogação. O novo layout e atualização visual automática da rc.5 ainda exigem validação no cliente.
+- Sem migração de banco, mudanças de regras de vínculo ou alterações de circuitos/assets existentes. Versão estável e tags dependem de aceite posterior.
 
 ## [1.4.0-rc.4] - 2026-10-24
 
