@@ -92,3 +92,11 @@ A validação preserva as 264 geometrias aprovadas, os materiais/UVs e as regras
 Consultar `build/release-metadata/release.json` e o `summary.json` da execução correspondente para ID, revisão e SHA-256 do JAR exato. O ZIP contém esse mesmo JAR, documentos e fontes de arte; não é uma cópia integral do repositório de desenvolvimento.
 
 Na rodada local de 23/10/2026: **751 testes JUnit**, **28 testes Python** e **64 grupos nativos** (47 criação/atualização e 17 após reinício). A integração também verifica que o índice estacionado é reaproveitado em repouso, detecta troca de holder na mesma posição, retirada do último componente e retorno, e ignora holders não elétricos.
+
+## Classroom administrativo — rc.3
+
+Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **800 testes JUnit**, **32 testes Python** e **76 verificações nativas** (53 na criação, 23 após reinício real). Build `1.4.0-rc.3+d4a6c2c77d19`, revisão de produção `68aa3db9aa1d`, árvore limpa na compilação. SHA-256 do JAR: `40d1d1c10d5fc10e4c20392eb7c50bce149f8a625336eb8df26ccb137a65ea3f`.
+
+A [evidência nativa preservada](evidence/classroom/2026-10-24-rc3-server.json) identifica o pacote exato e seus cenários. Confirma persistência da matrícula `00123`, convite offline e mensagem literal entre processos, além de aprovação, correção, saída, reingresso e remoção. As regressões de circuitos/receitas/assets continuam aprovadas pela automação.
+
+**Cliente rc.3: pendente.** Nenhuma destas verificações renderiza Custom UI. O [roteiro](classroom.md) exige professor/aluno, listas, eventos, campos, idiomas e conexão. Os relatos de rc.1/rc.2 permanecem históricos. A CI remota Windows/Linux precisa aprovar a revisão enviada; o resultado local não comprova Linux.

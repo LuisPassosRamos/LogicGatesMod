@@ -99,3 +99,5 @@ JUnit exercita serviços, SQLite, rollback, concorrência entre conexões, migra
 As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo de JAR/ZIP. A integração nativa usa o serviço de produção e permissões Hytale para conferir matrícula, convite e mensagem após reinício, além das regressões consolidadas. Ela não abre páginas nem recebe cliques de um cliente. A CI portável Windows/Linux precisa aprovar a revisão enviada; execução local no Windows não equivale a resultado Linux.
 
 Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
+
+A rodada local de rc.3 e o checksum exato estão no [registro de validação](validation.md#classroom-administrativo--rc3). A [evidência nativa preservada](evidence/classroom/2026-10-24-rc3-server.json) não substitui o roteiro de cliente.
