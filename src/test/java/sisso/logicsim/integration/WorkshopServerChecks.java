@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.MaterialQuantity;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
+import com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockOperations;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
@@ -20,6 +21,7 @@ import org.joml.Vector3i;
 import sisso.logicsim.circuit.BlockPosition;
 import sisso.logicsim.util.BlockComponentAccess;
 import sisso.logicsim.util.GateCatalog;
+import sisso.logicsim.util.LogicBlockTypes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +95,7 @@ final class WorkshopServerChecks {
         var consume = CraftingManager.class.getDeclaredMethod("removeInputFromInventory", ItemContainer.class, CraftingRecipe.class, int.class);
         consume.setAccessible(true);
         for (String id : ids) {
+            drops(id);
             var item = Item.getAssetMap().getAsset(id);
             check(item != null && item.getIcon() != null && item.getCategories().length == 1, "item icon/category registered: " + id);
             var recipes = new ArrayList<CraftingRecipe>();
@@ -129,6 +132,36 @@ final class WorkshopServerChecks {
         passed.add("eleven native recipes register correct creative categories, station requirements and ingredient identifiers");
         passed.add("native CraftingManager input transactions reject insufficient materials without consumption and consume exact costs");
         passed.add("native CraftingManager outputs produce eight cables or one component and scale correctly for multiple batches");
+        passed.add("native drop resolver returns exactly one base item for all eleven items and every connected/on/off variant");
+    }
+
+    private void drops(String id) {
+        var base = BlockType.getAssetMap().getAsset(id);
+        checkDrop(base, id);
+        if (id.equals(BENCH)) return;
+        int allowed = GateCatalog.gates().stream().filter(gate -> gate.itemId().equals(id))
+                .mapToInt(GateCatalog.Gate::allowedMask).findFirst().orElse(15);
+        for (int mask = 0; mask < 16; mask++) {
+            if ((mask & ~allowed) != 0) continue;
+            if (id.equals("Logic_Cable")) checkDrop(base.getBlockForState(LogicBlockTypes.cableState(mask)), id);
+            else for (boolean on : new boolean[]{false, true}) {
+                var variant = base.getBlockForState(LogicBlockTypes.terminalState(on, mask));
+                checkDrop(variant, id);
+            }
+        }
+    }
+
+    private void checkDrop(BlockType type, String id) {
+        check(type != null && type.getGathering() != null, "drop-bearing block exists: " + id);
+        var gathering = type.getGathering();
+        var soft = gathering.getSoft();
+        var breaking = gathering.getBreaking();
+        check(soft != null || breaking != null, "native gathering configured: " + id);
+        var drops = BlockHarvestUtils.getDrops(type, soft != null ? 1 : breaking.getQuantity(),
+                soft != null ? soft.getItemId() : breaking.getItemId(),
+                soft != null ? soft.getDropListId() : breaking.getDropListId());
+        check(drops.size() == 1 && id.equals(drops.getFirst().getItemId())
+                && drops.getFirst().getQuantity() == 1, "native drop is exactly one base item: " + type.getId());
     }
 
     private String ingredient(MaterialQuantity material) {
