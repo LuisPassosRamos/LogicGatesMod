@@ -1,12 +1,13 @@
 """Lossless PNG IO shared by model renders and deterministic UV atlas packing.
 
 Source artwork is never repainted: packing copies its existing RGBA pixels.
-Stored DEFLATE blocks make generated PNGs reproducible across zlib versions.
+Canonical fixed-Huffman DEFLATE makes PNGs compact and reproducible across zlib versions.
 """
 from functools import lru_cache
 from pathlib import Path
 import struct
 import zlib
+from portable_deflate import compress
 
 
 def chunk(kind, content):
@@ -14,16 +15,26 @@ def chunk(kind, content):
 
 
 def png(width, height, pixels):
-    rows = b"".join(b"\0" + pixels[y * width * 4:(y + 1) * width * 4] for y in range(height))
-    # Stored DEFLATE blocks keep icon bytes identical across zlib versions in CI.
-    compressed = bytearray(b"\x78\x01")
-    for start in range(0, len(rows), 65535):
-        block = rows[start:start + 65535]
-        compressed.extend(bytes([int(start + len(block) == len(rows))]))
-        compressed.extend(struct.pack("<HH", len(block), 65535 - len(block)))
-        compressed.extend(block)
-    compressed.extend(struct.pack(">I", zlib.adler32(rows)))
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+    if width <= 0 or height <= 0 or len(pixels) != width * height * 4:
+        raise ValueError("Expected positive dimensions and exactly width * height RGBA pixels")
+    # Opaque atlases need no alpha channel; the decoder restores exactly 255.
+    opaque = bytes(pixels[3::4]).count(255) == width * height
+    channels = 3 if opaque else 4
+    if opaque:
+        rgb = bytearray(width * height * 3)
+        for channel in range(3):
+            rgb[channel::3] = pixels[channel::4]
+        pixels = rgb
+    rows = bytearray()
+    stride = width * channels
+    previous = bytes(stride)
+    for y in range(height):
+        row = pixels[y * stride:(y + 1) * stride]
+        rows.append(2)  # PNG Up filter: preserve repeated rows and flat materials.
+        rows.extend((value - above) & 255 for value, above in zip(row, previous))
+        previous = row
+    compressed = compress(rows)
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2 if opaque else 6, 0, 0, 0))
             + chunk(b"IDAT", bytes(compressed)) + chunk(b"IEND", b""))
 
 

@@ -51,3 +51,9 @@ A base da alavanca tem ON no lado local +X e OFF no lado −X, acompanhando a in
 O catálogo lógico `src/main/resources/logicgates/gate-catalog.json` conserva tipos, máscaras e regras de simulação. O catálogo da oficina cuida da apresentação e fabricação. A conferência exige categoria, ícone e receita para todos os itens, inclusive os futuros. A categoria criativa tem Componentes, Portas lógicas e Bancadas; a estação oferece Componentes e Portas lógicas.
 
 Veja [fabricação](crafting.md) e [validação no cliente](validation.md).
+
+## Compactação sem perdas
+
+`tools/portable_deflate.py` publica um único bloco Huffman fixo RFC 1951, com busca limitada a oito candidatos por bucket e janela de 32 KiB. `png_codec.py` aplica o filtro Up, preserva exatamente os pixels RGBA8 (atlas opacos usam RGB8 com alpha 255 implícito) e usa zlib somente para leitura/checksums. A escolha evita depender de decisões de compressão que variam entre versões da biblioteca do sistema. Não há nova dependência Python.
+
+Na consolidação 1.3.3, o atlas da alavanca passou de 7.656.318 para 1.555.424 bytes e o da bancada para 2.303.842 bytes. O projeto editável da bancada passou de 10.285.830 para 3.149.198 bytes. Dimensões e pixels dos 28 PNGs de runtime foram comparados e permaneceram idênticos; fontes de arte e geometria não foram redesenhadas. O tamanho do JAR tem redução diferente, pois ele já aplica compressão ZIP.
