@@ -39,6 +39,8 @@ O codec recebe somente a ação; o contador atualizado pelo servidor usa `TextSp
 
 O usuário confirmou [abertura, dez cliques com atualização, fechamento e reabertura com reset](../classroom.md) em pt-BR no build `1.4.0-rc.1+43804c498938`, em 24/10/2026. A captura comprova apresentação do contador 10 e build ID; os demais casos permanecem separados no roteiro. Essa prova central libera o incremento de turma persistida. Builders/codecs exercitados em teste e servidor iniciado não substituem o teste das novas telas no cliente.
 
+Na rc.2, `/classroom` abre o formulário e `/classroom --probe` mantém a prova original. Os campos usam os componentes nativos TextField/MultilineTextField e bindings `@Name`/`@Description`. A resposta do banco retorna ao mundo e confere a instância da página ativa antes de chamar `PageManager.updateLegacyCustomPage`, sem outra passagem assíncrona que pudesse atualizar uma página substituída. A sintaxe nativa de concessão de permissão é `perm user add <UUID> <permissão>`; a integração também verifica esse caminho.
+
 ## Mudança de versão
 
 Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.

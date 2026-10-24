@@ -4,7 +4,20 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
+Nenhuma alteração registrada após 1.4.0-rc.2.
+
+## [1.4.0-rc.2] - 2026-10-24
+
+### Classroom — incremento 1
+- `/classroom` abre formulário de criação/edição da única turma do professor; nome e descrição validados no servidor, erros e telas en-US/pt-BR. A prova de contador permanece em `/classroom --probe`.
+- Permissão nativa `sisso.logicgates.classroom.teach`, conferida em cada operação, junto da responsabilidade pelo vínculo. Identidade, ID de turma e revisão vêm da sessão do servidor.
+- SQLite JDBC 3.53.4.0 empacotado com recursos nativos e licenças; banco por servidor em `getDataDirectory()`, esquema v1, vínculo atômico, índices de unicidade, edição por revisão e executor de I/O dedicado.
+- Falhas de armazenamento preservam os dados e isolam Classroom dos circuitos. Documentados backup/restauração, autorização docente e roteiro das novas telas.
+- Testes de persistência, autorização, revogação, concorrência, rollback e esquemas inválidos; teste do driver isolado no JAR de produção e integração da mesma turma antes/depois de reiniciar o servidor.
+
+### Validação
 - Em 24/10/2026, usuário confirmou abertura de `/classroom`, dez cliques com atualização, fechamento e reabertura com reset no build `1.4.0-rc.1+43804c498938`, pt-BR. Captura preservada; demais cenários de cliente mantidos como pendentes.
+- O formulário de rc.2 ainda requer teste no cliente. Convites, ingresso de alunos, matrícula e mensagem do dia permanecem nos incrementos seguintes.
 
 ## [1.4.0-rc.1] - 2026-10-24
 

@@ -35,7 +35,10 @@ Entradas aceitam cabo, alavanca ou saída de outra porta. Saídas alimentam cabo
 | `util/BuildInfo` | Identificação da compilação empacotada |
 | `interactions/` | Acionamento da alavanca |
 | `commands/` | Ajuda `/logichelp`, inspeção `/logicinspect`, diagnóstico `/logicenergy` e abertura de `/classroom` |
-| `classroom/ui/` | Páginas Custom UI de Classroom; incremento 0 com estado transitório por abertura |
+| `classroom/ui/` | Páginas Custom UI; estado por abertura e retorno assíncrono à sessão atual |
+| `classroom/domain/` | Serviço, contratos e regras educacionais sem dependência de Hytale |
+| `classroom/persistence/` | SQLite compartilhado pelo servidor, esquema versionado e transações |
+| `classroom/ClassroomRuntime` | Fila única de I/O, inicialização e encerramento dos serviços |
 
 `CircuitWorldState` é transitório e pertence ao ChunkStore de um mundo, acessado na thread apropriada. O índice acompanha entidades ativas e holders estacionados em seções carregadas. Mudanças na orientação e na disponibilidade das faces invalidam a avaliação, inclusive quando uma seção vazia retorna.
 
@@ -69,8 +72,18 @@ A bancada usa `BenchBlock` e a interface/fabricação nativa de Hytale. Não par
 
 ## Classroom — incremento 0 (1.4.0-rc.1)
 
-`ClassroomCommand` usa `AbstractPlayerCommand`, que despacha no contexto do mundo do jogador. Abre uma nova `ClassroomProbePage` com `CustomPageLifetime.CanDismiss`. O documento fica em `Common/UI/Custom/Pages/LogicGates/ClassroomProbe.ui` e reutiliza estilos nativos de `Common.ui`.
+`ClassroomCommand` usa `AbstractPlayerCommand`, que despacha no contexto do mundo do jogador. A prova original está em `/classroom --probe`, com `ClassroomProbePage` e `CustomPageLifetime.CanDismiss`. O documento fica em `Common/UI/Custom/Pages/LogicGates/ClassroomProbe.ui` e reutiliza estilos nativos de `Common.ui`.
 
 Bindings enviam somente `Action` pelo codec próprio da página. O contador é mantido pelo servidor e a atualização altera `#Counter.TextSpans` por mensagem traduzida, sem reconstruir o documento ou os bindings. Eventos desconhecidos recebem atualização vazia para liberar a interface; fechamento/dispensa encerra a instância. Cada jogador/abertura tem estado independente e não persistente.
 
-Os testes capturam o transporte e exercitam builders/codecs reais; renderização e interação dependem do [roteiro no cliente](classroom.md). Domínio educacional e SQLite só entram após essa prova. O [plano aprovado](roadmap/classroom.md) define sua separação em serviços, repositórios e adaptadores; o núcleo de circuitos permanece independente.
+Os testes capturam o transporte e exercitam builders/codecs reais. O usuário confirmou o fluxo central em pt-BR na rc.1; os demais casos continuam no [roteiro](classroom.md). O núcleo de circuitos permanece independente.
+
+## Classroom — incremento 1 (1.4.0-rc.2)
+
+`/classroom` abre `ClassroomPage`, que lê os dados pelo `ClassroomRuntime` compartilhado pelo plugin. Criação e edição passam por `ClassroomService`; o predicado de autorização consulta a permissão nativa atual, inclusive em gravações de uma página já aberta. O domínio não importa Hytale. UUID, turma e revisão são obtidos da sessão, nunca de campos enviados pelo cliente.
+
+`SqliteClassroomRepository` usa `classroom.db` no diretório de dados do plugin, esquema v1 com `application_id`, tabelas de turmas/vínculos, índices únicos e chaves estrangeiras. `BEGIN IMMEDIATE` protege criação/vínculo e atualização por revisão entre conexões independentes. O banco usa journal DELETE padrão; backup/restauração exigem encerramento limpo e estão descritos no guia Classroom. Ainda não existe esquema de matrícula ou operação de ingresso de alunos.
+
+A fila dedicada inicializa o repositório antes de atender requisições e preserva os sistemas elétricos se Classroom falhar. O encerramento drena a fila por até cinco segundos e resolve pendências como indisponíveis se for interrompido. Cada callback volta à thread do mundo e verifica referência, Store, mundo e identidade da página ativa antes de publicar; não há I/O no tick. Fechar a página não cancela uma gravação já aceita.
+
+O driver JDBC é empacotado por uma configuração Gradle exclusiva, com recursos nativos e licenças; a dependência Hytale não é incorporada. JUnit carrega o JAR de produção em um classloader isolado e executa uma consulta real. A matriz CI roda essa verificação em Windows/Linux. A integração nativa usa o serviço real e confere a turma após reinício; o formulário continua dependente de validação no cliente.

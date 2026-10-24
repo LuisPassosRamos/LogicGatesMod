@@ -1,6 +1,6 @@
 # Ensino, idiomas e comandos
 
-Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.1 acrescenta somente uma página de prova Classroom; turmas e armazenamento de alunos ainda não existem.
+Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.2 acrescenta criação/edição da turma do professor e SQLite. Ingresso de alunos, convites e mensagem do dia entram nos incrementos seguintes.
 
 ## Orientação e leitura
 
@@ -42,7 +42,7 @@ A razão da porta distingue lógica normal, ausência de entradas, seção indis
 
 ## Diagnóstico e idiomas
 
-`/classroom`, disponível a jogadores sem permissão especial, abre a página de prova com contador e fechamento. Cada abertura começa em zero. Consulte o [roteiro Classroom](classroom.md); sua aprovação exige teste no cliente, separado da validação do circuito.
+`/classroom` abre a turma do professor ou seu formulário de criação; operações docentes exigem `sisso.logicgates.classroom.teach` e responsabilidade pela turma. `/classroom --probe` mantém a página de contador sem permissão especial. Consulte [autorização e roteiro Classroom](classroom.md); a confirmação do contador de rc.1 não aprova o formulário novo.
 
 `/logicenergy`, com `sisso.logicgates.debug`, informa versão/ID, totais por mundo e tempos em milissegundos. O monitoramento e a avaliação têm janelas limitadas; p95 não significa tempo máximo. Consulte [desempenho](performance.md).
 

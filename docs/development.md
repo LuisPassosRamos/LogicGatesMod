@@ -78,7 +78,9 @@ Antes de distribuir: atualizar versão/changelog, executar `fullCheck`, realizar
 
 Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduzir valores mantendo todas as chaves e parâmetros `{nome}`. `verifyProject` rejeita chaves faltantes/extras, duplicadas, valores vazios e parâmetros divergentes; verifica referências literais em Java, nomes/descrições dos itens e referências `%server.logicgates.*` nos documentos `.ui`. Atualmente são en-US e pt-BR. As mensagens usam a tradução nativa do Hytale, com resolução de idioma pelo cliente/servidor e língua base; textos de engenharia nos logs/scripts permanecem em inglês.
 
-Os documentos Custom UI ficam em `src/main/resources/Common/UI/Custom/`. A auditoria de distribuição exige sua presença no JAR. Testes de builders, eventos e codecs não interpretam o layout no cliente: executar também o [roteiro Classroom](classroom.md) antes de expandir as telas. A primeira prova não usa SQLite; o contrato de dados futuro está no [plano aprovado](roadmap/classroom.md).
+Os documentos Custom UI ficam em `src/main/resources/Common/UI/Custom/`. A auditoria de distribuição exige sua presença no JAR. Testes de builders, eventos e codecs não interpretam o layout no cliente: executar também o [roteiro Classroom](classroom.md) antes de expandir as telas. A prova central de rc.1 foi confirmada em pt-BR; rc.2 acrescenta o formulário e SQLite, com validação própria pendente.
+
+SQLite JDBC 3.53.4.0 está fixado no Gradle e incorporado por `classroomRuntime`, com licenças e recursos nativos, sem empacotar Hytale. `test` depende do JAR e inclui uma execução isolada do driver no pacote final, também na matriz Windows/Linux. Os testes, o runner nativo e `runServer` habilitam `--enable-native-access=ALL-UNNAMED` no Java 25. Banco, backup e recuperação são descritos no [guia Classroom](classroom.md); não guardar a única cópia de dados em `build/`.
 
 O [guia de uso e ensino](teaching.md) descreve comandos e permissões. O [guia de desempenho](performance.md) separa medições do avaliador e do servidor real.
 

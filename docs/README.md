@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.1**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom tem a prova mínima de interface com fluxo central confirmado no cliente em pt-BR; os demais casos permanecem discriminados no roteiro. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.2**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom tem turma persistida e autorização docente; o formulário novo requer teste no cliente. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
 
 ## Uso e manutenção
 
@@ -10,7 +10,7 @@ Estado atual: pré-versão **1.4.0-rc.1**, Hytale **0.7.4**; base de circuitos c
 | [Desenvolvimento e automação](development.md) | Compilar, testar, versionar e localizar artefatos |
 | [Arte e arquivos gerados](assets.md) | Editar modelos, texturas e gerar variantes |
 | [Ensino e comandos](teaching.md) | Usar ajuda, tabelas verdade, inspeção e idiomas |
-| [Classroom — prova mínima](classroom.md) | Instalar a pré-versão, abrir a página e executar o roteiro no cliente |
+| [Classroom](classroom.md) | Autorizar professor, criar/editar turma, fazer backup e validar no cliente |
 | [Desempenho](performance.md) | Reproduzir benchmarks e interpretar os tempos |
 | [Validação](validation.md) | Reproduzir testes e conferir aparência, colisão e multiplayer |
 | [Compatibilidade Hytale](reference/hytale-074.md) | Adaptar código e avaliar tutoriais de outras versões |
@@ -23,7 +23,7 @@ Estado atual: pré-versão **1.4.0-rc.1**, Hytale **0.7.4**; base de circuitos c
 | Documento | Estado |
 | --- | --- |
 | [Objetivo educacional e prioridades](roadmap/README.md) | Direção do TCC; não é lista de funcionalidades implementadas |
-| [Classroom](roadmap/classroom.md) | Plano aprovado; incremento 0 implementado e demais funções pendentes |
+| [Classroom](roadmap/classroom.md) | Plano aprovado; incrementos 0/1 implementados, ingresso e atividades posteriores |
 | [Conexões entre alturas](roadmap/vertical-connections.md) | Avaliação de viabilidade; implementação pendente |
 
 A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo ficam em `src/main/resources/`. O código de referência legado foi removido depois de verificar que não era dependência do mod. `build/`, caches e mundos locais não são documentação nem fontes do projeto.

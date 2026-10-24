@@ -1,5 +1,11 @@
 # Validação e relato de testes
 
+## Classroom — 1.4.0-rc.2
+
+O incremento 1 acrescenta autorização docente, criação/edição de uma turma por professor e SQLite compartilhado entre mundos. A suíte inclui autorização/revogação, responsabilidade, vínculo entre papéis, limites de texto, concorrência, revisão, rollback e esquema incompatível. Um teste isolado carrega o driver a partir do JAR de produção; a integração usa o serviço e as permissões nativas e confere a mesma turma após reinício.
+
+**Formulário novo no cliente: pendente.** Executar o [roteiro do incremento 1](classroom.md), especialmente criação, descrição multilinha, edição, revogação com página aberta e retorno após reinício. A confirmação abaixo se refere ao contador de rc.1, não a estas novas telas. A matriz CI inclui teste real do driver em Windows/Linux; não considerar uma execução local Windows como resultado remoto Linux.
+
 ## Classroom — 1.4.0-rc.1
 
 A pré-versão acrescenta somente `/classroom`, página de prova com contador no servidor, atualização parcial e fechamento. Builders/codecs reais são exercitados por JUnit; Python confere traduções `.ui` e documentos no pacote. A integração nativa confere traduções e registro do comando antes/depois de reiniciar, sem cliente.

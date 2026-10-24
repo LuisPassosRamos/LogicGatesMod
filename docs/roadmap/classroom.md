@@ -4,9 +4,9 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.1 implementa somente o incremento 0:** `/classroom`, documento `.ui`, eventos de incrementar/fechar, contador transitório por página e en-US/pt-BR. O usuário confirmou o fluxo central no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. Isso libera o incremento 1; os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
+**1.4.0-rc.2 implementa os incrementos 0 e 1:** contador em `/classroom --probe`; criação/edição da turma do professor em `/classroom`, autorização docente e SQLite por servidor. O usuário confirmou o fluxo central da prova mínima no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. **O formulário de rc.2 ainda depende de validação no cliente**; os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
 
-Turmas, vínculos, permissões docentes, diretório de jogadores, SQLite, atividades, entregas e avaliações **ainda não estão implementados**. Não há banco ou dados educacionais nesta pré-versão. Não criar serviços/tabelas fictícios para antecipá-los.
+Turma, vínculo de professor e autorização estão implementados no esquema v1. Diretório de jogadores, ingresso de alunos, convites, matrícula, mensagem do dia, atividades, entregas e avaliações **ainda não estão implementados**. Não criar serviços/tabelas fictícios para antecipá-los.
 
 ## Regras confirmadas
 
@@ -38,12 +38,12 @@ As páginas Hytale convertem eventos em operações de aplicação; domínio e i
 
 O fluxo de ingresso é `solicitação com matrícula → conferência → aprovação → vínculo`. Um convite acrescenta `convite → aceite e matrícula` antes da conferência. IDs de turma, jogador, vínculo e processo de ingresso são UUIDs. Convites usam jogadores online ou já conhecidos pelo Classroom, com último nome conhecido para apresentação.
 
-Persistência planejada para o incremento 1:
+Persistência implementada no incremento 1:
 
-- `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com os recursos nativos necessários; validar resolução e execução do JAR distribuído em Java 25/Windows/Linux ao introduzir a dependência.
-- Repositórios específicos e transação única para aprovar ingresso, conferir matrícula e garantir vínculo ativo único. Duas aprovações simultâneas devem resultar em um único vínculo.
+- `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com recursos nativos/licenças; teste do JAR isolado na matriz Java 25/Windows/Linux, com resultado local distinguido da CI remota.
+- Criação de turma/vínculo em transação única e edição por revisão; índices garantem vínculo ativo único entre papéis. Aprovação de ingresso e matrícula serão acrescentadas no incremento 2 e deverão manter a mesma atomicidade.
 - Acesso ao banco em executor dedicado. Respostas de UI retornam ao contexto do mundo e revalidam sessão/referência antes de publicar.
-- Esquema versionado, testes de migração/rollback e procedimento de backup/restauração antes de usar dados reais. Banco incompatível ou falha de migração torna Classroom indisponível; preservar os arquivos e manter circuitos funcionando.
+- Esquema v1 com identificação própria, testes de criação inicial/rollback e rejeição de bancos incompatíveis; procedimento de backup/restauração no guia Classroom. Migrações futuras exigem backup prévio e teste específico. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
 
 ## Padrões aceitos com o plano
 

@@ -6,7 +6,7 @@ O núcleo de circuitos está implementado. O produto educacional completo ainda 
 
 ## Prioridades propostas
 
-1. Iniciar o incremento 1 do [plano Classroom](classroom.md): autorização docente e turma persistida em SQLite. O usuário confirmou o [fluxo central da prova mínima](../classroom.md) em pt-BR; os demais casos de cliente seguem discriminados no roteiro.
+1. Validar no cliente o formulário do incremento 1 do [plano Classroom](classroom.md): autorização docente e turma persistida em SQLite. O usuário confirmou o [fluxo central da prova mínima](../classroom.md) em pt-BR; o formulário de rc.2 requer nova rodada. Ingresso e membros entram depois.
 2. Completar verificações manuais específicas ainda abertas: drops nesta entrega, cancelamento/reembolso da fabricação e abertura dos projetos no Blockbench. Multiplayer, circuitos e crafts foram aprovados pelo usuário em 23/10/2026; consultar o [registro](../validation.md).
 3. Usar `benchmarkCircuit`, `benchmarkServer` e `/logicenergy` para acompanhar circuitos maiores. Invalidação por região depende de evidência de custo e continua fora desta correção.
 4. Acrescentar outras línguas seguindo o contrato existente. **en-US e pt-BR já estão implementados**, com validação de chaves, parâmetros e referências atuais. Traduzir futuras telas ao introduzi-las.
