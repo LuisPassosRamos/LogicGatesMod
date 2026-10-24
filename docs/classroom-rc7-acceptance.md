@@ -2,6 +2,8 @@
 
 **Pendente no cliente.** A [captura rc.6](evidence/classroom/2026-10-24-rc6-client.md) confirma somente sua abertura e visão geral docente em pt-BR. Os cenários detalhados aguardam disponibilidade do usuário. A rc.7 altera orientações de listas vazias; mantém layout, esquema v3, operações administrativas e autorização existentes. Atividades possuem [contrato aprovado](roadmap/classroom-learning-contracts.md), sem implementação nesta candidata.
 
+Candidata da rodada automatizada: **`1.4.0-rc.7+5294934c944b`**, com checksum e [evidência registrados](validation.md#orientação-das-listas-e-contrato--rc7).
+
 Instalar somente o JAR rc.7, com o servidor/save encerrado, substituindo o antigo. Preservar banco e mundos. Registrar build ID, idioma, resolução e escala. Executar em pt-BR/en-US, 1280×720 e 1920×1080 com escala padrão. Capturar resultados representativos e todas as falhas, sem registrar cada clique.
 
 | Caso | Aceite esperado | Evidência pedida |
