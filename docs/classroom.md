@@ -1,6 +1,6 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.5**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente.
+Disponível em **1.4.0-rc.5**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **O novo layout e a atualização visual automática da rc.5 permanecem pendentes de aceite.**
 
 ## Instalar e autorizar
 
@@ -107,4 +107,4 @@ As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo d
 
 Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
 
-A rodada local e o checksum da rc.4 estão no [registro de validação](validation.md), com [evidência nativa preservada](evidence/classroom/2026-10-24-rc4-server.json). O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.
+A rodada local e o checksum da rc.5 estão no [registro de validação](validation.md), com [evidência nativa preservada](evidence/classroom/2026-10-24-rc5-server.json). O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.

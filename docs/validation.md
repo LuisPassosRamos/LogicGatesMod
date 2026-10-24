@@ -108,3 +108,13 @@ Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **802 testes JUni
 A regressão nova exercita as seis telas, seleções e atualizações com/sem reset de campos. Rejeita `.Anchor.*` e confere os objetos nativos serializados, alturas e margens dos quatro textos afetados. O JAR e o ZIP foram auditados, incluindo traduções e documentação. O esquema do banco permanece v3.
 
 **Cliente rc.4: fluxos centrais confirmados em pt-BR.** O usuário confirmou convite e solicitação com aprovação, matrícula vazia recusada, `00123`, saída/remoção com confirmação, rejeição, mensagem, persistência relatada e atualização automática das duas contas. Confirmou também que revogar a autorização bloqueia navegação e alterações, sem salvar os dados modificados. [Capturas e limites da evidência](evidence/classroom/2026-10-24-rc4-client.md). En-US e cenários complementares permanecem pendentes; isso não é aprovação completa da interface.
+
+## Polimento e autorização automática — rc.5
+
+Em 24/10/2026, `fullCheck` final local Windows/Java 25 foi aprovado: **810 testes JUnit**, **32 testes Python** e **78 verificações nativas** (54 na criação, 24 após reinício real). Build `1.4.0-rc.5+af23d18990f0`, revisão `489b3063f8f2`, árvore limpa na compilação. SHA-256 do JAR: `44bbab5e15e9393322292749169a3b093ce41c25190c5dee1af83390b5dc8d72`. A [evidência nativa preservada](evidence/classroom/2026-10-24-rc5-server.json) identifica o arquivo exato.
+
+A integração exercitou os seis eventos reais: permissões individuais, entrada/saída de OP e concessão/remoção de permissão por grupo. Assinantes de autorização receberam a permissão efetiva atual; o canal de dados/MOTD não foi acionado. Regressões JUnit cobriram callbacks anteriores à revogação, restauração rápida antes do processamento visual, descarte docente e preservação de rascunho de aluno/capacidade inalterada, fechamento dos listeners, seleção e paginação. Os testes conferem também IDs/propriedades emitidos e ações fora da região rolável, sem interpretar o cliente.
+
+O gerador isolado foi executado e recusou sobrescrita em teste. Sua massa usa os serviços de produção, 25 membros, solicitações e perfis sintéticos, além de histórico; banco e gerador não integram o mod distribuído. As 140 traduções anteriores de cada idioma permaneceram intactas, com 19 novas chaves correspondentes. Esquema v3 e fontes/assets dos circuitos preservados.
+
+**Cliente rc.5: pendente.** Seguir o [roteiro de aceite](classroom-rc5-acceptance.md). A aprovação manual da rc.4 não aprova automaticamente as novas dimensões, rolagem, ações fixas ou reação visual a permissões. CI Windows/Linux verifica separadamente a revisão enviada; a rodada nativa acima é local Windows. Nenhuma tag estável ou merge em main foi realizado.

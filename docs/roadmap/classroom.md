@@ -4,7 +4,7 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.4 contém o MVP administrativo (incrementos 0–3), com fluxos centrais confirmados em pt-BR:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O próximo incremento é o polimento da tela atual e atualização automática de permissões, em rc.5.
+**1.4.0-rc.5 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento da tela atual e a atualização automática de permissões estão implementados na rc.5, com aceite no cliente pendente.
 
 O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. Atividades, entregas e avaliação continuam conceituais, sem tabelas/telas antecipadas. Veja [contratos futuros](classroom-learning-contracts.md).
 
@@ -17,7 +17,7 @@ Decisões confirmadas: refinar a estrutura atual e atualizar permissões automat
 | CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
 | CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado; aguarda cliente. |
 | CL-03 Autorização automática | Implementado: canal por UUID, eventos nativos, gerações de resposta, descarte docente na revogação e restauração sem recarga; aguarda cliente. |
-| CL-04 Verificar e entregar | Regressões e gerador de massa implementados; resultado final de build/servidor e identidade do JAR no registro de validação. |
+| CL-04 Verificar e entregar | Concluído localmente: 810 JUnit, 32 Python, 78 verificações nativas e gerador de massa. Identidade do JAR e resultado no [registro de validação](../validation.md); CI remota é separada. |
 | CL-05 Aceite | Pendente: [roteiro rc.5](../classroom-rc5-acceptance.md), com pt-BR/en-US, duas resoluções e contas de professor/aluno. |
 
 Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
