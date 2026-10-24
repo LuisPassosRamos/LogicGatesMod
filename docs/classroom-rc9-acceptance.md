@@ -2,7 +2,7 @@
 
 **Pendente no cliente.** O usuário ainda não testou a rc.8. Esta candidata acrescenta encerramento de turma pelo professor e preserva as otimizações anteriores; os relatos/capturas da rc.4/rc.6/rc.7 continuam históricos. Atividades permanecem somente especificadas.
 
-Instale somente o JAR rc.9, com o mundo/servidor parado, substituindo o anterior. Guarde o ZIP fora de `mods`. Preserve banco e mundos; há migração v4 com backup automático. Voltar a uma versão antiga exige restaurar também o banco correspondente. O resultado automatizado e a identidade exata da candidata ficam no [registro de validação](validation.md).
+Instale somente o JAR rc.9, com o mundo/servidor parado, substituindo o anterior. Guarde o ZIP fora de `mods`. Preserve banco e mundos; há migração v4 com backup automático. Voltar a uma versão antiga exige restaurar também o banco correspondente. Candidata automatizada: **`1.4.0-rc.9+e16132240905`**. SHA-256: `395c4b5bec09337c1428c20e9b14d9053f13970aba58c750d86c81dce6c4d8b9`. O resultado automatizado e a identidade exata ficam no [registro de validação](validation.md#encerramento-de-turma--rc9).
 
 ## Primeiro teste, quando houver disponibilidade
 
