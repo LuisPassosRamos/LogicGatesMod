@@ -1,6 +1,6 @@
 # Classroom — turma persistida e validação da interface
 
-Disponível em **1.4.0-rc.2**, Hytale **0.7.4**. O incremento 1 permite ao professor criar sua única turma e editar nome/descrição, com vínculo e SQLite compartilhados pelo servidor. O fluxo central da prova mínima em pt-BR foi confirmado em rc.1, conforme o registro abaixo. **O formulário de rc.2 ainda depende do teste no cliente.** Ingresso de alunos, convites e mensagem do dia entram nos incrementos seguintes do [plano aprovado](roadmap/classroom.md).
+Disponível em **1.4.0-rc.2**, Hytale **0.7.4**. O incremento 1 permite ao professor criar sua única turma e editar nome/descrição, com vínculo e SQLite compartilhados pelo servidor. O fluxo central da prova mínima em pt-BR foi confirmado em rc.1, conforme o registro abaixo. **Fluxo central de rc.2 confirmado pelo usuário em pt-BR**, conforme o registro abaixo. Ingresso de alunos, convites e mensagem do dia entram nos incrementos seguintes do [plano aprovado](roadmap/classroom.md).
 
 ## Instalação e funcionamento
 
@@ -31,7 +31,9 @@ Os comandos de testes e `runServer` habilitam acesso nativo da JVM. Em execuçã
 
 ## Roteiro no cliente — incremento 1
 
-**Estado: pendente.** A confirmação de rc.1 não aprova este formulário.
+**Fluxo central confirmado em 24/10/2026**, build `1.4.0-rc.2+a04a304d984f`: turma existente preservada após sair/entrar no mundo e usar Recarregar; contador incrementa e reinicia ao fechar/reabrir. O relato não confirma separadamente edição, revogação, en-US ou encerramento completo do processo do servidor. Os demais casos abaixo permanecem pendentes.
+
+![Turma persistida em rc.2](evidence/classroom/2026-10-24-classroom-rc2-pt-BR.png)
 
 | Caso | Procedimento | Esperado |
 | --- | --- | --- |

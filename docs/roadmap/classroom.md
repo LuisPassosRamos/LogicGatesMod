@@ -4,7 +4,7 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.2 implementa os incrementos 0 e 1:** contador em `/classroom --probe`; criação/edição da turma do professor em `/classroom`, autorização docente e SQLite por servidor. O usuário confirmou o fluxo central da prova mínima no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. **O formulário de rc.2 ainda depende de validação no cliente**; os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
+**1.4.0-rc.2 implementa os incrementos 0 e 1:** contador em `/classroom --probe`; criação/edição da turma do professor em `/classroom`, autorização docente e SQLite por servidor. O usuário confirmou o fluxo central da prova mínima no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. **O usuário também confirmou o fluxo central de rc.2 em pt-BR** (turma preservada ao sair/entrar e recarregar); os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
 
 Turma, vínculo de professor e autorização estão implementados no esquema v1. Diretório de jogadores, ingresso de alunos, convites, matrícula, mensagem do dia, atividades, entregas e avaliações **ainda não estão implementados**. Não criar serviços/tabelas fictícios para antecipá-los.
 
@@ -71,3 +71,7 @@ Avaliação automática virá depois do feedback manual. Deve usar snapshots/cas
 - Automatizado: autorização/responsabilidade, vínculo único entre papéis, matrícula vazia/duplicada e `00123`, processos de ingresso, persistência/reinício, migração, rollback e concorrência.
 - Integração Hytale: comando, codecs, traduções, recursos no JAR e inicialização dos serviços. `check`/`build` por incremento e `fullCheck` na revisão final.
 - Cliente: interação, renderização, listas, rolagem, formulários, erros, navegação, dois idiomas, professor/aluno e reconexão. Registrar build ID, cenário e resultado; iniciar o servidor nunca aprova a interface.
+
+## Referência e continuação aprovada
+
+A [análise PartyPro](../reference/partypro.md) orienta listas, ficha e navegação. O MVP é administrativo: incremento 2A (solicitação completa), 2B (convites/membros) e 3 (mensagem/administração), com builds e evidências separados. O painel pedagógico completo e entregas ficam para depois.
