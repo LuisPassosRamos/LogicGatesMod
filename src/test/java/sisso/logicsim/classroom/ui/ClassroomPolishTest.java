@@ -7,6 +7,7 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import sisso.logicsim.classroom.ClassroomUiFixture;
 import sisso.logicsim.classroom.domain.Classroom;
+import sisso.logicsim.classroom.domain.ClassroomException;
 import sisso.logicsim.classroom.domain.ClassroomService;
 import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import sisso.logicsim.classroom.persistence.SqliteClassroomRepository;
@@ -15,6 +16,7 @@ import org.bson.BsonValue;
 import java.nio.file.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static sisso.logicsim.util.LogicMessages.text;
 
 /** Transport and resource topology only; no native client renderer is emulated here. */
 class ClassroomPolishTest {
@@ -64,6 +66,50 @@ class ClassroomPolishTest {
         assertFalse(value(c,"#DescriptionDisplay.Visible").asBoolean().getValue()); assertFalse(value(c,"#MessageDisplay.Visible").asBoolean().getValue());
         assertEquals("server.logicgates.classroom.myClassHint",ClassroomScreenRenderer.status(page.model,false).getMessageId());
         assertEquals("server.logicgates.classroom.updated",ClassroomScreenRenderer.status(page.model,true).getMessageId());
+    }
+    @Test void emptyListsGuideEachSectionAndRoleWithoutOverridingRefreshOrConfirmation() {
+        UUID teacher=UUID.randomUUID(), id=UUID.randomUUID(); var classroom=new Classroom(id,teacher,"Class","",0,"");
+        var member=new Member(UUID.randomUUID(),id,teacher,"Teacher",Role.TEACHER,null,true,1,null,0);
+        var owner=new Home(classroom,member,"Teacher",true); var applicant=new Home(null,null,"",false);
+        var screens=List.of(new Screen(owner,Kind.MEMBERS,new Page<>(List.of(),0,false),0),
+                new Screen(owner,Kind.INTAKES,new Page<>(List.of(),0,false),0),
+                new Screen(owner,Kind.PLAYERS,new Page<>(List.of(),0,false),0),
+                new Screen(applicant,Kind.BROWSE,new Page<>(List.of(),0,false),0),
+                new Screen(applicant,Kind.INTAKES,new Page<>(List.of(),0,false),0));
+        var hints=List.of("emptyMembersHint","emptyPendingHint","emptyPlayersHint","emptyBrowseHint","emptyHistoryHint");
+        for(int i=0;i<screens.size();i++) {
+            var model=new ClassroomPageModel(); model.apply(screens.get(i),true);
+            assertEquals("server.logicgates.classroom."+hints.get(i),ClassroomScreenRenderer.status(model,false).getMessageId());
+            assertEquals("server.logicgates.classroom.updated",ClassroomScreenRenderer.status(model,true).getMessageId());
+            model.confirming=true;
+            for(boolean refreshed:new boolean[]{false,true}) assertEquals("server.logicgates.classroom.confirmHint",ClassroomScreenRenderer.status(model,refreshed).getMessageId());
+        }
+    }
+    @Test void emptyLaterPageOffersPreviousAndRetainedSelectionKeepsItsRecordGuidance() {
+        UUID teacher=UUID.randomUUID(), id=UUID.randomUUID(); var classroom=new Classroom(id,teacher,"Class","",0,"");
+        var link=new Member(UUID.randomUUID(),id,teacher,"Teacher",Role.TEACHER,null,true,1,null,0);
+        var home=new Home(classroom,link,"Teacher",true); var page=new ClassroomPage(null,null,null);
+        var empty=new Screen(home,Kind.MEMBERS,new Page<>(List.of(),1,false),20); page.model.apply(empty,true);
+        assertEquals("server.logicgates.classroom.emptyPageHint",ClassroomScreenRenderer.status(page.model,false).getMessageId());
+        var c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),true);
+        assertTrue(value(c,"#Empty.TextSpans").toString().contains("server.logicgates.classroom.emptyList"));
+        assertFalse(value(c,"#Previous.Disabled").asBoolean().getValue());
+        var student=new Member(UUID.randomUUID(),id,UUID.randomUUID(),"Student",Role.STUDENT,"00123",true,1,null,0);
+        page.model.apply(new Screen(home,Kind.MEMBERS,new Page<>(List.of(student),0,false),1),true);
+        assertTrue(page.model.select(student.id().toString()));
+        assertFalse(page.model.apply(empty,false));
+        assertEquals("server.logicgates.classroom.recordHint",ClassroomScreenRenderer.status(page.model,false).getMessageId());
+        assertEquals("server.logicgates.classroom.refreshed",ClassroomScreenRenderer.status(page.model,true).getMessageId());
+    }
+    @Test void explicitOperationFeedbackRemainsAboveTheEmptyListGuidance() {
+        var page=new ClassroomPage(null,null,null);
+        var screen=new Screen(new Home(null,null,"",false),Kind.BROWSE,new Page<>(List.of(),0,false),0);
+        for(var feedback:List.of(text("classroom.done"),text("classroom.saving"),
+                ClassroomPage.error(new ClassroomException(ClassroomException.Reason.INVALID_ENROLLMENT)))) {
+            var c=new UICommandBuilder();
+            assertTrue(page.renderResponse(page.access.current(),screen,true,feedback,c,new UIEventBuilder()));
+            assertTrue(value(c,"#Status.TextSpans").toString().contains(feedback.getMessageId()));
+        }
     }
     @Test void actionDockAndSaveAreOutsideTheScrollingContentAndEveryRenderedIdExists() throws Exception {
         String layout=resource(ClassroomPage.LAYOUT), row=resource(ClassroomPage.ROW_LAYOUT);

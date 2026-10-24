@@ -40,7 +40,7 @@ final class ClassroomScreenRenderer {
         height(c,"#HeaderInfo",textHeight("W".repeat(20)+home.teacherName()+(linked && !teacher?home.member().enrollment():""),900,15,20,24),8);
         c.set("#ListPanel.Visible",list); c.set("#SearchBar.Visible",model.kind==Kind.BROWSE || model.kind==Kind.PLAYERS);
         c.set("#Empty.Visible",model.screen.rows().items().isEmpty());
-        c.set("#Empty.TextSpans",switch(model.kind) {
+        c.set("#Empty.TextSpans",model.page>0 ? text("classroom.emptyList") : switch(model.kind) {
             case MEMBERS -> text("classroom.emptyMembers"); case INTAKES -> teacher ? text("classroom.emptyPending") : text("classroom.emptyHistory");
             case PLAYERS -> text("classroom.emptyPlayers"); default -> text("classroom.emptyBrowse");
         });
@@ -124,6 +124,15 @@ final class ClassroomScreenRenderer {
                 ? text("classroom.refreshed") : text("classroom.updated");
         if (model.kind==Kind.SETTINGS) return text(model.screen.home().classroom()==null ? "classroom.createHint" : "classroom.settingsHint");
         if (model.kind==Kind.DETAIL) return text("classroom.myClassHint");
+        if (model.selected==null && model.screen.rows().items().isEmpty()) {
+            if (model.page>0) return text("classroom.emptyPageHint");
+            return switch(model.kind) {
+                case MEMBERS -> text("classroom.emptyMembersHint");
+                case INTAKES -> text(model.teacher() ? "classroom.emptyPendingHint" : "classroom.emptyHistoryHint");
+                case PLAYERS -> text("classroom.emptyPlayersHint");
+                default -> text("classroom.emptyBrowseHint");
+            };
+        }
         return model.selected==null ? text("classroom.ready") : text("classroom.recordHint");
     }
     static void denied(UICommandBuilder c) {
