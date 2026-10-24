@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.8.
+Nenhuma alteração registrada após 1.4.0-rc.9.
+
+## [1.4.0-rc.9] - 2026-10-24
+
+### Encerramento de turma pelo professor
+- Administração oferece Encerrar turma, com confirmação e cancelamento. Somente o responsável com permissão docente pode confirmar; a revisão exibida protege contra alterações antigas.
+- Uma transação encerra os vínculos ativos do professor e dos alunos e cancela convites/solicitações pendentes. Turmas encerradas deixam a descoberta; participantes podem ingressar em outra turma, e o professor pode criar uma nova. Matrículas, vínculos anteriores, aprovações e conteúdo da turma são preservados no banco. Não há restauração de turma ou exclusão definitiva nesta entrega.
+- SQLite v4 substitui a unicidade permanente do professor por unicidade de turma aberta e registra o instante de encerramento. Migração com backup consistente preserva IDs e referências de v1–v3; o rollback para um mod antigo exige o banco do backup correspondente.
+- Notificação de encerramento atualiza páginas relacionadas após o commit, incluindo alunos e histórico de ingressos visível, sem consulta periódica. As otimizações da rc.8 permanecem; atividades, circuitos e mundos não são alterados.
+- Regressões cobrem migração/restauração, concorrência com aprovação, rollback integral, autorização, confirmação, histórico e recriação. Encerramento e demais interações da candidata ainda exigem validação no cliente.
 
 ## [1.4.0-rc.8] - 2026-10-24
 

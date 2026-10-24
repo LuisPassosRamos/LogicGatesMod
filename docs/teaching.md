@@ -1,6 +1,6 @@
 # Ensino, idiomas e comandos
 
-Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.8 mantém o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
+Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.9 mantém o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
 
 ## Orientação e leitura
 
@@ -47,3 +47,5 @@ A razão da porta distingue lógica normal, ausência de entradas, seção indis
 `/logicenergy`, com `sisso.logicgates.debug`, informa versão/ID, totais por mundo e tempos em milissegundos. O monitoramento e a avaliação têm janelas limitadas; p95 não significa tempo máximo. Consulte [desempenho](performance.md).
 
 Itens, ajuda, diagnósticos e a página Classroom usam o mecanismo nativo de tradução, com en-US e pt-BR. Selecione o idioma correspondente no cliente e reinicie/reconecte se necessário para recarregar traduções. Na validação manual, conferir termos e acentos nas duas línguas. Logs técnicos não são a interface do aluno.
+
+O professor responsável pode usar **Administração → Encerrar turma → Confirmar encerramento da turma**. Isso libera professor e alunos e cancela ingressos pendentes, preservando histórico. Cancelar mantém os vínculos. A turma encerrada não tem restauração pela interface; valide com uma turma de teste. A rc.9 migra o banco para v4 com backup automático.

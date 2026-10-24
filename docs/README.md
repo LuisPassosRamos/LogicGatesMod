@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.8**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.8 reduz notificações e transporte redundantes. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; reteste das otimizações e demais cenários de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.9**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.8 reduz notificações e transporte redundantes. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; reteste das otimizações e demais cenários de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
 
 ## Uso e manutenção
 
@@ -29,3 +29,5 @@ Estado atual: pré-versão **1.4.0-rc.8**, Hytale **0.7.4**; base de circuitos c
 A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo ficam em `src/main/resources/`. O código de referência legado foi removido depois de verificar que não era dependência do mod. `build/`, caches e mundos locais não são documentação nem fontes do projeto.
 
 - [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.
+
+A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. [Roteiro atual](classroom-rc9-acceptance.md); nenhuma interação desta candidata foi aprovada no cliente.

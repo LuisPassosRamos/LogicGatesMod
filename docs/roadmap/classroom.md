@@ -6,7 +6,7 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 **1.4.0-rc.8 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
 
-O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. A rc.7 ajustou orientações de listas vazias e documentou o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
+O núcleo é independente da API Hytale, com esquema v4 e migração preservando a turma da v1. A rc.7 ajustou orientações de listas vazias e documentou o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
 
 ## Polimento aprovado — rc.5, correções rc.6/rc.7 e otimização rc.8
 
@@ -20,7 +20,7 @@ Decisões confirmadas: refinar a estrutura atual e atualizar permissões automat
 | CL-04 Verificar e entregar | rc.8 aprovada localmente: 824 JUnit, 37 Python, 78 verificações nativas e benchmark comparativo. Evidências e identidade em [validação](../validation.md); CI remota separada. |
 | CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Multiplayer e revogação automática relatados após rc.7. O [roteiro rc.8](../classroom-rc8-acceptance.md) retesta carregamento inicial, bindings, campos e demais casos pendentes. |
 
-Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
+Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. A rc.9 acrescenta encerramento de turma, por solicitação do usuário, com migração v4; a regra de vínculo ativo único permanece. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
 
 ## Regras confirmadas
 
@@ -57,7 +57,7 @@ Persistência iniciada no incremento 1 e ampliada na rc.3:
 - `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com recursos nativos/licenças; teste do JAR isolado na matriz Java 25/Windows/Linux, com resultado local distinguido da CI remota.
 - Criação de turma/vínculo em transação única e edição por revisão; índices garantem vínculo ativo único entre papéis. Aprovação, matrícula e encerramento das demais pendências também são transacionais.
 - Acesso ao banco em executor dedicado. Respostas de UI retornam ao contexto do mundo e revalidam sessão/referência antes de publicar.
-- Esquemas v1–v3 com identificação própria, migração transacional, backup prévio consistente e testes de restauração/rollback/rejeição. Procedimento operacional no guia Classroom. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
+- Esquemas v1–v4 com identificação própria, migração transacional, backup prévio consistente e testes de restauração/rollback/rejeição. Procedimento operacional no guia Classroom. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
 
 ## Padrões aceitos com o plano
 
@@ -65,7 +65,7 @@ Persistência iniciada no incremento 1 e ampliada na rc.3:
 - Pendências não ocupam uma turma; a primeira aprovação efetiva encerra os demais processos de ingresso do jogador.
 - Convites sobrevivem a reinício até aceite, recusa, cancelamento ou perda de elegibilidade.
 - Matrícula: 1–64 caracteres após remoção de espaços nas extremidades; preservar capitalização e conteúdo interno. A unicidade considera vínculos ativos.
-- Saída/remoção encerra vínculo e preserva seu registro. Exclusão de turma, transferência de professor e múltiplos responsáveis ficam para depois.
+- Saída/remoção encerra vínculo e preserva seu registro. A rc.9 permite ao professor encerrar a turma com confirmação, liberar participantes e cancelar ingressos pendentes, preservando histórico. Exclusão definitiva, restauração de turma, transferência de professor e múltiplos responsáveis ficam para depois.
 - Mensagem do dia no painel e, quando preenchida, no chat após a conexão do membro.
 
 ## Contratos conceituais posteriores
@@ -91,3 +91,7 @@ Avaliação automática virá depois do feedback manual. Deve usar snapshots/cas
 ## Referência e continuação aprovada
 
 A [análise PartyPro](../reference/partypro.md) orienta listas, ficha e navegação. O MVP é administrativo: incremento 2A (solicitação completa), 2B (convites/membros) e 3 (mensagem/administração), com builds e evidências separados. O painel pedagógico completo e entregas ficam para depois.
+
+## Encerramento administrativo — rc.9
+
+Solicitado após a rc.8, ainda sem reteste daquela candidata. Administração permite encerrar a própria turma com confirmação/cancelamento; a transação libera todos os vínculos, cancela ingressos pendentes e conserva histórico. Migração v4 com backup substitui a unicidade permanente do professor pela de turma aberta. Regras de autorização e transporte incremental permanecem. O [roteiro rc.9](../classroom-rc9-acceptance.md) mantém as pendências anteriores e acrescenta encerramento/recriação; atividades continuam sem implementação.
