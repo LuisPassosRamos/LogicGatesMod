@@ -8,6 +8,7 @@ import sisso.logicsim.LogicSimPlugin;
 import sisso.logicsim.classroom.ClassroomRuntime;
 import sisso.logicsim.classroom.domain.Classroom;
 import sisso.logicsim.classroom.domain.ClassroomException;
+import sisso.logicsim.classroom.domain.ClassroomViews.State;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +22,8 @@ import static sisso.logicsim.classroom.domain.ClassroomException.Reason.*;
 final class ClassroomServerChecks {
     private static final UUID TEACHER = UUID.fromString("c1a55000-0000-4000-8000-000000000001");
     private static final UUID OTHER = UUID.fromString("c1a55000-0000-4000-8000-000000000002");
+    private static final UUID STUDENT = UUID.fromString("c1a55000-0000-4000-8000-000000000003");
+    private static final UUID INVITED = UUID.fromString("c1a55000-0000-4000-8000-000000000004");
     private final List<String> passed;
     private final Path expectedId;
     ClassroomServerChecks(List<String> passed, Path expectedId) { this.passed = passed; this.expectedId = expectedId; }
@@ -51,7 +54,7 @@ final class ClassroomServerChecks {
         }
         return preparation.thenCompose(classroom -> {
             check(classroom.name().equals("Turma persistida") && classroom.description().equals("Descrição\ncom acento")
-                    && classroom.revision() == 1 && classroom.teacherId().equals(TEACHER), "classroom content/revision preserved");
+                    && classroom.revision() == (create ? 1 : 2) && classroom.teacherId().equals(TEACHER), "classroom content/revision preserved");
             try {
                 if (create) {
                     Files.createDirectories(expectedId.getParent());
@@ -60,13 +63,57 @@ final class ClassroomServerChecks {
             } catch (java.io.IOException failure) { throw new CompletionException(failure); }
             passed.add(create ? "production Classroom queue creates and edits a class using packaged native SQLite"
                     : "real server restart preserves Classroom UUID, teacher link, name, description and revision");
-            return expect(ALREADY_MEMBER, runtime.create(TEACHER, "Segunda turma", ""))
+            return admissions(runtime,classroom,create)
+                    .thenCompose(ignored -> expect(ALREADY_MEMBER, runtime.create(TEACHER, "Segunda turma", "")))
                     .thenCompose(ignored -> expect(FORBIDDEN, runtime.update(OTHER, classroom.id(), classroom.revision(), "Intrusão", "")))
                     .thenCompose(ignored -> {
                         PermissionsModule.get().removeUserPermission(TEACHER, Set.of(ClassroomRuntime.TEACH_PERMISSION));
                         return expect(FORBIDDEN, runtime.update(TEACHER, classroom.id(), classroom.revision(), "Revogado", ""));
                     }).thenRun(() -> passed.add("native teacher permission revocation, classroom ownership and one-active-link policy reject unauthorized mutations"));
         });
+    }
+
+    private CompletableFuture<Void> admissions(ClassroomRuntime runtime,Classroom classroom,boolean create) {
+        if (create) {
+            return runtime.remember(STUDENT,"Aluno integração")
+                .thenCompose(ignored->runtime.remember(INVITED,"Aluno offline"))
+                .thenCompose(ignored->runtime.request(STUDENT,classroom.id(),"00123"))
+                .thenCompose(request->runtime.home(STUDENT).thenCompose(home->{
+                    check(home.member()==null,"request must await teacher approval");
+                    return runtime.approve(TEACHER,request.id(),request.revision(),"00123");
+                }))
+                .thenCompose(member->{
+                    check(member.enrollment().equals("00123"),"text enrollment preserves leading zeroes");
+                    return runtime.invite(TEACHER,INVITED);
+                })
+                .thenCompose(invite->{
+                    check(invite.state()==State.INVITED,"offline invitation remains pending");
+                    return runtime.message(TEACHER,classroom.id(),classroom.revision(),"Bem-vindos %server.fake");
+                }).thenAccept(value->passed.add("production Classroom request requires approval, preserves 00123 and persists an offline invitation and literal message"));
+        }
+        return runtime.home(STUDENT).thenCompose(home->{
+            check(home.member()!=null && home.member().enrollment().equals("00123"),"student link survives restart");
+            check(home.classroom().message().equals("Bem-vindos %server.fake"),"literal message survives restart");
+            return runtime.intakes(INVITED,false,0);
+        }).thenCompose(page->{
+            var invite=page.items().getFirst(); check(invite.state()==State.INVITED,"invitation survives full restart");
+            return runtime.accept(INVITED,invite.id(),invite.revision(),"00007");
+        }).thenCompose(request->runtime.home(INVITED).thenCompose(home->{
+            check(home.member()==null,"accepting an invitation must still await teacher approval");
+            return runtime.approve(TEACHER,request.id(),request.revision(),"00007");
+        })).thenCompose(member->runtime.correct(TEACHER,member.id(),member.revision(),"00008"))
+          .thenCompose(member->runtime.end(INVITED,member.id(),member.revision(),false))
+          .thenCompose(ended->{
+              check(!ended.active() && ended.endedAt()!=null,"leaving retains historical membership");
+              return runtime.request(INVITED,classroom.id(),"00008").thenCompose(request->runtime.approve(TEACHER,request.id(),request.revision(),"00008"))
+                  .thenCompose(joined->{
+                      check(!joined.id().equals(ended.id()),"reentry creates a new membership identity");
+                      return runtime.end(TEACHER,joined.id(),joined.revision(),true);
+                  });
+          }).thenCompose(removed->runtime.home(INVITED)).thenAccept(home->{
+              check(home.member()==null,"teacher removal ends active membership");
+              passed.add("real restart preserves student enrollment, invitation and message; invite acceptance awaits approval, correction/leave/reentry/removal retain history");
+          });
     }
 
     private CompletableFuture<Void> expect(ClassroomException.Reason reason, CompletableFuture<?> operation) {

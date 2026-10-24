@@ -8,6 +8,7 @@ public interface ClassroomRepository {
     Optional<Classroom> findByMember(UUID playerId);
     Classroom create(UUID teacherId, String name, String description);
     Classroom update(UUID teacherId, UUID classroomId, long revision, String name, String description);
+    Classroom settings(UUID teacherId, UUID classroomId, long revision, String name, String description, String message);
     Classroom message(UUID teacherId, UUID classroomId, long revision, String message);
     void remember(UUID playerId, String name);
     String playerName(UUID playerId);

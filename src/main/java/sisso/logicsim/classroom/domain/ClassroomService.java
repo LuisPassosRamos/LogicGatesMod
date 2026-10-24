@@ -35,6 +35,10 @@ public final class ClassroomService {
         // Ownership and revision are checked again inside the repository's write transaction.
         return repository.update(actor, classroomId, revision, name(name), description(description));
     }
+    public Classroom settings(UUID actor, UUID classroomId, long revision, String name, String description, String message) {
+        authorize(actor); identity(classroomId);
+        return repository.settings(actor, classroomId, revision, name(name), description(description), multiline(message, INVALID_MESSAGE));
+    }
 
     public Home home(UUID actor) {
         identity(actor);

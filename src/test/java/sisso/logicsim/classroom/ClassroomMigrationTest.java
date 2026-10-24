@@ -63,4 +63,15 @@ class ClassroomMigrationTest {
         assertThrows(ClassroomException.class,()->new SqliteClassroomRepository(db()));
         assertArrayEquals(before,Files.readAllBytes(db()));
     }
+    @Test void versionTwoAddsMessageWithoutLosingAdmissions() throws Exception {
+        var s=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
+        var c=s.create(teacher,"A",""); UUID student=UUID.randomUUID();
+        s.remember(student,"Known offline"); var invitation=s.invite(teacher,student);
+        try(var conn=DriverManager.getConnection("jdbc:sqlite:"+db());var q=conn.createStatement()) {
+            q.execute("ALTER TABLE classrooms DROP COLUMN message"); q.execute("PRAGMA user_version=2");
+        }
+        var reopened=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
+        assertEquals(c,reopened.own(teacher).orElseThrow());
+        assertEquals(invitation,reopened.intakes(student,false,0).items().getFirst());
+    }
 }

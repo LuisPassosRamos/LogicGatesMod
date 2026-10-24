@@ -20,6 +20,9 @@ import sisso.logicsim.systems.EnergyInitializerSystem;
 import sisso.logicsim.systems.EnergyPropagationSystem;
 import sisso.logicsim.util.BuildInfo;
 import sisso.logicsim.classroom.ClassroomRuntime;
+import sisso.logicsim.classroom.ClassroomPresence;
+import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 
 public final class LogicSimPlugin extends JavaPlugin {
@@ -29,6 +32,7 @@ public final class LogicSimPlugin extends JavaPlugin {
     private static ComponentType<ChunkStore, GateComponent> gateComponentType;
     private static ResourceType<ChunkStore, CircuitWorldState> circuitStateType;
     private static ClassroomRuntime classroom;
+    private ClassroomPresence classroomPresence;
 
     public LogicSimPlugin(JavaPluginInit init) { super(init); }
 
@@ -62,9 +66,13 @@ public final class LogicSimPlugin extends JavaPlugin {
                 actor -> PermissionsModule.get().hasPermission(actor, ClassroomRuntime.TEACH_PERMISSION, false),
                 failure -> getLogger().atSevere().withCause(failure).log("Classroom storage unavailable; circuit systems remain active"));
         getCommandRegistry().registerCommand(new ClassroomCommand(classroom));
+        classroomPresence = new ClassroomPresence(classroom);
+        getEventRegistry().registerGlobal(PlayerReadyEvent.class, classroomPresence::ready);
+        getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, classroomPresence::disconnected);
     }
 
     @Override protected void shutdown() {
+        if (classroomPresence != null) classroomPresence.close();
         if (classroom != null) classroom.close();
     }
 }

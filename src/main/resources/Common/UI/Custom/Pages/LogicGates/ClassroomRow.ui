@@ -1,0 +1,13 @@
+Button {
+  Anchor: (Height: 76, Bottom: 6);
+  LayoutMode: Top;
+  Padding: (Full: 10);
+  Background: (Color: #233047);
+  Style: (
+    Default: (Background: (Color: #233047)),
+    Hovered: (Background: (Color: #30445f)),
+    Pressed: (Background: (Color: #3b577a))
+  );
+  Label #RowName { Anchor: (Height: 25); Style: (FontSize: 17, Wrap: true, TextColor: #ffffff); }
+  Label #RowInfo { Anchor: (Height: 32); Style: (FontSize: 14, Wrap: true, TextColor: #a9bad0); }
+}

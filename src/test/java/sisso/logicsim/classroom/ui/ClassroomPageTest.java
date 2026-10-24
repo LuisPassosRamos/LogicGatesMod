@@ -29,10 +29,11 @@ class ClassroomPageTest {
         }
         var save = Arrays.stream(events.getEvents()).filter(event -> event.selector.equals("#Save")).findFirst().orElseThrow();
         var data = BsonDocument.parse(save.data);
-        assertEquals(3, data.size());
+        assertEquals(4, data.size());
         assertEquals("Save", data.getString("Action").getValue());
         assertEquals("#Name.Value", data.getString("@Name").getValue());
         assertEquals("#Description.Value", data.getString("@Description").getValue());
+        assertEquals("#Message.Value", data.getString("@Message").getValue());
     }
 
     @Test void realJsonCodecAcceptsLiteralTextAndIgnoresForgedOwnerAndRevision() throws Exception {

@@ -30,14 +30,16 @@ public final class ClassroomRuntime implements AutoCloseable {
     // Accessed only on the executor. Initialization is enqueued before all operations.
     private ClassroomService service;
     public record Change(UUID classroom, UUID player, boolean directory) { }
-    private final java.util.Map<UUID, Consumer<Change>> listeners = new ConcurrentHashMap<>();
+    private record Listener(UUID owner, Consumer<Change> callback) { }
+    private final java.util.Map<UUID, Listener> listeners = new ConcurrentHashMap<>();
     /** A token belongs to one page, not to the player's name or current list position. */
-    public AutoCloseable listen(Consumer<Change> listener) {
-        UUID token = UUID.randomUUID(); listeners.put(token, listener);
+    public AutoCloseable listen(UUID owner, Consumer<Change> listener) {
+        UUID token = UUID.randomUUID(); listeners.put(token, new Listener(owner, listener));
         return () -> listeners.remove(token);
     }
+    public void forget(UUID player) { listeners.values().removeIf(listener -> player.equals(listener.owner())); }
     private void changed(Change change) {
-        listeners.values().forEach(listener -> { try { listener.accept(change); } catch (RuntimeException failure) { log.accept(failure); } });
+        listeners.values().forEach(listener -> { try { listener.callback().accept(change); } catch (RuntimeException failure) { log.accept(failure); } });
     }
 
     public ClassroomRuntime(Path dataDirectory, Predicate<UUID> canTeach, Consumer<Throwable> log) {
@@ -87,6 +89,9 @@ public final class ClassroomRuntime implements AutoCloseable {
     }
     public CompletableFuture<Classroom> message(UUID actor, UUID classroom, long revision, String message) {
         return mutation(service -> service.message(actor, classroom, revision, message), value -> new Change(value.id(), actor, false));
+    }
+    public CompletableFuture<Classroom> settings(UUID actor, UUID classroom, long revision, String name, String description, String message) {
+        return mutation(service -> service.settings(actor, classroom, revision, name, description, message), value -> new Change(value.id(), actor, true));
     }
     private static Change change(Intake i) { return new Change(i.classroomId(), i.studentId(), false); }
     private static Change change(Member m) { return new Change(m.classroomId(), m.playerId(), true); }

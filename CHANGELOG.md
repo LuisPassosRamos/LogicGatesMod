@@ -4,7 +4,23 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.2.
+Nenhuma alteração registrada após 1.4.0-rc.3.
+
+## [1.4.0-rc.3] - 2026-10-24
+
+### Classroom — MVP administrativo para validação
+- Entrada por vínculo: turma do professor, consulta básica do aluno e descoberta/ingresso para jogadores sem turma.
+- Lista pública pesquisável, solicitações com matrícula textual, convites persistidos para jogadores conhecidos e conferência docente antes de qualquer ingresso. Pendências convergem e a primeira aprovação encerra as demais.
+- Alunos e processos em listas paginadas, seleção por UUID, ficha, correção de matrícula, remoção e saída com confirmação; histórico preservado. O aluno acompanha os estados dos próprios ingressos.
+- Administração de nome, descrição e mensagem em gravação atômica por revisão. Mensagem no painel e no chat após a primeira prontidão da conexão, sem repetição por troca de mundo.
+- Migrações v1 → v2 → v3 preservam a turma existente e guardam backup consistente antes da atualização. Índices garantem matrícula ativa única e um único vínculo ativo entre papéis.
+- Notificações após commit, revisões preservadas durante edição, limpeza de sessões/listeners e I/O com fila limitada. Traduções nativas en-US/pt-BR.
+- Testes de domínio, persistência, migração/restauração, concorrência, transporte e sessão; integração nativa exercita solicitações, convites, matrícula e mensagem antes/depois de reiniciar.
+
+### Validação
+- Usuário confirmou o fluxo central da rc.2 em pt-BR: turma preservada após sair/entrar e recarregar, além da regressão do contador. Captura e escopo preservados na documentação.
+- As novas telas de rc.3 aguardam validação no cliente 0.7.4 com professor/aluno nos dois idiomas. Testes automatizados não comprovam renderização/interação.
+- Atividades, entregas, avaliação e painel pedagógico completo permanecem posteriores; circuitos, IDs, codecs e aparência preservados.
 
 ## [1.4.0-rc.2] - 2026-10-24
 

@@ -65,6 +65,13 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
             return new Classroom(id, teacher, old.name(), old.description(), revision + 1, message);
         });
     }
+    @Override public Classroom settings(UUID teacher, UUID id, long revision, String name, String description, String message) {
+        return transaction(c -> {
+            var old = owned(c, teacher); sameClass(old, id); revision(old.revision(), revision);
+            execute(c, "UPDATE classrooms SET name=?,description=?,search_name=?,message=?,revision=revision+1 WHERE id=?", name, description, lower(name), message, id);
+            return new Classroom(id, teacher, name, description, revision + 1, message);
+        });
+    }
     @Override public void remember(UUID id, String name) {
         transaction(c -> { execute(c, "INSERT INTO classroom_players(uuid,name,search_name) VALUES(?,?,?) ON CONFLICT(uuid) DO UPDATE SET name=excluded.name,search_name=excluded.search_name", id, name, lower(name)); return null; });
     }
@@ -100,7 +107,8 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         return read(c -> {
             String scope = teacher ? "i.classroom_id=?" : "i.student_uuid=?";
             Object id = teacher ? owned(c, actor).id() : actor;
-            return page(c, INTAKE + "WHERE " + scope + " AND i.state IN('INVITED','REQUESTED') ORDER BY i.created_at,i.id LIMIT 21 OFFSET ?",
+            String states = teacher ? " AND i.state IN('INVITED','REQUESTED') ORDER BY i.created_at,i.id" : " ORDER BY i.created_at DESC,i.id";
+            return page(c, INTAKE + "WHERE " + scope + states + " LIMIT 21 OFFSET ?",
                     SqliteClassroomRepository::intake, page, id, page * PAGE_SIZE);
         });
     }

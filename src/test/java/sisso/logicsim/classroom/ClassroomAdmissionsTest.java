@@ -57,7 +57,7 @@ class ClassroomAdmissionsTest {
         assertEquals(request.id(),s.invite(teacher,student).id());
         s.request(student,b.id(),"002");
         s.approve(teacher,request.id(),request.revision(),"001");
-        assertTrue(s.intakes(student,false,0).items().isEmpty());
+        assertTrue(s.intakes(student,false,0).items().stream().noneMatch(i->i.state()==State.INVITED || i.state()==State.REQUESTED));
         assertTrue(s.intakes(other,true,0).items().isEmpty());
         expect(ALREADY_MEMBER,()->s.request(student,b.id(),"003"));
         expect(FORBIDDEN,()->s.create(student,"Illegal", ""));
@@ -65,7 +65,7 @@ class ClassroomAdmissionsTest {
     @Test void creationAsTeacherSupersedesTheirPendingStudentRequests() {
         var s=service(); var a=classroom(s);
         s.request(other,a.id(),"01"); s.create(other,"B","");
-        assertTrue(s.intakes(other,false,0).items().isEmpty());
+        assertTrue(s.intakes(other,false,0).items().stream().noneMatch(i->i.state()==State.INVITED || i.state()==State.REQUESTED));
         assertTrue(s.intakes(teacher,true,0).items().isEmpty());
     }
     @Test void pendingEnrollmentsAreNotReservedButActiveOnesAreUniqueAndCaseSensitive() {
@@ -120,7 +120,7 @@ class ClassroomAdmissionsTest {
         assertEquals(State.DECLINED,s.closeIntake(student,i.id(),0,false).state());
         var next=s.invite(teacher,student);
         assertEquals(State.CANCELLED,s.closeIntake(teacher,next.id(),0,true).state());
-        assertTrue(service().intakes(student,false,0).items().isEmpty());
+        assertEquals(Set.of(State.DECLINED,State.CANCELLED),service().intakes(student,false,0).items().stream().map(Intake::state).collect(java.util.stream.Collectors.toSet()));
         expect(NOT_FOUND,()->s.invite(teacher,UUID.randomUUID()));
     }
     @Test void twoTeachersApprovingSameStudentCommitOneLinkAndCloseTheOtherProcess() throws Exception {
@@ -133,7 +133,7 @@ class ClassroomAdmissionsTest {
         var results=List.of(first.get(10,TimeUnit.SECONDS),next.get(10,TimeUnit.SECONDS));
         assertEquals(1,results.stream().filter(Member.class::isInstance).count());
         assertEquals(1,s.members(teacher,0).items().size()+s.members(other,0).items().size());
-        assertTrue(s.intakes(student,false,0).items().isEmpty());
+        assertTrue(s.intakes(student,false,0).items().stream().noneMatch(i->i.state()==State.INVITED || i.state()==State.REQUESTED));
     }
     @Test void approvalFailureRollsBackMembershipAndOtherPendingProcesses() throws Exception {
         var s=service(); var a=classroom(s); var b=s.create(other,"B","");
@@ -142,6 +142,26 @@ class ClassroomAdmissionsTest {
         expect(UNAVAILABLE,()->s.approve(teacher,i.id(),0,"001"));
         assertNull(s.home(student).member()); assertEquals(2,s.intakes(student,false,0).items().size());
         sql("DROP TRIGGER fail_approval"); s.approve(teacher,i.id(),0,"001");
+    }
+    @Test void concurrentStudentsCannotClaimTheSameEnrollment() throws Exception {
+        var s=service(); var c=classroom(s); UUID secondStudent=UUID.randomUUID();
+        var a=s.request(student,c.id(),"00123"); var b=s.request(secondStudent,c.id(),"00123"); var second=service();
+        var start=new CountDownLatch(1);
+        var first=CompletableFuture.supplyAsync(()->attempt(start,()->s.approve(teacher,a.id(),0,"00123")));
+        var next=CompletableFuture.supplyAsync(()->attempt(start,()->second.approve(teacher,b.id(),0,"00123")));
+        start.countDown(); var results=List.of(first.get(10,TimeUnit.SECONDS),next.get(10,TimeUnit.SECONDS));
+        assertEquals(1,results.stream().filter(Member.class::isInstance).count());
+        assertEquals(1,results.stream().filter(DUPLICATE_ENROLLMENT::equals).count());
+    }
+    @Test void approvalAndTeacherCreationForTheSameUuidCannotCommitTwoRoles() throws Exception {
+        var s=service(); var c=classroom(s); var i=s.request(other,c.id(),"00123"); var second=service();
+        var start=new CountDownLatch(1);
+        var first=CompletableFuture.supplyAsync(()->attempt(start,()->s.approve(teacher,i.id(),0,"00123")));
+        var next=CompletableFuture.supplyAsync(()->attempt(start,()->second.create(other,"Other","")));
+        start.countDown(); var results=List.of(first.get(10,TimeUnit.SECONDS),next.get(10,TimeUnit.SECONDS));
+        assertEquals(1,results.stream().filter(value->value instanceof Member || value instanceof Classroom).count());
+        assertNotNull(s.home(other).member());
+        assertTrue(s.intakes(other,false,0).items().stream().noneMatch(value->value.state()==State.REQUESTED || value.state()==State.INVITED));
     }
     @Test void publicPagesExposeOnlySummariesAndSearchIsLiteralAndUnicodeAware() {
         var s=service(); var c=classroom(s); s.request(student,c.id(),"SECRET-00123");
@@ -161,7 +181,7 @@ class ClassroomAdmissionsTest {
         assertFalse(s.browse(student,"",0).items().toString().contains("<b>Olá"));
         assertEquals("",s.message(teacher,c.id(),1,"").message());
     }
-    private Object attempt(CountDownLatch start,Supplier<Member> action) {
+    private Object attempt(CountDownLatch start,Supplier<?> action) {
         try { start.await(); return action.get(); } catch(ClassroomException expected) { return expected.reason(); }
         catch(InterruptedException e) { Thread.currentThread().interrupt(); throw new AssertionError(e); }
     }
