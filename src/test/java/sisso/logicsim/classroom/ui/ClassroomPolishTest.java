@@ -134,6 +134,40 @@ class ClassroomPolishTest {
         }
         assertTrue(row.contains("#SelectionMark {")); assertTrue(row.contains("#RowStamp {"));
     }
+    @Test void classroomClosureIsAvailableOnlyToLinkedTeacherAndConfirmationKeepsDraftFields() {
+        UUID teacher=UUID.randomUUID(), student=UUID.randomUUID(), id=UUID.randomUUID();
+        var classroom=new Classroom(id,teacher,"Class","Description",4,"Message");
+        var teacherLink=new Member(UUID.randomUUID(),id,teacher,"Teacher",Role.TEACHER,null,true,1,null,0);
+        var page=new ClassroomPage(null,null,null);
+        page.model.apply(new Screen(new Home(classroom,teacherLink,"Teacher",true),Kind.SETTINGS,new Page<>(List.of(),0,false),0),true);
+        var c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),true);
+        assertTrue(value(c,"#Actions.Visible").asBoolean().getValue()); assertTrue(value(c,"#Danger.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#Danger.Text").toString().contains("server.logicgates.classroom.disband"));
+        assertTrue(value(c,"#Save.Visible").asBoolean().getValue()); assertFalse(value(c,"#CancelConfirm.Visible").asBoolean().getValue());
+        page.model.confirming=true; c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),false);
+        assertTrue(value(c,"#Danger.Text").toString().contains("server.logicgates.classroom.confirmDisband"));
+        assertTrue(value(c,"#CancelConfirm.Visible").asBoolean().getValue()); assertFalse(value(c,"#Save.Visible").asBoolean().getValue());
+        assertEquals("server.logicgates.classroom.confirmDisbandHint",ClassroomScreenRenderer.status(page.model,false).getMessageId());
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(command->command.selector!=null && command.selector.endsWith(".Value")));
+        // A different classroom or loss of membership can never reuse a previous closure confirmation.
+        page.model.apply(new Screen(new Home(null,null,"",true),Kind.SETTINGS,new Page<>(List.of(),0,false),0),false);
+        assertFalse(page.model.confirming); assertEquals(0,page.model.editRevision);
+        c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),true);
+        assertFalse(value(c,"#Danger.Visible").asBoolean().getValue()); assertTrue(value(c,"#Save.Visible").asBoolean().getValue());
+        var self=new Member(UUID.randomUUID(),id,student,"Student",Role.STUDENT,"00123",true,1,null,0);
+        page.model.apply(new Screen(new Home(classroom,self,"Teacher",false),Kind.DETAIL,new Page<>(List.of(),0,false),1),true);
+        c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),true);
+        assertTrue(value(c,"#Danger.Text").toString().contains("server.logicgates.classroom.leave"));
+    }
+    @Test void closureInvalidatesAffectedAdmissionHistoryWithoutRefreshingUnrelatedPages() {
+        UUID classroom=UUID.randomUUID(), student=UUID.randomUUID(), teacher=UUID.randomUUID();
+        var intake=new Intake(UUID.randomUUID(),classroom,"Class",student,"Student",Origin.INVITE,State.INVITED,null,0,1);
+        var model=new ClassroomPageModel(); model.apply(new Screen(new Home(null,null,"",false),Kind.INTAKES,new Page<>(List.of(intake),0,false),0),true);
+        var interest=model.interest(student);
+        var closure=new sisso.logicsim.classroom.ClassroomRuntime.Change(classroom,teacher,true);
+        assertTrue(interest.test(closure)); assertTrue(model.interested(closure,student));
+        assertFalse(interest.test(new sisso.logicsim.classroom.ClassroomRuntime.Change(UUID.randomUUID(),teacher,true)));
+    }
     private static String resource(String path) throws Exception {
         try(var stream=ClassroomPolishTest.class.getResourceAsStream("/Common/UI/Custom/"+path)) { assertNotNull(stream); return new String(stream.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8); }
     }

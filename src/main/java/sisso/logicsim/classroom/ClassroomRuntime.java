@@ -112,6 +112,9 @@ public final class ClassroomRuntime implements AutoCloseable {
     public CompletableFuture<Classroom> update(UUID actor, UUID id, long revision, String name, String description) {
         return mutation(service -> service.update(actor, id, revision, name, description), value -> new Change(value.id(), actor, true));
     }
+    public CompletableFuture<Classroom> disband(UUID actor, UUID classroom, long revision) {
+        return mutation(service -> service.disband(actor, classroom, revision), value -> new Change(value.id(), actor, true));
+    }
     public CompletableFuture<Home> home(UUID actor) { return submit(service -> service.home(actor)); }
     public CompletableFuture<Screen> screen(UUID actor, Kind kind, String query, int page) { return submit(service -> service.screen(actor, kind, query, page)); }
     public CompletableFuture<Void> remember(UUID actor, String name) {

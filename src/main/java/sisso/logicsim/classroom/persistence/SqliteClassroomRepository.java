@@ -31,14 +31,14 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         return c;
     }
     @Override public Optional<Classroom> findByMember(UUID player) {
-        return read(c -> one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE m.player_uuid=? AND m.active=1", SqliteClassroomRepository::classroom, player));
+        return read(c -> one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE m.player_uuid=? AND m.active=1 AND c.closed_at IS NULL", SqliteClassroomRepository::classroom, player));
     }
     @Override public Optional<Member> member(UUID player) { return read(c -> active(c, player)); }
     private Optional<Member> active(Connection c, UUID player) throws SQLException {
         return one(c, MEMBER + "WHERE m.player_uuid=? AND m.active=1", SqliteClassroomRepository::membership, player);
     }
     private Classroom owned(Connection c, UUID actor) throws SQLException {
-        return one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE c.teacher_uuid=? AND m.player_uuid=? AND m.role='TEACHER' AND m.active=1",
+        return one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE c.teacher_uuid=? AND m.player_uuid=? AND m.role='TEACHER' AND m.active=1 AND c.closed_at IS NULL",
                 SqliteClassroomRepository::classroom, actor, actor).orElseThrow(() -> new ClassroomException(FORBIDDEN));
     }
     @Override public Classroom create(UUID teacher, String name, String description) {
@@ -72,6 +72,16 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
             return new Classroom(id, teacher, name, description, revision + 1, message);
         });
     }
+    @Override public Classroom disband(UUID teacher, UUID id, long revision) {
+        return transaction(c -> {
+            var old = owned(c, teacher); sameClass(old, id); revision(old.revision(), revision);
+            long ended = now();
+            execute(c, "UPDATE classrooms SET closed_at=?,revision=revision+1 WHERE id=?", ended, id);
+            execute(c, "UPDATE classroom_memberships SET active=0,ended_at=?,revision=revision+1 WHERE classroom_id=? AND active=1", ended, id);
+            execute(c, "UPDATE classroom_intakes SET state='CANCELLED',revision=revision+1 WHERE classroom_id=? AND state IN('INVITED','REQUESTED')", id);
+            return new Classroom(id, teacher, old.name(), old.description(), revision + 1, old.message());
+        });
+    }
     @Override public void remember(UUID id, String name) {
         transaction(c -> { execute(c, "INSERT INTO classroom_players(uuid,name,search_name) VALUES(?,?,?) ON CONFLICT(uuid) DO UPDATE SET name=excluded.name,search_name=excluded.search_name", id, name, lower(name)); return null; });
     }
@@ -82,7 +92,7 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         return read(c -> page(c, """
             SELECT c.id,c.name,c.description,c.teacher_uuid,coalesce(p.name,c.teacher_uuid) AS teacher_name
             FROM classrooms c LEFT JOIN classroom_players p ON p.uuid=c.teacher_uuid
-            WHERE instr(c.search_name,?)>0 OR instr(coalesce(p.search_name,''),?)>0
+            WHERE c.closed_at IS NULL AND (instr(c.search_name,?)>0 OR instr(coalesce(p.search_name,''),?)>0)
             ORDER BY c.search_name,c.id LIMIT 21 OFFSET ?
             """, r -> new Summary(uuid(r,"id"),r.getString("name"),r.getString("description"),uuid(r,"teacher_uuid"),r.getString("teacher_name")), page, lower(query), lower(query), page * PAGE_SIZE));
     }
@@ -115,7 +125,7 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
     @Override public Intake request(UUID student, UUID classroom, String enrollment) {
         return transaction(c -> {
             eligible(c, student);
-            one(c, "SELECT * FROM classrooms WHERE id=?", SqliteClassroomRepository::classroom, classroom).orElseThrow(() -> new ClassroomException(NOT_FOUND));
+            one(c, "SELECT * FROM classrooms WHERE id=? AND closed_at IS NULL", SqliteClassroomRepository::classroom, classroom).orElseThrow(() -> new ClassroomException(NOT_FOUND));
             var pending = open(c, classroom, student);
             if (pending.isPresent()) {
                 var i = pending.get();

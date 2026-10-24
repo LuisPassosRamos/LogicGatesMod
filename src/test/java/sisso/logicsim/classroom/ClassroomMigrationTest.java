@@ -74,4 +74,33 @@ class ClassroomMigrationTest {
         assertEquals(c,reopened.own(teacher).orElseThrow());
         assertEquals(invitation,reopened.intakes(student,false,0).items().getFirst());
     }
+    @Test void releasedV3MigrationKeepsForeignKeysAdmissionsAndBackupWhileAllowingTeacherReuse() throws Exception {
+        Class.forName("org.sqlite.JDBC"); UUID student=UUID.randomUUID(), link=UUID.randomUUID(), intake=UUID.randomUUID();
+        try(var input=getClass().getResourceAsStream("/classroom/released-v3.sql");
+            var c=DriverManager.getConnection("jdbc:sqlite:"+db()); var q=c.createStatement()) {
+            assertNotNull(input);
+            for(String sql:new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(";")) if(!sql.isBlank()) q.execute(sql);
+            q.execute("INSERT INTO classrooms VALUES('"+classroom+"','"+teacher+"','Saved','Description',7,'saved','Message')");
+            q.execute("INSERT INTO classroom_memberships VALUES('"+membership+"','"+classroom+"','"+teacher+"','TEACHER',1,NULL,123,NULL,0)");
+            q.execute("INSERT INTO classroom_memberships VALUES('"+link+"','"+classroom+"','"+student+"','STUDENT',1,'00123',456,NULL,2)");
+            q.execute("INSERT INTO classroom_intakes VALUES('"+intake+"','"+classroom+"','"+student+"','REQUEST','APPROVED','00123',1,234,'"+link+"')");
+        }
+        var service=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
+        var saved=service.own(teacher).orElseThrow(); assertEquals(7,saved.revision()); assertEquals("Message",saved.message());
+        assertEquals(link,service.home(student).member().id()); assertEquals("00123",service.home(student).member().enrollment());
+        assertEquals(intake,service.intakes(student,false,0).items().getFirst().id());
+        try(var c=DriverManager.getConnection("jdbc:sqlite:"+db());var q=c.createStatement();var r=q.executeQuery("PRAGMA foreign_key_check")) { assertFalse(r.next()); }
+        service.disband(teacher,classroom,7); assertNotEquals(classroom,service.create(teacher,"Next","").id());
+        Path backup;
+        try(var files=Files.list(dir.resolve("backups"))) { var list=files.toList(); assertEquals(1,list.size()); backup=list.getFirst(); }
+        try(var c=DriverManager.getConnection("jdbc:sqlite:"+backup);var q=c.createStatement();var r=q.executeQuery("PRAGMA user_version")) { assertEquals(3,r.getInt(1)); }
+        Path restored=dir.resolve("restore/classroom.db"); Files.createDirectories(restored.getParent()); Files.copy(backup,restored);
+        var original=new ClassroomService(new SqliteClassroomRepository(restored),id->true);
+        assertEquals(saved,original.own(teacher).orElseThrow()); assertEquals(link,original.home(student).member().id());
+        try(var c=DriverManager.getConnection("jdbc:sqlite:"+db());var q=c.createStatement()) {
+            q.execute("PRAGMA foreign_keys=ON");
+            assertThrows(SQLException.class,()->q.execute("INSERT INTO classroom_memberships VALUES('"+UUID.randomUUID()+"','missing','"+UUID.randomUUID()+"','TEACHER',1,NULL,0,NULL,0)"));
+        }
+    }
+
 }

@@ -179,3 +179,7 @@ logicgates.classroom.emptyHistoryHint = Find a class to request admission, or wa
 logicgates.classroom.emptyPlayersHint = Try another name. Players must be known to Classroom and have no active class.
 logicgates.classroom.emptyBrowseHint = Search by class or teacher name, or wait for a class to be created.
 logicgates.classroom.emptyPageHint = This page is empty. Select Previous to go back.
+
+logicgates.classroom.disband = CLOSE CLASSROOM
+logicgates.classroom.confirmDisband = CONFIRM CLASSROOM CLOSURE
+logicgates.classroom.confirmDisbandHint = Closing releases all participants and cancels pending admissions. History is kept. Confirm or cancel.

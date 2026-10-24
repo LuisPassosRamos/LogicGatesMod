@@ -34,7 +34,7 @@ final class ClassroomPageModel {
                 && screen.home().member().role()==Role.TEACHER && kind == Kind.INTAKES) return true;
         return screen != null && screen.rows().items().stream().anyMatch(row ->
                 row instanceof Member m && m.playerId().equals(change.player())
-                || row instanceof Intake i && i.studentId().equals(change.player()));
+                || row instanceof Intake i && (i.studentId().equals(change.player()) || i.classroomId().equals(change.classroom())));
     }
     boolean apply(Screen next, boolean reset) {
         boolean contextChanged = screen == null || next.kind() != screen.kind()

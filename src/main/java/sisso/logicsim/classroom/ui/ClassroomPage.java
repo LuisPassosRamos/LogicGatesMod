@@ -133,7 +133,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                 var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,true); publish(ref,store,c,e);
             }
             case "Save" -> {
-                if (model.kind != Kind.SETTINGS) { acknowledge(ref,store); return; }
+                if (model.kind != Kind.SETTINGS || model.confirming) { acknowledge(ref,store); return; }
                 var current=model.screen.home().classroom();
                 run(ref,store,current == null ? runtime.create(playerRef.getUuid(),event.name,event.description)
                         : runtime.settings(playerRef.getUuid(),current.id(),model.editRevision,event.name,event.description,event.message));
@@ -144,7 +144,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                 else acknowledge(ref,store);
             }
             case "Danger" -> danger(ref,store);
-            case "CancelConfirm" -> { model.confirming=false; var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,false); publish(ref,store,c,e); }
+            case "CancelConfirm" -> { model.confirming=false; var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,false); c.set("#Status.TextSpans",ClassroomScreenRenderer.status(model,false)); publish(ref,store,c,e); }
             default -> acknowledge(ref,store);
         }
     }
@@ -165,10 +165,20 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         }
     }
     private void danger(Ref<EntityStore> ref,Store<EntityStore> store) {
+        if (model.kind==Kind.SETTINGS && model.teacher()) {
+            var classroom=model.screen.home().classroom();
+            if (model.confirming) run(ref,store,runtime.disband(playerRef.getUuid(),classroom.id(),model.editRevision));
+            else confirmDanger(ref,store);
+            return;
+        }
         Member target = model.teacher() && model.selected instanceof Member m ? m : model.kind==Kind.DETAIL ? model.screen.home().member() : null;
         if (target == null || target.role()!=Role.STUDENT) { acknowledge(ref,store); return; }
         if (model.confirming) run(ref,store,runtime.end(playerRef.getUuid(),target.id(),target.revision(),model.teacher()));
-        else { model.confirming=true; var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,false); c.set("#Status.TextSpans",text("classroom.confirmHint")); publish(ref,store,c,e); }
+        else confirmDanger(ref,store);
+    }
+    private void confirmDanger(Ref<EntityStore> ref,Store<EntityStore> store) {
+        model.confirming=true; var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,false);
+        c.set("#Status.TextSpans",ClassroomScreenRenderer.status(model,false)); publish(ref,store,c,e);
     }
     private void run(Ref<EntityStore> ref,Store<EntityStore> store,CompletableFuture<?> operation) {
         var stamp = access.current();

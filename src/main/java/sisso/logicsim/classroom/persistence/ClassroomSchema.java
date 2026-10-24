@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /** Transactional upgrades retain v1 identifiers; consistent pre-upgrade copies stay in plugin data. */
 final class ClassroomSchema {
-    static final int VERSION = 3;
+    static final int VERSION = 4;
     static final int APPLICATION = 0x4c47434c;
     private ClassroomSchema() { }
     static void initialize(Connection c, Path path) throws Exception {
@@ -32,6 +32,9 @@ final class ClassroomSchema {
                 }
             }
         }
+        // SQLite's documented table-rebuild procedure keeps dependent FK definitions unchanged.
+        // This connection is private to initialization; the transaction and foreign_key_check still protect the upgrade.
+        if (version < 4) execute(c, "PRAGMA foreign_keys=OFF");
         execute(c, "BEGIN IMMEDIATE");
         try {
             if (version == 0) {
@@ -48,13 +51,15 @@ final class ClassroomSchema {
             }
             if (version < 2) upgradeTwo(c);
             if (version < 3) execute(c, "ALTER TABLE classrooms ADD COLUMN message TEXT NOT NULL DEFAULT '' CHECK(length(message)<=2048)");
+            if (version < 4) upgradeFour(c);
             execute(c, "PRAGMA application_id=" + APPLICATION);
             execute(c, "PRAGMA user_version=" + VERSION);
             verifyBase(c);
-            execute(c, "SELECT message,search_name FROM classrooms LIMIT 0");
+            execute(c, "SELECT message,search_name,closed_at FROM classrooms LIMIT 0");
             execute(c, "SELECT enrollment,joined_at,ended_at,revision FROM classroom_memberships LIMIT 0");
             execute(c, "SELECT id,classroom_id,student_uuid,origin,state,enrollment,revision,created_at,membership_id FROM classroom_intakes LIMIT 0");
             execute(c, "SELECT uuid,name,search_name FROM classroom_players LIMIT 0");
+            verifyIndex(c, "one_open_classroom_per_teacher", "teacher_uuid", "closed_at IS NULL");
             verifyIndex(c, "unique_active_enrollment", "classroom_id,enrollment", "active=1 AND role='STUDENT'");
             verifyIndex(c, "one_open_intake", "classroom_id,student_uuid", "state IN ('INVITED','REQUESTED')");
             try (var s = c.createStatement(); var r = s.executeQuery("PRAGMA foreign_key_check")) {
@@ -64,7 +69,22 @@ final class ClassroomSchema {
         } catch (Exception failure) {
             try { execute(c, "ROLLBACK"); } catch (SQLException rollback) { failure.addSuppressed(rollback); }
             throw failure;
+        } finally {
+            if (version < 4) execute(c, "PRAGMA foreign_keys=ON");
         }
+    }
+    private static void upgradeFour(Connection c) throws SQLException {
+        execute(c, """
+            CREATE TABLE classrooms_v4(id TEXT PRIMARY KEY NOT NULL, teacher_uuid TEXT NOT NULL,
+              name TEXT NOT NULL CHECK(length(name) BETWEEN 1 AND 64),
+              description TEXT NOT NULL CHECK(length(description)<=2048), revision INTEGER NOT NULL CHECK(revision>=0),
+              search_name TEXT NOT NULL DEFAULT '', message TEXT NOT NULL DEFAULT '' CHECK(length(message)<=2048),
+              closed_at INTEGER CHECK(closed_at IS NULL OR closed_at>=0))
+            """);
+        execute(c, "INSERT INTO classrooms_v4(id,teacher_uuid,name,description,revision,search_name,message) SELECT id,teacher_uuid,name,description,revision,search_name,message FROM classrooms");
+        execute(c, "DROP TABLE classrooms");
+        execute(c, "ALTER TABLE classrooms_v4 RENAME TO classrooms");
+        execute(c, "CREATE UNIQUE INDEX one_open_classroom_per_teacher ON classrooms(teacher_uuid) WHERE closed_at IS NULL");
     }
     private static void upgradeTwo(Connection c) throws SQLException {
         execute(c, "ALTER TABLE classrooms ADD COLUMN search_name TEXT NOT NULL DEFAULT ''");

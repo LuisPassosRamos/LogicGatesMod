@@ -40,6 +40,12 @@ public final class ClassroomService {
         return repository.settings(actor, classroomId, revision, name(name), description(description), multiline(message, INVALID_MESSAGE));
     }
 
+    /** End all active links atomically; historical records remain in storage. */
+    public Classroom disband(UUID actor, UUID classroomId, long revision) {
+        authorize(actor); identity(classroomId);
+        return repository.disband(actor, classroomId, revision);
+    }
+
     public Home home(UUID actor) {
         identity(actor);
         var member = repository.member(actor).orElse(null);

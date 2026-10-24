@@ -92,6 +92,7 @@ final class ClassroomServerChecks {
             passed.add(create ? "production Classroom queue creates and edits a class using packaged native SQLite"
                     : "real server restart preserves Classroom UUID, teacher link, name, description and revision");
             return admissions(runtime,classroom,create)
+                    .thenCompose(ignored -> disband(runtime,create))
                     .thenCompose(ignored -> expect(ALREADY_MEMBER, runtime.create(TEACHER, "Segunda turma", "")))
                     .thenCompose(ignored -> expect(FORBIDDEN, runtime.update(OTHER, classroom.id(), classroom.revision(), "Intrusão", "")))
                     .thenCompose(ignored -> {
@@ -99,6 +100,38 @@ final class ClassroomServerChecks {
                         return expect(FORBIDDEN, runtime.update(TEACHER, classroom.id(), classroom.revision(), "Revogado", ""));
                     }).thenRun(() -> passed.add("native teacher permission revocation, classroom ownership and one-active-link policy reject unauthorized mutations"));
         });
+    }
+
+    private CompletableFuture<Void> disband(ClassroomRuntime runtime,boolean create) {
+        UUID pupil=UUID.fromString("c1a55000-0000-4000-8000-000000000006");
+        UUID applicant=UUID.fromString("c1a55000-0000-4000-8000-000000000007");
+        if (!create) return runtime.own(OTHER).thenCompose(value->{
+            check(value.orElseThrow().name().equals("Replacement class"),"replacement classroom survives restart");
+            return runtime.home(pupil);
+        }).thenCompose(home->{
+            check(home.member()==null,"closed class releases students across real restart");
+            return runtime.intakes(applicant,false,0);
+        }).thenAccept(history->{
+            check(history.items().getFirst().state()==State.CANCELLED,"closure cancellation history survives real restart");
+            passed.add("real restart preserves classroom closure history, released links and the teacher's replacement class");
+        });
+        return runtime.create(OTHER,"Class to close","").thenCompose(classroom ->
+            runtime.request(pupil,classroom.id(),"00123")
+                .thenCompose(request->runtime.approve(OTHER,request.id(),request.revision(),"00123"))
+                .thenCompose(ignored->runtime.request(applicant,classroom.id(),"002"))
+                .thenCompose(ignored->expect(FORBIDDEN,runtime.disband(TEACHER,classroom.id(),classroom.revision())))
+                .thenCompose(ignored->runtime.disband(OTHER,classroom.id(),classroom.revision()))
+                .thenCompose(ignored->runtime.home(pupil))
+                .thenCompose(home->{
+                    check(home.member()==null,"closure releases student with packaged SQLite");
+                    return runtime.intakes(applicant,false,0);
+                }).thenCompose(history->{
+                    check(history.items().getFirst().state()==State.CANCELLED,"closure cancels pending intake");
+                    return runtime.create(OTHER,"Replacement class","");
+                }).thenAccept(replacement->{
+                    check(!replacement.id().equals(classroom.id()),"teacher can create another classroom after closure");
+                    passed.add("production closure checks ownership, releases participants, cancels pending admissions and permits a new class");
+                }));
     }
 
     private CompletableFuture<Void> admissions(ClassroomRuntime runtime,Classroom classroom,boolean create) {

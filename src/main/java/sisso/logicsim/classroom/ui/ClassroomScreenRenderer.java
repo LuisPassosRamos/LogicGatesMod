@@ -64,7 +64,7 @@ final class ClassroomScreenRenderer {
         }
         c.set("#Form.Visible",settings); c.set("#MessageEditor.Visible",settings && classroom!=null);
         c.set("#View.Visible",!settings); c.set("#ActionDock.Visible",true);
-        c.set("#Actions.Visible",!settings); c.set("#Save.Visible",settings);
+        c.set("#Actions.Visible",!settings || teacher); c.set("#Save.Visible",settings && !model.confirming);
         c.set("#Save.Text",classroom==null ? text("classroom.create") : text("classroom.save"));
         c.set("#EnrollmentForm.Visible",false);
         for (String field:META) c.set("#Meta"+field+".Visible",false);
@@ -111,6 +111,10 @@ final class ClassroomScreenRenderer {
             literal(c,"#MessageText",classroom==null?"":classroom.message(),width);
             c.set("#CancelConfirm.Visible",model.confirming);
         }
+        if (settings && teacher && classroom!=null) {
+            action(c,"Danger",text(model.confirming ? "classroom.confirmDisband" : "classroom.disband"));
+            c.set("#CancelConfirm.Visible",model.confirming);
+        }
         if (resetFields) {
             c.set("#Name.Value",classroom==null?"":classroom.name()); c.set("#Description.Value",classroom==null?"":classroom.description());
             c.set("#Message.Value",classroom==null?"":classroom.message()); c.set("#Enrollment.Value",enrollment); c.set("#Search.Value",model.query);
@@ -119,7 +123,7 @@ final class ClassroomScreenRenderer {
     }
 
     static Message status(ClassroomPageModel model,boolean refreshed) {
-        if (model.confirming) return text("classroom.confirmHint");
+        if (model.confirming) return text(model.kind==Kind.SETTINGS ? "classroom.confirmDisbandHint" : "classroom.confirmHint");
         if (refreshed) return model.kind==Kind.SETTINGS || model.selected!=null && model.kind!=Kind.DETAIL
                 ? text("classroom.refreshed") : text("classroom.updated");
         if (model.kind==Kind.SETTINGS) return text(model.screen.home().classroom()==null ? "classroom.createHint" : "classroom.settingsHint");

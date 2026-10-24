@@ -170,3 +170,7 @@ logicgates.classroom.emptyHistoryHint = Encontre uma turma para solicitar ingres
 logicgates.classroom.emptyPlayersHint = Tente outro nome. O jogador precisa ser conhecido pelo Classroom e estar sem turma.
 logicgates.classroom.emptyBrowseHint = Busque pelo nome da turma ou do professor, ou aguarde uma turma ser criada.
 logicgates.classroom.emptyPageHint = Esta página está vazia. Use Anterior para voltar.
+
+logicgates.classroom.disband = ENCERRAR TURMA
+logicgates.classroom.confirmDisband = CONFIRMAR ENCERRAMENTO DA TURMA
+logicgates.classroom.confirmDisbandHint = Encerrar libera todos os participantes e cancela ingressos pendentes. O histórico será mantido. Confirme ou cancele.

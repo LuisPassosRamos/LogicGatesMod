@@ -10,6 +10,7 @@ public interface ClassroomRepository {
     Classroom update(UUID teacherId, UUID classroomId, long revision, String name, String description);
     Classroom settings(UUID teacherId, UUID classroomId, long revision, String name, String description, String message);
     Classroom message(UUID teacherId, UUID classroomId, long revision, String message);
+    Classroom disband(UUID teacherId, UUID classroomId, long revision);
     void remember(UUID playerId, String name);
     String playerName(UUID playerId);
     Optional<Member> member(UUID playerId);
