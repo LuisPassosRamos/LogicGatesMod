@@ -59,11 +59,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             subscription = runtime.listen(playerRef.getUuid(), change -> {
                 try { world.execute(() -> {
                     if (!active(ref,store)) { dispose(); return; }
-                    var home = model.screen == null ? null : model.screen.home();
-                    boolean relevant = change.player().equals(playerRef.getUuid())
-                            || home != null && home.classroom() != null && home.classroom().id().equals(change.classroom())
-                            || change.directory() && (model.kind == Kind.BROWSE || model.kind == Kind.PLAYERS);
-                    if (!relevant) return;
+                    if (!model.interested(change,playerRef.getUuid())) return;
                     if (busy) refreshPending = true; else refresh(ref,store,false,null);
                 }); } catch (RuntimeException stoppedWorld) { dispose(); }
             });

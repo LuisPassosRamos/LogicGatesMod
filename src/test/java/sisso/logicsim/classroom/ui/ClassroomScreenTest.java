@@ -79,4 +79,14 @@ class ClassroomScreenTest {
         assertTrue(model.apply(screen(new Home(classroom,member(student,Role.STUDENT,"00123",0),"Professor",false),Kind.DETAIL),false));
         assertFalse(model.confirming);
     }
+    @Test void approvalInAnotherClassRefreshesPendingListsAndKnownStudentRenamesRefreshMemberLists() {
+        var model=new ClassroomPageModel();
+        model.apply(screen(teacherHome(classroom),Kind.INTAKES),true);
+        var admittedElsewhere=new sisso.logicsim.classroom.ClassroomRuntime.Change(UUID.randomUUID(),student,true);
+        assertTrue(model.interested(admittedElsewhere,teacher));
+        model.navigate(Kind.MEMBERS);
+        model.apply(screen(teacherHome(classroom),Kind.MEMBERS,member(student,Role.STUDENT,"00123",0)),true);
+        assertTrue(model.interested(new sisso.logicsim.classroom.ClassroomRuntime.Change(null,student,true),teacher));
+        assertFalse(model.interested(new sisso.logicsim.classroom.ClassroomRuntime.Change(null,UUID.randomUUID(),true),teacher));
+    }
 }

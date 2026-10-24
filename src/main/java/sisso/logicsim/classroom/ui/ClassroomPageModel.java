@@ -1,6 +1,7 @@
 package sisso.logicsim.classroom.ui;
 
 import sisso.logicsim.classroom.domain.ClassroomViews.*;
+import sisso.logicsim.classroom.ClassroomRuntime.Change;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,6 +15,17 @@ final class ClassroomPageModel {
     long editRevision;
     boolean confirming;
     boolean teacher() { return screen != null && screen.home().member() != null && screen.home().member().role() == Role.TEACHER; }
+    boolean interested(Change change, UUID actor) {
+        if (actor.equals(change.player())) return true;
+        var classroom = screen == null ? null : screen.home().classroom();
+        if (classroom != null && (classroom.id().equals(change.classroom()) || classroom.teacherId().equals(change.player()))) return true;
+        if (change.directory() && (kind == Kind.BROWSE || kind == Kind.PLAYERS)) return true;
+        // Creating any active link can close this class's requests, including ones outside the current page.
+        if (change.directory() && change.classroom() != null && teacher() && kind == Kind.INTAKES) return true;
+        return screen != null && screen.rows().items().stream().anyMatch(row ->
+                row instanceof Member m && m.playerId().equals(change.player())
+                || row instanceof Intake i && i.studentId().equals(change.player()));
+    }
     boolean apply(Screen next, boolean reset) {
         boolean contextChanged = screen == null || next.kind() != screen.kind()
                 || !Objects.equals(classroomId(screen), classroomId(next)) || !Objects.equals(membershipId(screen), membershipId(next));
