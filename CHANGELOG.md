@@ -4,7 +4,17 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.3.2.
+Nenhuma alteração registrada após 1.3.3.
+
+## [1.3.3] - 2026-10-23
+
+### Polimento
+- Compactação PNG sem perdas, determinística entre versões de Python/zlib: mesmos pixels, dimensões, transparência, UVs e geometria. Atlas compilados, ícones e projeto editável da bancada ocupam menos espaço.
+- Monitoramento em repouso reutiliza índices de holders e usa chaves primitivas, alocando novos mapas somente após mudança real de vínculos; sem alterar o escopo global da avaliação.
+- Benchmark nativo opcional `benchmarkServer`: seções reais, redes independentes, alteração de uma fonte, grade de 1.024 cabos e bancada não elétrica; mede monitoramento, avaliação/publicação e alocações.
+- Resolvedor nativo de drops confere um item base por componente, bancada e variantes ligadas/desligadas/conectadas, antes e depois de reiniciar.
+- Documentação atual separada do histórico; multiplayer, circuitos e crafts registrados conforme confirmação do usuário. Drops no cliente e cancelamento/reembolso não são considerados aprovados por esse relato.
+- Roteiro de manutenção e critérios de entrega consolidados. Classroom e conexões verticais permanecem no planejamento.
 
 ## [1.3.2] - 2026-10-23
 

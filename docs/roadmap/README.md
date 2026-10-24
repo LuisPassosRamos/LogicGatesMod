@@ -6,12 +6,11 @@ O núcleo de circuitos está implementado. O produto educacional completo ainda 
 
 ## Prioridades propostas
 
-1. Consolidar o roteiro de cliente, especialmente dois jogadores, orientação, iluminação e colisão.
-2. Validar no cliente as letras A/B/C/seta, a ajuda com tabelas verdade e a inspeção explicativa acrescentadas em 1.2.0.
-3. Adicionar português e depois outras línguas, mantendo as mesmas chaves dos itens e traduzindo mensagens de interface/diagnóstico. A versão 1.2.0 já inclui en-US/pt-BR e valida igualdade de chaves e parâmetros. Outras línguas podem seguir esse contrato.
-4. Prototipar [Classroom](classroom.md) e validar um exercício simples com alunos/professor antes de ampliar o painel.
-5. Medir circuitos grandes e vários jogadores antes de otimizar invalidação por rede/região. A inspeção de porta e as métricas já existem em 1.2.0; aprofundar medições do servidor e multiplayer antes de otimizar.
-6. Implementar [degraus de cabos](vertical-connections.md) após validar o protótipo físico/visual e suas regras de apoio.
+1. Iniciar o protótipo [Classroom](classroom.md), fechando antes os contratos de turma, matrícula, atividades, permissões e persistência. Nenhum desses serviços foi antecipado nesta etapa.
+2. Completar verificações manuais específicas ainda abertas: drops nesta entrega, cancelamento/reembolso da fabricação e abertura dos projetos no Blockbench. Multiplayer, circuitos e crafts foram aprovados pelo usuário em 23/10/2026; consultar o [registro](../validation.md).
+3. Usar `benchmarkCircuit`, `benchmarkServer` e `/logicenergy` para acompanhar circuitos maiores. Invalidação por região depende de evidência de custo e continua fora desta correção.
+4. Acrescentar outras línguas seguindo o contrato existente. **en-US e pt-BR já estão implementados**, com validação de chaves, parâmetros e referências atuais. Traduzir futuras telas ao introduzi-las.
+5. Implementar [degraus de cabos](vertical-connections.md) em incremento próprio, após validar o protótipo físico/visual e suas regras de apoio.
 
 Não há placeholders Java para esses incrementos. Serviços, persistência e UI devem entrar junto com uma funcionalidade testável, mantendo o domínio separado da API do jogo.
 

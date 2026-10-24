@@ -11,6 +11,7 @@ Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os s
 | `.\gradlew.bat verifyGeneratedAssets` | Confere os sete geradores sem reescrever fontes |
 | `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
 | `.\gradlew.bat benchmarkCircuit` | Mede avaliador em 12 cenários; grava JSON sem limiar artificial de aprovação |
+| `.\gradlew.bat benchmarkServer` | Mede monitoramento e publicação em seções reais; requer os assets locais |
 | `.\gradlew.bat fullCheck` | Build completo e integração real com reinício |
 | `.\gradlew.bat runServer` | Abre o ambiente de desenvolvimento em `devserver-074/` |
 | `.\gradlew.bat clean` | Remove as saídas em `build/` |
@@ -67,7 +68,7 @@ O repositório próprio é [LuisPassosRamos/LogicGatesMod](https://github.com/Lu
 
 O workflow `ci.yml` roda em push, pull request e disparo manual, em Windows e Linux, com Java 25/Python 3.13. Executa `build benchmarkCircuit`, publica o ZIP aprovado e conserva relatórios. O pacote inclui a documentação; seus links locais e checksum também são conferidos. As actions estão fixadas por commit. A resolução inicial das dependências requer rede.
 
-`server-integration.yml` é manual e requer um runner próprio com o rótulo `hytale-0.7.4`, Java/Python, acesso às dependências e `HYTALE_ASSETS` configurado para o arquivo licenciado. Ele executa `fullCheck` e publica somente resultados/entrega, sem copiar assets ou o servidor do jogo para os artifacts. Não executar automaticamente código de pull requests externos nesse runner.
+`server-integration.yml` executa `fullCheck benchmarkServer`, preserva relatórios funcionais e de carga; é manual e requer um runner próprio com o rótulo `hytale-0.7.4`, Java/Python, acesso às dependências e `HYTALE_ASSETS` configurado para o arquivo licenciado. Ele executa `fullCheck` e publica somente resultados/entrega, sem copiar assets ou o servidor do jogo para os artifacts. Não executar automaticamente código de pull requests externos nesse runner.
 
 O push dos commits dispara a CI portável no GitHub. A integração nativa continua dependendo de runner próprio com os assets; `fullCheck` pode ser executado localmente sem instalar um runner. Tags identificam marcos de fonte; o build não cria tags ou releases remotas automaticamente.
 
@@ -79,4 +80,13 @@ Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduz
 
 O [guia de uso e ensino](teaching.md) descreve comandos e permissões. O [guia de desempenho](performance.md) separa medições do avaliador e do servidor real.
 
-A versão 1.3.0 confere sete geradores, incluindo bancada, categoria e ícones. O ZIP passa a incluir as fontes de arte; o JAR permanece exclusivo de runtime. Veja [arte](assets.md) e [fabricação](crafting.md).
+Os sete geradores incluem bancada, categoria e ícones. O ZIP contém fontes de arte e documentação; o JAR permanece exclusivo de runtime. Para editar Java ou regenerar arte, use o checkout do repositório: o ZIP de entrega não inclui Gradle, Java e ferramentas. Veja [arte](assets.md) e [fabricação](crafting.md).
+
+## Contratos para contribuições
+
+- Alterar fontes em `assets/` e regenerar; não corrigir manualmente variantes ou ícones. Não apagar exportações originais ou mundos locais para reduzir o projeto.
+- Componente novo exige catálogo lógico (quando elétrico), catálogo da oficina, categoria, ícone, receita e traduções completas. O build rejeita registro incompleto.
+- Preservar IDs e codecs existentes; documentar migração antes de alterar dados persistidos. Não persistir resultados derivados dos circuitos.
+- Mudanças no motor devem cobrir entrada removida/0/1, multiplicidade física, orientação, ciclos, descarregamento e retorno de seção vazia. A integração deve continuar sem forçar carregamento durante a simulação.
+- Medir antes de otimizar. Comparar mesmo cenário, JVM, heap e máquina; publicar mediana/p95 e alocações, sem converter benchmark sem clientes em promessa de alunos suportados.
+- Fazer commits por assunto: código/arte e suas regressões, depois documentação/versão. Executar `fullCheck` na revisão final e conservar a identidade do JAR entregue. Criar tags apenas como marcos explícitos; uma tag não substitui o registro de pendências manuais.
