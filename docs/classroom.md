@@ -105,4 +105,4 @@ As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo d
 
 Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
 
-A rodada local de rc.3 e o checksum exato estão no [registro de validação](validation.md#classroom-administrativo--rc3). A [evidência nativa preservada](evidence/classroom/2026-10-24-rc3-server.json) não substitui o roteiro de cliente.
+A rodada local e o checksum da rc.4 estão no [registro de validação](validation.md#correcao-de-custom-ui--rc4), com [evidência nativa preservada](evidence/classroom/2026-10-24-rc4-server.json). O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.

@@ -100,3 +100,11 @@ Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **801 testes JUni
 A [evidência nativa preservada](evidence/classroom/2026-10-24-rc3-server.json) identifica o pacote exato e seus cenários. Confirma persistência da matrícula `00123`, convite offline e mensagem literal entre processos, além de aprovação, correção, saída, reingresso e remoção. As regressões de circuitos/receitas/assets continuam aprovadas pela automação.
 
 **Cliente rc.3: falha confirmada.** Em 24/10/2026, o usuário relatou desconexão ao abrir `/classroom`; captura e log do cliente identificam `#HeaderTitle.Anchor.Height` como propriedade inválida. O JAR instalado corresponde ao build acima. A [captura preservada](evidence/classroom/2026-10-24-rc3-anchor-client-error.png) registra a falha. As aprovações automatizadas anteriores permanecem evidências de servidor/transporte, sem aprovação da interface. Os relatos de rc.1/rc.2 permanecem históricos.
+
+## Correção de Custom UI — rc.4
+
+Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **802 testes JUnit**, **32 testes Python** e **76 verificações nativas** (53 na criação, 23 após reinício real). Build `1.4.0-rc.4+39c111e7c82a`, revisão `dfb7546907d0`, árvore limpa na compilação. SHA-256 do JAR: `daf906232735836ffdf37cb993e365024928ad2778b9a0de96d25d5a2a823d03`. A [evidência nativa preservada](evidence/classroom/2026-10-24-rc4-server.json) corresponde a esse arquivo exato.
+
+A regressão nova exercita as seis telas, seleções e atualizações com/sem reset de campos. Rejeita `.Anchor.*` e confere os objetos nativos serializados, alturas e margens dos quatro textos afetados. O JAR e o ZIP foram auditados, incluindo traduções e documentação. O esquema do banco permanece v3.
+
+**Cliente rc.4: pendente.** A automação não renderiza a página. Repetir primeiro abertura, navegação, fechamento/Esc e reabertura; depois continuar o [roteiro com professor/aluno](classroom.md). A CI Windows/Linux verifica separadamente a revisão enviada; não é evidência de uso da interface no cliente.
