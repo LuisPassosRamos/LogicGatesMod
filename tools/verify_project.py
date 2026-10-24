@@ -14,6 +14,7 @@ from project_config import ROOT, configuration, production_jar
 from build_info import identity
 from gate_catalog import CATALOG, model_count
 from verify_languages import check as check_languages
+from verify_custom_ui import check as check_custom_ui, check_document as check_ui_document
 
 REMOVED_CLASSES = ("EnergyNodeComponent", "ToggleSourceComponent", "BlockContextAware")
 SQLITE_RESOURCES = {
@@ -47,7 +48,8 @@ def repository():
             require(not re.match(r"[A-Za-z]:", target), f"Machine-specific link in {document.relative_to(ROOT)}")
             require((document.parent / target).exists(), f"Broken link in {document.relative_to(ROOT)}: {target}")
     keys = check_languages(ROOT)
-    print(f"Repository checked: version {config['version']}, {len(documents)} documents, {keys} translation keys")
+    ui_count = check_custom_ui(ROOT)
+    print(f"Repository checked: version {config['version']}, {len(documents)} documents, {keys} translation keys, {ui_count} UI documents")
 
 
 def assets():
@@ -77,6 +79,8 @@ def distribution(path):
         ui_resources = {source.relative_to(resource_root).as_posix()
                         for source in (resource_root / "Common/UI/Custom").rglob("*.ui")}
         require(ui_resources.issubset(names), f"Missing Custom UI documents: {sorted(ui_resources - set(names))}")
+        for name in sorted(ui_resources):
+            check_ui_document(archive.read(name).decode('utf-8-sig'), name)
         for name in names:
             require(not name.endswith((".bbmodel", ".py", ".bak")), f"Authoring file packaged: {name}")
             require("/integration/" not in name and not name.endswith("Test.class"), f"Test class packaged: {name}")

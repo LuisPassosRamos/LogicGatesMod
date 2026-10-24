@@ -28,7 +28,7 @@ $C.@Container {
         Group #SearchBar {
           LayoutMode: Left;
           Anchor: (Height: 38, Bottom: 8);
-          $C.@TextField #Search { FlexWeight: 1; @Anchor = (Right: 8); MaxLength: 128; }
+          $C.@TextField #Search { @Anchor = (Right: 8); FlexWeight: 1; MaxLength: 128; }
           $C.@SecondaryTextButton #Find { @Anchor = (Width: 120); @Text = %server.logicgates.classroom.find; }
         }
         Label #Empty { Anchor: (Height: 64); Text: %server.logicgates.classroom.emptyList; Style: (FontSize: 16, Wrap: true, TextColor: #9daec2); }
@@ -46,7 +46,7 @@ $C.@Container {
             Anchor: (Height: 40);
             LayoutMode: Left;
             $C.@SecondaryTextButton #Previous { @Anchor = (Width: 138, Right: 8); @Text = %server.logicgates.classroom.previous; }
-            $C.@SecondaryTextButton #Next { FlexWeight: 1; @Text = %server.logicgates.classroom.next; }
+            $C.@SecondaryTextButton #Next { @Text = %server.logicgates.classroom.next; FlexWeight: 1; }
           }
         }
       }
