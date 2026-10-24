@@ -1,0 +1,49 @@
+$C = "../../Common.ui";
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 620, Height: 350);
+
+  #Title {
+    $C.@Title {
+      @Text = %server.logicgates.classroom.probe.title;
+    }
+  }
+
+  #Content {
+    LayoutMode: Top;
+    Padding: (Full: 24);
+
+    Label #Description {
+      Anchor: (Height: 56, Bottom: 14);
+      Text: %server.logicgates.classroom.probe.description;
+      Style: (FontSize: 16, Wrap: true, TextColor: #c8d3e0);
+    }
+
+    Label #Counter {
+      Anchor: (Height: 34, Bottom: 20);
+      Style: (FontSize: 24, HorizontalAlignment: Center, TextColor: #ffffff);
+    }
+
+    Group {
+      LayoutMode: Left;
+      Anchor: (Height: 44, Bottom: 20);
+
+      $C.@TextButton #Increment {
+        @Anchor = (Width: 340, Right: 12);
+        @Text = %server.logicgates.classroom.probe.increment;
+      }
+
+      $C.@CancelTextButton #Close {
+        @Anchor = (Width: 180);
+        @Text = %server.logicgates.classroom.probe.close;
+      }
+    }
+
+    Label #Build {
+      Anchor: (Height: 40);
+      Style: (FontSize: 12, Wrap: true, TextColor: #9daec2);
+    }
+  }
+}

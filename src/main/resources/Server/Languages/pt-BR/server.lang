@@ -64,3 +64,10 @@ logicgates.categories.title = LogicGates
 logicgates.categories.components = Componentes
 logicgates.categories.gates = Portas lógicas
 logicgates.categories.benches = Bancadas
+
+logicgates.commands.classroom.description = Abre a página de teste da interface Classroom.
+logicgates.classroom.probe.title = Classroom
+logicgates.classroom.probe.description = Teste da interface: clique para atualizar o contador no servidor, feche e reabra com /classroom.
+logicgates.classroom.probe.counter = Cliques no servidor: {count}
+logicgates.classroom.probe.increment = Incrementar contador
+logicgates.classroom.probe.close = Fechar

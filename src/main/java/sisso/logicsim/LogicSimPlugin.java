@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import sisso.logicsim.components.CableComponent;
 import sisso.logicsim.components.GateComponent;
 import sisso.logicsim.commands.DebugEnergyCommand;
+import sisso.logicsim.commands.ClassroomCommand;
 import sisso.logicsim.commands.InspectGateCommand;
 import sisso.logicsim.commands.LogicHelpCommand;
 import sisso.logicsim.components.LampComponent;
@@ -51,5 +52,6 @@ public final class LogicSimPlugin extends JavaPlugin {
         getCommandRegistry().registerCommand(new DebugEnergyCommand());
         getCommandRegistry().registerCommand(new InspectGateCommand());
         getCommandRegistry().registerCommand(new LogicHelpCommand());
+        getCommandRegistry().registerCommand(new ClassroomCommand());
     }
 }

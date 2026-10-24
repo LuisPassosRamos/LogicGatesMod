@@ -1,4 +1,4 @@
-"""Validate complete locale keys, duplicate keys, parameters and literal Java references."""
+"""Validate locale keys, duplicates, parameters and literal Java/Custom UI references."""
 import json
 import re
 
@@ -52,5 +52,13 @@ def check(root):
         for key in keys:
             if key not in base:
                 raise ValueError(f"Missing Java translation {key} in {source.name}")
+    for source in (root / "src/main/resources/Common/UI/Custom").rglob("*.ui"):
+        content = source.read_text(encoding="utf-8")
+        # Comments are not references; quoted values may contain URL // sequences.
+        tokens = re.finditer(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*[\s\S]*?\*/|%(server\.logicgates\.[\w.]+)', content)
+        for token in tokens:
+            key = token.group(1)
+            if key and key not in base:
+                raise ValueError(f"Missing Custom UI translation {key} in {source.name}")
     print(f"Languages checked: {len(locales)} locales, {len(base)} keys each, matching parameters")
     return len(base)

@@ -35,3 +35,19 @@ class LanguagesTest(unittest.TestCase):
         source.parent.mkdir(parents=True)
         source.write_text('text("missing");',encoding='utf-8')
         with self.assertRaisesRegex(ValueError,'Missing Java translation'): verify_languages.check(self.root)
+
+    def test_custom_ui_translation_references_must_exist(self):
+        source=self.root/'src/main/resources/Common/UI/Custom/Pages/Example.ui'
+        source.parent.mkdir(parents=True)
+        source.write_text('Label { Text: %server.logicgates.test; }',encoding='utf-8')
+        self.assertEqual(1,verify_languages.check(self.root))
+        source.write_text('Label { Text: %server.logicgates.missing; }',encoding='utf-8')
+        with self.assertRaisesRegex(ValueError,'Missing Custom UI translation'): verify_languages.check(self.root)
+
+    def test_custom_ui_comments_and_literals_are_not_translation_references(self):
+        source=self.root/'src/main/resources/Common/UI/Custom/Pages/Example.ui'
+        source.parent.mkdir(parents=True)
+        source.write_text('// %server.logicgates.comment\n/* %server.logicgates.block */\n'
+                          'Label { Text: "https://example.test/%server.logicgates.literal"; }\n'
+                          'Label { Text: %server.logicgates.test; }',encoding='utf-8')
+        self.assertEqual(1,verify_languages.check(self.root))

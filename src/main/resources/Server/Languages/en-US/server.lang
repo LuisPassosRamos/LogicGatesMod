@@ -73,3 +73,10 @@ logicgates.categories.title = LogicGates
 logicgates.categories.components = Components
 logicgates.categories.gates = Logic gates
 logicgates.categories.benches = Workbenches
+
+logicgates.commands.classroom.description = Opens the Classroom interface test page.
+logicgates.classroom.probe.title = Classroom
+logicgates.classroom.probe.description = Interface test: click to update the server counter, then close and reopen with /classroom.
+logicgates.classroom.probe.counter = Server clicks: {count}
+logicgates.classroom.probe.increment = Increment counter
+logicgates.classroom.probe.close = Close

@@ -66,6 +66,10 @@ def distribution(path):
         require(info["sourceFingerprint"] == identity()["sourceFingerprint"], "Packaged sources are stale; rebuild the JAR")
         require(info["buildId"] == f"{config['version']}+{info['sourceFingerprint'][:12]}", "Incorrect build ID")
         require("sisso/logicsim/LogicSimPlugin.class" in names, "Plugin entry class missing")
+        resource_root = ROOT / "src/main/resources"
+        ui_resources = {source.relative_to(resource_root).as_posix()
+                        for source in (resource_root / "Common/UI/Custom").rglob("*.ui")}
+        require(ui_resources.issubset(names), f"Missing Custom UI documents: {sorted(ui_resources - set(names))}")
         for name in names:
             require(not name.endswith((".bbmodel", ".py", ".bak")), f"Authoring file packaged: {name}")
             require("/integration/" not in name and not name.endswith("Test.class"), f"Test class packaged: {name}")

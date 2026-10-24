@@ -49,6 +49,11 @@ final class TeachingServerChecks {
         check(i18n.getMessage("pt-BR","server.logicgates.help.optional").contains("Entrada vazia"),"Portuguese teaching translation loaded");
         check(i18n.getMessage("en-US","server.logicgates.help.optional").contains("Empty inputs"),"English teaching translation loaded");
         passed.add("native I18n loads matching English and Brazilian Portuguese teaching/item messages");
+        check("Incrementar contador".equals(i18n.getMessage("pt-BR","server.logicgates.classroom.probe.increment")),
+                "Portuguese Classroom translation loaded");
+        check("Increment counter".equals(i18n.getMessage("en-US","server.logicgates.classroom.probe.increment")),
+                "English Classroom translation loaded");
+        passed.add("native I18n loads Classroom probe labels in English and Brazilian Portuguese");
         var state=world.getChunkStore().getStore().getResource(LogicSimPlugin.getCircuitStateType());
         var timing=state.metrics.summary();
         check(timing.samples()>0 && timing.lastMs()>=timing.solverMs(),"native timing captures complete evaluation and solver");
@@ -71,6 +76,13 @@ final class TeachingServerChecks {
             return commands.handleCommand(denied,"logicinspect 2 64 20 --world="+world.getName()).thenRun(()->{
                 check(denied.count("server.logicgates.inspect.header")==0,"inspection requires its permission");
                 passed.add("native inspection permission prevents unauthorized gate inspection");
+            }).thenCompose(afterPermissionCheck->{
+                var nonPlayer=new Receiver(false);
+                return commands.handleCommand(nonPlayer,"classroom").thenRun(()->{
+                    check(nonPlayer.count("server.commands.errors.playerOrArg")==1,
+                            "Classroom is registered without a special permission and requires an in-world player");
+                    passed.add("native Classroom command rejects a non-player through the player-only command path; no client rendering tested");
+                });
             });
         });
     }

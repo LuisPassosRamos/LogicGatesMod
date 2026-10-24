@@ -75,6 +75,9 @@ class BuildToolsTest(unittest.TestCase):
             archive.writestr("manifest.json", json.dumps({"Version": "1.1.0", "ServerVersion": "=0.7.4"}))
             archive.writestr("logicgates-build.properties", "".join(f"{key}={value}\n" for key, value in info.items()))
             archive.writestr("sisso/logicsim/LogicSimPlugin.class", b"fixture")
+            resource_root = verify_project.ROOT / "src/main/resources"
+            for source in (resource_root / "Common/UI/Custom").rglob("*.ui"):
+                archive.writestr(source.relative_to(resource_root).as_posix(), source.read_bytes())
             from workshop_material import ITEMS
             for item_id, settings in ITEMS.items():
                 icon = f"Icons/LogicGates/{item_id}.png"
@@ -105,6 +108,15 @@ class BuildToolsTest(unittest.TestCase):
     def test_distribution_rejects_stale_production_sources(self):
         with self.assertRaisesRegex(ValueError, "stale"):
             self.verify(self.make_jar(fingerprint="b" * 64))
+
+    def test_distribution_rejects_missing_custom_ui_document(self):
+        jar = self.make_jar()
+        with zipfile.ZipFile(jar) as archive:
+            entries = {name: archive.read(name) for name in archive.namelist() if not name.endswith('.ui')}
+        with zipfile.ZipFile(jar, 'w') as archive:
+            for name, data in entries.items(): archive.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'Missing Custom UI documents'):
+            self.verify(jar)
 
     def test_metadata_and_checksum_identify_packaged_bytes(self):
         jar = self.make_jar()
