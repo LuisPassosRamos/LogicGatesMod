@@ -1,11 +1,12 @@
-# Classroom rc.5 — roteiro de aceite
+# Classroom rc.6 — roteiro de aceite
 
-**Pendente no cliente.** Não converter aprovação de JUnit, CI ou servidor iniciado em aprovação destas telas. As [evidências rc.4](evidence/classroom/2026-10-24-rc4-client.md) permanecem históricas. Não é necessário repetir a campanha manual consolidada de circuitos/fabricação.
+**Pendente no cliente.** A [rc.5 falhou na leitura do markup](evidence/classroom/2026-10-24-rc5-client.md) antes de testar `/classroom`; rc.6 corrige Buscar e Próxima. Não converter aprovação de JUnit, CI ou servidor iniciado em aprovação destas telas. As [evidências rc.4](evidence/classroom/2026-10-24-rc4-client.md) permanecem históricas. Não é necessário repetir a campanha manual consolidada de circuitos/fabricação.
 
-Instalar somente o JAR rc.5, com o servidor/save encerrado, substituindo o antigo. Preservar banco e mundos. Registrar build ID, idioma, resolução e escala. Executar em pt-BR/en-US, 1280×720 e 1920×1080 com escala padrão. Capturar resultados representativos e todas as falhas, sem registrar cada clique.
+Instalar somente o JAR rc.6, com o servidor/save encerrado, substituindo o antigo. Preservar banco e mundos. Registrar build ID, idioma, resolução e escala. Executar em pt-BR/en-US, 1280×720 e 1920×1080 com escala padrão. Capturar resultados representativos e todas as falhas, sem registrar cada clique.
 
 | Caso | Aceite esperado | Evidência pedida |
 | --- | --- | --- |
+| Entrada e abertura | Entrar no mundo sem erro de markup; abrir `/classroom`, fechar e reabrir; a turma anterior permanece | Relato e captura da página com build ID rc.6 |
 | Professor: lista, busca e seleção | Buscar/Anterior/Próxima completos; contador separado; marca de seleção corresponde à ficha | Uma ficha selecionada com controles visíveis |
 | Administração e texto extenso | Nome, descrição e mensagem editáveis; rolagem só do conteúdo; Salvar permanece acessível | Editor rolado com Salvar visível |
 | Ficha do aluno e confirmação | Matrícula íntegra, mensagem e descrição legíveis; Sair/Confirmar/Cancelar acessíveis | Confirmação e resultado |

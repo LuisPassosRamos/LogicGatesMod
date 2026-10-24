@@ -1,10 +1,10 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.5**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **O novo layout e a atualização visual automática da rc.5 permanecem pendentes de aceite.**
+Disponível em **1.4.0-rc.6**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. O novo layout e a atualização visual automática permanecem pendentes de aceite.**
 
 ## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.5.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.5.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A atualização para rc.5 mantém o esquema v3 e não requer apagar dados.
+Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.6.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.6.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A atualização para rc.6 mantém o esquema v3 e não requer apagar dados.
 
 Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
@@ -42,7 +42,7 @@ Vinculado, o aluno consulta a própria turma e ficha, incluindo mensagem do dia.
 
 Atualizações após commit alcançam as páginas interessadas. Campos de edição e revisões apresentados ao usuário são preservados durante atualizações automáticas. Uma gravação desatualizada recebe erro; copie os campos e use **Recarregar** para revisar os dados. Recarregar, navegar e selecionar outro registro substituem os respectivos campos; não há salvamento automático.
 
-Na rc.5, alterações de autorização feitas pelos comandos/APIs nativas também revalidam páginas abertas: permissões individuais, vínculos de grupo/OP e permissões de grupo. Não há consulta periódica. A revalidação bloqueia ações, descarta respostas antigas e aplica a permissão efetiva atual. Revogar autorização docente descarta o rascunho e oculta o painel; restaurar carrega os dados persistidos sem exigir Recarregar. Se a autorização continuar igual, o rascunho é preservado. Edições externas de arquivos ou provedores que não emitem eventos continuam dependendo da próxima interação/recarga, com validação no servidor em cada operação. Esses eventos não reenviam a mensagem do dia.
+Desde a rc.5, alterações de autorização feitas pelos comandos/APIs nativas também revalidam páginas abertas: permissões individuais, vínculos de grupo/OP e permissões de grupo. Não há consulta periódica. A revalidação bloqueia ações, descarta respostas antigas e aplica a permissão efetiva atual. Revogar autorização docente descarta o rascunho e oculta o painel; restaurar carrega os dados persistidos sem exigir Recarregar. Se a autorização continuar igual, o rascunho é preservado. Edições externas de arquivos ou provedores que não emitem eventos continuam dependendo da próxima interação/recarga, com validação no servidor em cada operação. Esses eventos não reenviam a mensagem do dia.
 
 Fechar/dispensar não cancela uma gravação aceita. Sua resposta não atualiza outra página. Ao concluir, a alteração pode ser vista na próxima abertura. Desconexão limpa listeners da conta; callbacks também conferem referência, mundo, conexão e página ativa.
 
@@ -58,9 +58,9 @@ Esquema v1: turma e vínculo docente; v2: diretório, processos, matrícula e hi
 
 Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um backup v1 aberto na rc.3 será migrado novamente, preservando identidades.
 
-## Roteiro de cliente — rc.5
+## Roteiro de cliente — rc.6
 
-**Estado rc.5: pendente no cliente.** As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte também o [roteiro de aceite da rc.5](classroom-rc5-acceptance.md).
+**Estado rc.6: pendente no cliente.** Primeiro, entrar no mundo sem erro de markup e abrir/fechar/reabrir `/classroom`. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte também o [roteiro de aceite da rc.6](classroom-rc6-acceptance.md).
 
 | Cenário | Resultado esperado |
 | --- | --- |
@@ -107,4 +107,4 @@ As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo d
 
 Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
 
-A rodada local e o checksum da rc.5 estão no [registro de validação](validation.md), com [evidência nativa preservada](evidence/classroom/2026-10-24-rc5-server.json). O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.
+As rodadas locais e os checksums estão no [registro de validação](validation.md), com [evidência nativa preservada](evidence/classroom/2026-10-24-rc5-server.json). O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.

@@ -4,7 +4,15 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.5.
+Nenhuma alteração registrada após 1.4.0-rc.6.
+
+## [1.4.0-rc.6] - 2026-10-24
+
+### Correção da leitura de Custom UI
+- Corrigida a ordem de declarações de parâmetros em Buscar e Próxima: `@Anchor`/`@Text` agora precedem `FlexWeight`, conforme a sintaxe nativa 0.7.4. Na rc.5, o cliente reportou `Expected {, found =` ao entrar no mundo, antes de permitir testar `/classroom`.
+- Verificação direcionada rejeita parâmetros declarados após propriedades ou filhos, tanto nas fontes quanto nos documentos do JAR. Regressões cobrem os dois casos originais, comentários, literais, blocos aninhados e arquivo empacotado inválido. Não substitui o parser/renderizador do cliente.
+- Registro da falha rc.5 e roteiro rc.6 começam pela entrada no mundo, abertura, fechamento e reabertura. Os demais testes de polimento continuam pendentes no cliente.
+- Sem alterações de domínio, permissões, esquema SQLite v3, dados de turma ou circuitos.
 
 ## [1.4.0-rc.5] - 2026-10-24
 

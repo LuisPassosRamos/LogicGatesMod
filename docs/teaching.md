@@ -1,6 +1,6 @@
 # Ensino, idiomas e comandos
 
-Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.5 refina o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
+Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.6 mantém o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
 
 ## Orientação e leitura
 
@@ -42,7 +42,7 @@ A razão da porta distingue lógica normal, ausência de entradas, seção indis
 
 ## Diagnóstico e idiomas
 
-`/classroom` abre a turma do professor/aluno ou a descoberta e os próprios ingressos de quem ainda não tem vínculo; operações docentes exigem `sisso.logicgates.classroom.teach` e responsabilidade pela turma. `/classroom --probe` mantém a página de contador sem permissão especial. Consulte [autorização e roteiro Classroom](classroom.md); os fluxos centrais da rc.4 foram confirmados em pt-BR; o polimento e atualização automática de permissões da rc.5 ainda requerem teste no cliente.
+`/classroom` abre a turma do professor/aluno ou a descoberta e os próprios ingressos de quem ainda não tem vínculo; operações docentes exigem `sisso.logicgates.classroom.teach` e responsabilidade pela turma. `/classroom --probe` mantém a página de contador sem permissão especial. Consulte [autorização e roteiro Classroom](classroom.md); os fluxos centrais da rc.4 foram confirmados em pt-BR; a rc.6 corrige a leitura da UI; o polimento e a atualização automática de permissões ainda requerem teste no cliente.
 
 `/logicenergy`, com `sisso.logicgates.debug`, informa versão/ID, totais por mundo e tempos em milissegundos. O monitoramento e a avaliação têm janelas limitadas; p95 não significa tempo máximo. Consulte [desempenho](performance.md).
 

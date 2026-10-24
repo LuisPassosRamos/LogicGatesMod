@@ -54,3 +54,9 @@ PermissionsModule 0.7.4 altera o provedor e depois despacha os tipos concretos `
 ## Mudança de versão
 
 Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.
+
+## Custom UI — ordem de parâmetros
+
+Na rc.5, o cliente informou `Classroom.ui (31:58) — Expected {, found =` ao entrar no mundo: `{ FlexWeight: 1; @Anchor = (Right: 8); }`. As declarações de parâmetros de template devem preceder propriedades/filhos do bloco. A forma nativa é `{ @Anchor = (Right: 8); FlexWeight: 1; }`; `@Text` obedece à mesma ordem.
+
+Conferido nos assets licenciados 0.7.4: `Common/UI/Custom/Pages/Point/PointInspectorPage.ui` usa `$C.@TextField #PosXField { @Anchor = (Right: 4); FlexWeight: 1; }`. `Common.ui` também declara parâmetros antes das propriedades dos templates. A rc.6 corrige Buscar e Próxima. `tools/verify_custom_ui.py` faz uma verificação estática direcionada dessa ordem, nas fontes e no JAR, com comentários e strings opacos. A regra foi conferida em 166 documentos nativos sem rejeições; isso não valida toda a gramática, os seletores ou a renderização no cliente.

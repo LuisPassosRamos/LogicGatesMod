@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.5**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Classroom implementa o MVP administrativo com turmas, ingresso, matrícula, membros e mensagem do dia em SQLite; a rc.5 refina as telas e atualiza permissões automaticamente, aguardando validação no cliente.
+Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.6**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Classroom implementa o MVP administrativo com turmas, ingresso, matrícula, membros e mensagem do dia em SQLite; a rc.6 corrige a leitura das telas refinadas na rc.5 e mantém a atualização automática de permissões, aguardando validação no cliente.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
@@ -16,11 +16,11 @@ No Linux/macOS: `bash ./gradlew build`.
 
 O comando compila, executa os testes e confere versões, documentação, traduções, assets gerados e o conteúdo do JAR. Entrega:
 
-- `build/libs/LogicGates-1.4.0-rc.5.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
-- `build/releases/LogicGates-1.4.0-rc.5.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
+- `build/libs/LogicGates-1.4.0-rc.6.jar`: mod para a pasta `mods` de um servidor Hytale 0.7.4.
+- `build/releases/LogicGates-1.4.0-rc.6.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
 - `build/reports/tests/test/index.html`: resultados JUnit.
 
-Com o mundo/servidor parado, instale apenas o JAR de produção, substituindo o anterior para evitar duas cópias do mesmo plugin. O ZIP é um pacote de entrega: guarde-o fora de `mods`; se recebeu somente o ZIP, extraia dele apenas o JAR de produção para instalar. Reinicie o servidor/cliente para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar. A rc.5 não exige apagar mundos ou recriar o banco Classroom.
+Com o mundo/servidor parado, instale apenas o JAR de produção, substituindo o anterior para evitar duas cópias do mesmo plugin. O ZIP é um pacote de entrega: guarde-o fora de `mods`; se recebeu somente o ZIP, extraia dele apenas o JAR de produção para instalar. Reinicie o servidor/cliente para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar. A rc.6 não exige apagar mundos ou recriar o banco Classroom.
 
 ## Desenvolvimento e testes
 
@@ -44,7 +44,7 @@ No console, acrescente `--world=nome` à inspeção. Veja o [guia de ensino](doc
 
 Comece pelo [índice](docs/README.md). Consulte [desenvolvimento e automação](docs/development.md), [regras e arquitetura](docs/architecture.md), [edição de arte](docs/assets.md), [validação no cliente](docs/validation.md) e [changelog](CHANGELOG.md).
 
-Classroom tem uma turma ativa por UUID, como professor ou aluno. Solicitação e convite exigem matrícula e aprovação docente. O MVP inclui administração de membros e mensagem do dia; os fluxos centrais foram confirmados em pt-BR na rc.4, e a nova apresentação da rc.5 exige a rodada de cliente descrita no [registro](docs/classroom.md). O [plano aprovado](docs/roadmap/classroom.md) mantém atividades/entregas posteriores. A CI verifica Windows/Linux; integração nativa usa assets locais. Conexões entre alturas continuam fora deste trabalho.
+Classroom tem uma turma ativa por UUID, como professor ou aluno. Solicitação e convite exigem matrícula e aprovação docente. O MVP inclui administração de membros e mensagem do dia; os fluxos centrais foram confirmados em pt-BR na rc.4, e a apresentação corrigida na rc.6 exige a rodada de cliente descrita no [registro](docs/classroom.md). O [plano aprovado](docs/roadmap/classroom.md) mantém atividades/entregas posteriores. A CI verifica Windows/Linux; integração nativa usa assets locais. Conexões entre alturas continuam fora deste trabalho.
 
 Para medir o avaliador: `.\gradlew.bat benchmarkCircuit`. Consulte [desempenho](docs/performance.md) para limites e interpretação.
 
