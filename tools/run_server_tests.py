@@ -94,7 +94,7 @@ def main():
     try:
         for phase in (("benchmark",) if args.benchmark else ("create", "reload")):
             log = reports / f"{phase}.log"
-            command = [java, "-Xmx2G", "-jar", str(server),
+            command = [java, "-Xmx2G", "--enable-native-access=ALL-UNNAMED", "-jar", str(server),
                        "--assets", str(assets), "--auth-mode", "offline",
                        "--bind", "127.0.0.1:5534", "--disable-sentry",
                        "--disable-file-watcher", "--disable-cpb-build",

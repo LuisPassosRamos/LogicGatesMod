@@ -16,6 +16,11 @@ from gate_catalog import CATALOG, model_count
 from verify_languages import check as check_languages
 
 REMOVED_CLASSES = ("EnergyNodeComponent", "ToggleSourceComponent", "BlockContextAware")
+SQLITE_RESOURCES = {
+    "org/sqlite/JDBC.class", "META-INF/services/java.sql.Driver",
+    "org/sqlite/native/Windows/x86_64/sqlitejdbc.dll", "org/sqlite/native/Linux/x86_64/libsqlitejdbc.so",
+    "META-INF/maven/org.xerial/sqlite-jdbc/LICENSE", "META-INF/maven/org.xerial/sqlite-jdbc/LICENSE.zentus",
+}
 
 
 def require(condition, message):
@@ -66,6 +71,8 @@ def distribution(path):
         require(info["sourceFingerprint"] == identity()["sourceFingerprint"], "Packaged sources are stale; rebuild the JAR")
         require(info["buildId"] == f"{config['version']}+{info['sourceFingerprint'][:12]}", "Incorrect build ID")
         require("sisso/logicsim/LogicSimPlugin.class" in names, "Plugin entry class missing")
+        require(SQLITE_RESOURCES.issubset(names), f"Missing SQLite runtime resources: {sorted(SQLITE_RESOURCES - set(names))}")
+        require("com/hypixel/hytale/server/core/HytaleServer.class" not in names, "Hytale server dependency must not be bundled")
         resource_root = ROOT / "src/main/resources"
         ui_resources = {source.relative_to(resource_root).as_posix()
                         for source in (resource_root / "Common/UI/Custom").rglob("*.ui")}

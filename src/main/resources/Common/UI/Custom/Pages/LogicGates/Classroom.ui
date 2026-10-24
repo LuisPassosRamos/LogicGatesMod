@@ -1,0 +1,107 @@
+$C = "../../Common.ui";
+
+$C.@PageOverlay {}
+$C.@Container {
+  Anchor: (Width: 920, Height: 620);
+  #Title {
+    $C.@Title { @Text = %server.logicgates.classroom.title; }
+  }
+  #Content {
+    LayoutMode: Top;
+    Padding: (Full: 24);
+    Group {
+      LayoutMode: Left;
+      Anchor: (Height: 400, Bottom: 12);
+      Group {
+        Anchor: (Width: 220, Right: 24);
+        LayoutMode: Top;
+        Label #ClassName {
+          Anchor: (Height: 60, Bottom: 12);
+          Text: %server.logicgates.classroom.title;
+          Style: (FontSize: 24, Wrap: true, TextColor: #ffffff);
+        }
+        Label #Teacher {
+          Anchor: (Height: 48, Bottom: 20);
+          Style: (FontSize: 16, Wrap: true, TextColor: #c8d3e0);
+        }
+        Label {
+          Anchor: (Height: 56, Bottom: 20);
+          Text: %server.logicgates.classroom.oneClass;
+          Style: (FontSize: 16, Wrap: true, TextColor: #9daec2);
+        }
+        Group #Members {
+          Visible: false;
+          LayoutMode: Top;
+          Label {
+            Anchor: (Height: 28, Bottom: 8);
+            Text: %server.logicgates.classroom.members;
+            Style: (FontSize: 20, TextColor: #ffffff);
+          }
+          Label {
+            Anchor: (Height: 60);
+            Text: %server.logicgates.classroom.emptyMembers;
+            Style: (FontSize: 16, Wrap: true, TextColor: #9daec2);
+          }
+        }
+      }
+      Group {
+        FlexWeight: 1;
+        LayoutMode: Top;
+        Label #NoAccess {
+          Visible: false;
+          Anchor: (Height: 110);
+          Text: %server.logicgates.classroom.noAccess;
+          Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0);
+        }
+        Group #Form {
+          Visible: false;
+          LayoutMode: Top;
+          Label {
+            Anchor: (Height: 28, Bottom: 8);
+            Text: %server.logicgates.classroom.name;
+            Style: (FontSize: 18, TextColor: #ffffff);
+          }
+          $C.@TextField #Name {
+            @Anchor = (Bottom: 18);
+            MaxLength: 64;
+          }
+          Label {
+            Anchor: (Height: 28, Bottom: 8);
+            Text: %server.logicgates.classroom.description;
+            Style: (FontSize: 18, TextColor: #ffffff);
+          }
+          $C.@MultilineTextField #Description {
+            @Anchor = (Height: 180, Bottom: 18);
+            MaxLength: 2048;
+          }
+          $C.@TextButton #Save {
+            @Anchor = (Width: 230);
+            @Text = %server.logicgates.classroom.create;
+            Disabled: true;
+          }
+        }
+      }
+    }
+    Label #Status {
+      Anchor: (Height: 48, Bottom: 12);
+      Text: %server.logicgates.classroom.loading;
+      Style: (FontSize: 16, Wrap: true, TextColor: #c8d3e0);
+    }
+    Group {
+      LayoutMode: Left;
+      Anchor: (Height: 44);
+      $C.@SecondaryTextButton #Reload {
+        @Anchor = (Width: 170, Right: 12);
+        @Text = %server.logicgates.classroom.reload;
+      }
+      $C.@CancelTextButton #Close {
+        @Anchor = (Width: 160, Right: 18);
+        @Text = %server.logicgates.classroom.probe.close;
+      }
+      Label #Build {
+        FlexWeight: 1;
+        Style: (FontSize: 12, Wrap: true, TextColor: #9daec2);
+      }
+    }
+  }
+}

@@ -7,8 +7,11 @@ val targetHytale = manifestValue("ServerVersion").removePrefix("=")
 val python = providers.gradleProperty("pythonExecutable").orElse("python")
 val buildInfoDirectory = layout.buildDirectory.dir("generated/build-info")
 val releaseDirectory = layout.buildDirectory.dir("release-metadata")
+val classroomRuntime by configurations.creating
 
 dependencies {
+    implementation("org.xerial:sqlite-jdbc:3.53.4.0")
+    classroomRuntime("org.xerial:sqlite-jdbc:3.53.4.0") { isTransitive = false }
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.4")
 }
@@ -38,10 +41,16 @@ tasks.withType<Jar>().configureEach {
     isReproducibleFileOrder = true
 }
 tasks.named<Jar>("jar") {
+    from(provider { classroomRuntime.map { zipTree(it) } }) {
+        exclude("META-INF/MANIFEST.MF", "META-INF/versions/**", "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA")
+    }
     archiveFileName.set("LogicGates-${project.version}.jar")
     manifest.attributes("Implementation-Title" to "LogicGates", "Implementation-Version" to project.version.toString())
 }
 tasks.withType<Test>().configureEach {
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+    dependsOn(tasks.jar)
+    systemProperty("logicgates.productionJar", tasks.named<Jar>("jar").get().archiveFile.get().asFile.absolutePath)
     useJUnitPlatform()
     systemProperty("java.util.logging.manager", "com.hypixel.hytale.logger.backend.HytaleLogManager")
 }
@@ -156,6 +165,7 @@ tasks.register<JavaExec>("benchmarkCircuit") {
     args(layout.buildDirectory.file("reports/benchmarks/circuit.json").get().asFile.absolutePath)
 }
 tasks.named<JavaExec>("runServer") {
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
     workingDir(layout.projectDirectory.dir("devserver-074"))
     doFirst { workingDir.mkdirs() }
 }

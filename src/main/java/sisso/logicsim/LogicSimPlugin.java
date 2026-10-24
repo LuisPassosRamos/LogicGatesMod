@@ -19,6 +19,8 @@ import sisso.logicsim.systems.CircuitWorldState;
 import sisso.logicsim.systems.EnergyInitializerSystem;
 import sisso.logicsim.systems.EnergyPropagationSystem;
 import sisso.logicsim.util.BuildInfo;
+import sisso.logicsim.classroom.ClassroomRuntime;
+import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 
 public final class LogicSimPlugin extends JavaPlugin {
     private static ComponentType<ChunkStore, LeverComponent> leverComponentType;
@@ -26,6 +28,7 @@ public final class LogicSimPlugin extends JavaPlugin {
     private static ComponentType<ChunkStore, CableComponent> cableComponentType;
     private static ComponentType<ChunkStore, GateComponent> gateComponentType;
     private static ResourceType<ChunkStore, CircuitWorldState> circuitStateType;
+    private static ClassroomRuntime classroom;
 
     public LogicSimPlugin(JavaPluginInit init) { super(init); }
 
@@ -34,6 +37,7 @@ public final class LogicSimPlugin extends JavaPlugin {
     public static ComponentType<ChunkStore, CableComponent> getCableComponentType() { return cableComponentType; }
     public static ComponentType<ChunkStore, GateComponent> getGateComponentType() { return gateComponentType; }
     public static ResourceType<ChunkStore, CircuitWorldState> getCircuitStateType() { return circuitStateType; }
+    public static ClassroomRuntime getClassroom() { return classroom; }
 
     @Override
     protected void setup() {
@@ -52,6 +56,15 @@ public final class LogicSimPlugin extends JavaPlugin {
         getCommandRegistry().registerCommand(new DebugEnergyCommand());
         getCommandRegistry().registerCommand(new InspectGateCommand());
         getCommandRegistry().registerCommand(new LogicHelpCommand());
-        getCommandRegistry().registerCommand(new ClassroomCommand());
+        PermissionsModule.registerPermission(ClassroomRuntime.TEACH_PERMISSION);
+        getLogger().atInfo().log("Classroom database: %s", getDataDirectory().resolve("classroom.db").toAbsolutePath().normalize());
+        classroom = new ClassroomRuntime(getDataDirectory(),
+                actor -> PermissionsModule.get().hasPermission(actor, ClassroomRuntime.TEACH_PERMISSION, false),
+                failure -> getLogger().atSevere().withCause(failure).log("Classroom storage unavailable; circuit systems remain active"));
+        getCommandRegistry().registerCommand(new ClassroomCommand(classroom));
+    }
+
+    @Override protected void shutdown() {
+        if (classroom != null) classroom.close();
     }
 }

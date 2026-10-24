@@ -133,7 +133,9 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
 
     private CompletableFuture<Void> teachingChecks(World world, boolean create) {
         var checks = new TeachingServerChecks(passed);
-        return checks.run(world,create).thenRun(()->measurements=checks.measurements());
+        return checks.run(world,create).thenRun(()->measurements=checks.measurements())
+                .thenCompose(ignored -> new ClassroomServerChecks(passed,
+                        getDataDirectory().resolve("classroom-expected-id.txt")).run(create));
     }
 
     private void create(World world) {

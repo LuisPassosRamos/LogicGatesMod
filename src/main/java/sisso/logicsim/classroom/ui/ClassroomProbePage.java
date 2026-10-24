@@ -16,7 +16,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import sisso.logicsim.util.BuildInfo;
 import static sisso.logicsim.util.LogicMessages.text;
 
-/** Increment 0: transient page state only, pending validation in the Hytale client. */
+/** Increment 0 diagnostic: central flow confirmed in pt-BR; transient page state only. */
 public class ClassroomProbePage extends InteractiveCustomUIPage<ClassroomProbePage.ActionEvent> {
     public static final String LAYOUT = "Pages/LogicGates/ClassroomProbe.ui";
     private long count;

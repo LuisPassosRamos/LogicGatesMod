@@ -75,6 +75,8 @@ class BuildToolsTest(unittest.TestCase):
             archive.writestr("manifest.json", json.dumps({"Version": "1.1.0", "ServerVersion": "=0.7.4"}))
             archive.writestr("logicgates-build.properties", "".join(f"{key}={value}\n" for key, value in info.items()))
             archive.writestr("sisso/logicsim/LogicSimPlugin.class", b"fixture")
+            for name in verify_project.SQLITE_RESOURCES:
+                archive.writestr(name, b"fixture-sqlite")
             resource_root = verify_project.ROOT / "src/main/resources"
             for source in (resource_root / "Common/UI/Custom").rglob("*.ui"):
                 archive.writestr(source.relative_to(resource_root).as_posix(), source.read_bytes())
@@ -116,6 +118,15 @@ class BuildToolsTest(unittest.TestCase):
         with zipfile.ZipFile(jar, 'w') as archive:
             for name, data in entries.items(): archive.writestr(name, data)
         with self.assertRaisesRegex(ValueError, 'Missing Custom UI documents'):
+            self.verify(jar)
+
+    def test_distribution_rejects_missing_sqlite_native_resource(self):
+        jar = self.make_jar()
+        with zipfile.ZipFile(jar) as archive:
+            entries = {name: archive.read(name) for name in archive.namelist() if not name.endswith('.dll')}
+        with zipfile.ZipFile(jar, 'w') as archive:
+            for name, data in entries.items(): archive.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'Missing SQLite runtime resources'):
             self.verify(jar)
 
     def test_metadata_and_checksum_identify_packaged_bytes(self):
