@@ -21,6 +21,10 @@ import sisso.logicsim.systems.EnergyPropagationSystem;
 import sisso.logicsim.util.BuildInfo;
 import sisso.logicsim.classroom.ClassroomRuntime;
 import sisso.logicsim.classroom.ClassroomPresence;
+import sisso.logicsim.classroom.ClassroomPermissions;
+import com.hypixel.hytale.server.core.event.events.permissions.PlayerPermissionChangeEvent;
+import com.hypixel.hytale.server.core.event.events.permissions.PlayerGroupEvent;
+import com.hypixel.hytale.server.core.event.events.permissions.GroupPermissionChangeEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
@@ -69,6 +73,13 @@ public final class LogicSimPlugin extends JavaPlugin {
         classroomPresence = new ClassroomPresence(classroom);
         getEventRegistry().registerGlobal(PlayerReadyEvent.class, classroomPresence::ready);
         getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, classroomPresence::disconnected);
+        var classroomPermissions = new ClassroomPermissions(classroom);
+        getEventRegistry().registerGlobal(PlayerPermissionChangeEvent.PermissionsAdded.class, classroomPermissions::playerChanged);
+        getEventRegistry().registerGlobal(PlayerPermissionChangeEvent.PermissionsRemoved.class, classroomPermissions::playerChanged);
+        getEventRegistry().registerGlobal(PlayerGroupEvent.Added.class, classroomPermissions::playerChanged);
+        getEventRegistry().registerGlobal(PlayerGroupEvent.Removed.class, classroomPermissions::playerChanged);
+        getEventRegistry().registerGlobal(GroupPermissionChangeEvent.Added.class, classroomPermissions::groupChanged);
+        getEventRegistry().registerGlobal(GroupPermissionChangeEvent.Removed.class, classroomPermissions::groupChanged);
     }
 
     @Override protected void shutdown() {

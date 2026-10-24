@@ -33,6 +33,7 @@ final class ClassroomServerChecks {
         var permission = Set.of(ClassroomRuntime.TEACH_PERMISSION);
         permissions.addUserPermission(OTHER, permission);
         var runtime = LogicSimPlugin.getClassroom();
+        authorizationEvents(runtime);
         return CommandManager.get().handleCommand(new Console(), "perm user add " + TEACHER + " " + ClassroomRuntime.TEACH_PERMISSION)
                 .thenCompose(ignored -> {
                     check(permissions.hasPermission(TEACHER, ClassroomRuntime.TEACH_PERMISSION, false), "native teacher permission command");
@@ -42,6 +43,33 @@ final class ClassroomServerChecks {
                     permissions.removeUserPermission(TEACHER, permission);
                     permissions.removeUserPermission(OTHER, permission);
                 });
+    }
+
+    private void authorizationEvents(ClassroomRuntime runtime) {
+        UUID subject=UUID.fromString("c1a55000-0000-4000-8000-000000000005");
+        String group="LogicGatesClassroomIntegration";
+        var permissions=PermissionsModule.get(); var teacherPermission=Set.of(ClassroomRuntime.TEACH_PERMISSION);
+        var values=new java.util.concurrent.CopyOnWriteArrayList<Boolean>();
+        var data=new java.util.concurrent.atomic.AtomicInteger();
+        try(var subscription=runtime.listenAuthorization(subject,values::add);
+            var unrelated=runtime.listen(null,change->data.incrementAndGet())) {
+            permissions.addUserPermission(subject,teacherPermission);
+            permissions.removeUserPermission(subject,teacherPermission);
+            permissions.addUserToGroup(subject,"hytale:Admin");
+            permissions.removeUserFromGroup(subject,"hytale:Admin");
+            permissions.addUserToGroup(subject,group);
+            permissions.addGroupPermission(group,teacherPermission);
+            permissions.removeGroupPermission(group,teacherPermission);
+            check(values.equals(List.of(true,false,true,false,false,true,false)),"native permission/OP/group events refresh authorization subscribers");
+            check(data.get()==0,"permission invalidations do not publish data/MOTD changes");
+            passed.add("native individual permission, OP and group permission events reach production authorization listeners without data or MOTD notifications");
+        } catch(Exception failure) { throw new CompletionException(failure); }
+        finally {
+            permissions.removeUserPermission(subject,teacherPermission);
+            permissions.removeUserFromGroup(subject,"hytale:Admin");
+            permissions.removeUserFromGroup(subject,group);
+            permissions.removeGroupPermission(group,teacherPermission);
+        }
     }
 
     private CompletableFuture<Void> authorized(ClassroomRuntime runtime, boolean create) {

@@ -26,24 +26,49 @@ public final class ClassroomRuntime implements AutoCloseable {
     private final ExecutorService executor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
             new ArrayBlockingQueue<>(256), Thread.ofPlatform().daemon(true).name("LogicGates-Classroom-", 0).factory());
     private final Consumer<Throwable> log;
+    private final Predicate<UUID> canTeach;
+    private volatile boolean closed;
     private final Set<CompletableFuture<?>> pending = ConcurrentHashMap.newKeySet();
     // Accessed only on the executor. Initialization is enqueued before all operations.
     private ClassroomService service;
     public record Change(UUID classroom, UUID player, boolean directory) { }
     private record Listener(UUID owner, Consumer<Change> callback) { }
     private final java.util.Map<UUID, Listener> listeners = new ConcurrentHashMap<>();
+    private record AuthorizationListener(UUID owner, Consumer<Boolean> callback) { }
+    private final java.util.Map<UUID, AuthorizationListener> authorizationListeners = new ConcurrentHashMap<>();
+    public AutoCloseable listenAuthorization(UUID owner, Consumer<Boolean> listener) {
+        java.util.Objects.requireNonNull(owner);
+        UUID token = UUID.randomUUID();
+        if (!closed) authorizationListeners.put(token, new AuthorizationListener(owner, listener));
+        if (closed) authorizationListeners.remove(token);
+        return () -> authorizationListeners.remove(token);
+    }
+    /** Native permission events are separate from committed data changes and never resend the MOTD. */
+    public void authorizationChanged(UUID player) {
+        if (closed) return;
+        boolean allowed = canTeach.test(player);
+        authorizationListeners.values().stream().filter(listener -> listener.owner().equals(player)).forEach(listener -> {
+            try { listener.callback().accept(allowed); } catch (RuntimeException failure) { log.accept(failure); }
+        });
+    }
+    public void authorizationChangedForOpenPages() {
+        authorizationListeners.values().stream().map(AuthorizationListener::owner).distinct().forEach(this::authorizationChanged);
+    }
     /** A token belongs to one page, not to the player's name or current list position. */
     public AutoCloseable listen(UUID owner, Consumer<Change> listener) {
         UUID token = UUID.randomUUID(); listeners.put(token, new Listener(owner, listener));
         return () -> listeners.remove(token);
     }
-    public void forget(UUID player) { listeners.values().removeIf(listener -> player.equals(listener.owner())); }
+    public void forget(UUID player) {
+        listeners.values().removeIf(listener -> player.equals(listener.owner()));
+        authorizationListeners.values().removeIf(listener -> player.equals(listener.owner()));
+    }
     private void changed(Change change) {
         listeners.values().forEach(listener -> { try { listener.callback().accept(change); } catch (RuntimeException failure) { log.accept(failure); } });
     }
 
     public ClassroomRuntime(Path dataDirectory, Predicate<UUID> canTeach, Consumer<Throwable> log) {
-        this.log = log;
+        this.log = log; this.canTeach = canTeach;
         executor.execute(() -> {
             try { service = new ClassroomService(new SqliteClassroomRepository(dataDirectory.resolve("classroom.db")), canTeach); }
             catch (Exception failure) { log.accept(failure); }
@@ -118,7 +143,7 @@ public final class ClassroomRuntime implements AutoCloseable {
     }
 
     @Override public void close() {
-        listeners.clear();
+        closed = true; listeners.clear(); authorizationListeners.clear();
         synchronized (this) { executor.shutdown(); }
         try {
             if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
