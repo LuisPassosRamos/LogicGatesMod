@@ -4,9 +4,9 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.2 implementa os incrementos 0 e 1:** contador em `/classroom --probe`; criação/edição da turma do professor em `/classroom`, autorização docente e SQLite por servidor. O usuário confirmou o fluxo central da prova mínima no cliente em 24/10/2026, build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez atualizações, fechamento e reabertura com reset. **O usuário também confirmou o fluxo central de rc.2 em pt-BR** (turma preservada ao sair/entrar e recarregar); os demais casos e idiomas mantêm seu estado específico no [registro e roteiro Classroom](../classroom.md).
+**1.4.0-rc.3 implementa o MVP administrativo (incrementos 0–3) para validação no cliente:** prova, turma, ingresso por solicitação/convite, matrícula, membros e mensagem. O usuário confirmou os fluxos centrais de rc.1/rc.2 em pt-BR. As novas telas e a experiência com duas contas aguardam o [roteiro de rc.3](../classroom.md). Implementação não equivale a aprovação manual.
 
-Turma, vínculo de professor e autorização estão implementados no esquema v1. Diretório de jogadores, ingresso de alunos, convites, matrícula, mensagem do dia, atividades, entregas e avaliações **ainda não estão implementados**. Não criar serviços/tabelas fictícios para antecipá-los.
+O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. Atividades, entregas e avaliação continuam conceituais, sem tabelas/telas antecipadas. Veja [contratos futuros](classroom-learning-contracts.md).
 
 ## Regras confirmadas
 
@@ -38,12 +38,12 @@ As páginas Hytale convertem eventos em operações de aplicação; domínio e i
 
 O fluxo de ingresso é `solicitação com matrícula → conferência → aprovação → vínculo`. Um convite acrescenta `convite → aceite e matrícula` antes da conferência. IDs de turma, jogador, vínculo e processo de ingresso são UUIDs. Convites usam jogadores online ou já conhecidos pelo Classroom, com último nome conhecido para apresentação.
 
-Persistência implementada no incremento 1:
+Persistência iniciada no incremento 1 e ampliada na rc.3:
 
 - `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com recursos nativos/licenças; teste do JAR isolado na matriz Java 25/Windows/Linux, com resultado local distinguido da CI remota.
-- Criação de turma/vínculo em transação única e edição por revisão; índices garantem vínculo ativo único entre papéis. Aprovação de ingresso e matrícula serão acrescentadas no incremento 2 e deverão manter a mesma atomicidade.
+- Criação de turma/vínculo em transação única e edição por revisão; índices garantem vínculo ativo único entre papéis. Aprovação, matrícula e encerramento das demais pendências também são transacionais.
 - Acesso ao banco em executor dedicado. Respostas de UI retornam ao contexto do mundo e revalidam sessão/referência antes de publicar.
-- Esquema v1 com identificação própria, testes de criação inicial/rollback e rejeição de bancos incompatíveis; procedimento de backup/restauração no guia Classroom. Migrações futuras exigem backup prévio e teste específico. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
+- Esquemas v1–v3 com identificação própria, migração transacional, backup prévio consistente e testes de restauração/rollback/rejeição. Procedimento operacional no guia Classroom. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
 
 ## Padrões aceitos com o plano
 

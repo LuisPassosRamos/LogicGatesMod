@@ -1,88 +1,101 @@
-# Classroom — turma persistida e validação da interface
+# Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.2**, Hytale **0.7.4**. O incremento 1 permite ao professor criar sua única turma e editar nome/descrição, com vínculo e SQLite compartilhados pelo servidor. O fluxo central da prova mínima em pt-BR foi confirmado em rc.1, conforme o registro abaixo. **Fluxo central de rc.2 confirmado pelo usuário em pt-BR**, conforme o registro abaixo. Ingresso de alunos, convites e mensagem do dia entram nos incrementos seguintes do [plano aprovado](roadmap/classroom.md).
+Disponível em **1.4.0-rc.3**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **As novas telas aguardam validação no cliente com professor e aluno em en-US/pt-BR.** Os relatos de rc.1/rc.2 aprovam os cenários históricos abaixo, sem aprovar automaticamente esta compilação.
 
-## Instalação e funcionamento
+## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. O pacote é `build/releases/LogicGates-1.4.0-rc.2.zip` e o mod é `build/libs/LogicGates-1.4.0-rc.2.jar`. Instale somente esse JAR de produção na pasta `mods` de um ambiente de testes 0.7.4, substituindo a versão anterior, e reinicie para recarregar os assets. Preserve os mundos de desenvolvimento. O driver SQLite e suas licenças já estão no JAR; não é preciso instalar um banco externo.
+Compile com `.\gradlew.bat build`. Instale apenas `build/libs/LogicGates-1.4.0-rc.3.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.3.zip` inclui o JAR, checksum e documentação. Preserve os mundos e faça backup antes de atualizar o banco.
 
-Qualquer jogador no mundo pode abrir `/classroom`. Para criar, consultar e editar a própria turma como professor, o servidor verifica `sisso.logicgates.classroom.teach` em cada operação, inclusive depois de a página estar aberta. Contas sem autorização recebem uma mensagem de acesso; não recebem os dados privados da turma. No console, `/classroom` exige um jogador.
-
-O administrador pode conceder/remover a permissão pelo console nativo 0.7.4, substituindo `<UUID>` pela identidade técnica do jogador:
+Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
 ```text
 perm user add <UUID> sisso.logicgates.classroom.teach
 perm user remove <UUID> sisso.logicgates.classroom.teach
 ```
 
-Com permissão, `/classroom` mostra um formulário para criar a turma ou editar a existente. Nome obrigatório de 1–64 caracteres; descrição opcional de até 2048, com quebras de linha. O servidor valida os campos e preserva o conteúdo como texto literal. **Recarregar** busca os dados atuais e substitui o rascunho. Uma edição desatualizada recebe erro e conserva os campos para revisão.
+Cada UUID possui **um único vínculo ativo no servidor**, professor ou aluno. A autorização docente não ocupa esse vínculo. Uma conta com permissão pode solicitar ingresso como aluno enquanto estiver sem vínculo; nesse caso, não poderá criar outra turma enquanto o vínculo estiver ativo. A perda da permissão preserva a turma e bloqueia operações docentes.
 
-Fechar/dispensar não cancela uma gravação já aceita. A operação pode concluir e será vista ao reabrir; sua resposta não atualiza uma página encerrada ou substituída. O idioma acompanha a tradução nativa do cliente, en-US ou pt-BR. O rodapé identifica a compilação.
+## Professor
 
-## Dados e backup
+Sem vínculo, use **Criar turma**. Nome obrigatório, 1–64 caracteres; descrição opcional de até 2048. Após criar, a abertura seguinte entra diretamente na própria turma.
 
-O plugin registra no log `Classroom database: <caminho absoluto>`. Esse é o `classroom.db` de `getDataDirectory()`, compartilhado entre mundos. Esquema v1 com `application_id` próprio: turma, professor e vínculo ativo são gravados na mesma transação. Índices garantem vínculo único por jogador e professor responsável único. Revisões impedem sobrescrever uma edição concorrente.
+- **Turma:** lista de alunos à esquerda. Selecione um para consultar nome, UUID, matrícula e data de ingresso UTC; corrija matrícula ou remova com confirmação. A visão geral mostra descrição e mensagem.
+- **Ingressos:** processos abertos da sua turma. Solicitações aguardam conferência; o professor pode corrigir a matrícula antes de aprovar ou rejeitar. Convites ainda não aceitos podem ser cancelados.
+- **Convidar jogador:** pesquisa jogadores conhecidos pelo Classroom, incluindo offline. Nome é apresentação; a seleção conserva o UUID. Jogadores já vinculados não são elegíveis.
+- **Administração:** nome, descrição e mensagem do dia são salvos juntos, em uma transação e revisão. Mensagem opcional de até 2048 caracteres; vazia suprime apresentação/envio.
 
-O banco usa conexões curtas, journal padrão DELETE, gravações serializadas e I/O fora do tick. Um banco incompatível, corrompido ou com esquema incompleto torna Classroom indisponível e preserva o arquivo; o plugin mantém os sistemas de circuitos registrados. Nenhuma recuperação apaga/recria dados automaticamente.
+As listas exibem até 20 registros por página. Isso não limita o tamanho da turma. Não há remoção automática por ausência, promoção de outro professor ou exclusão de turma neste MVP.
 
-Para backup, encerre o servidor normalmente e copie o diretório de dados do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve uma cópia do diretório atual e restaure o backup completo no mesmo local. Use backup de encerramento limpo; não copie apenas o arquivo principal de um banco ativo. Migrações futuras exigem backup prévio, versão explícita e teste de rollback. rc.1 não tinha banco, portanto rc.2 apenas cria o esquema inicial.
+## Aluno e ingresso
 
-Os comandos de testes e `runServer` habilitam acesso nativo da JVM. Em execução direta de servidor Java 25, use `--enable-native-access=ALL-UNNAMED` antes de `-jar`.
+Sem turma, **Encontrar turmas** oferece resumos públicos com nome, descrição e professor. Pesquise, selecione uma turma, informe matrícula e use **Solicitar ingresso**. Não há ingresso imediato.
 
-## Roteiro no cliente — incremento 1
+Em **Ingressos**, o jogador acompanha os próprios processos, inclusive estados encerrados. Para convite, aceitar e informar matrícula também encaminha para conferência do professor. Recusa e cancelamento encerram o processo. Solicitação e convite para a mesma turma convergem para uma pendência; repetição não sobrescreve a matrícula que já está sob conferência.
 
-**Fluxo central confirmado em 24/10/2026**, build `1.4.0-rc.2+a04a304d984f`: turma existente preservada após sair/entrar no mundo e usar Recarregar; contador incrementa e reinicia ao fechar/reabrir. O relato não confirma separadamente edição, revogação, en-US ou encerramento completo do processo do servidor. Os demais casos abaixo permanecem pendentes.
+A matrícula é textual, de 1 a 64 caracteres, sem controles/quebras de linha. Remove apenas espaços nas extremidades e preserva zeros, caixa e conteúdo interno válido: `00123` permanece `00123`. Sua unicidade considera alunos ativos da turma, com comparação exata; `001a` e `001A` são diferentes. Pendências não reservam matrícula.
 
-![Turma persistida em rc.2](evidence/classroom/2026-10-24-classroom-rc2-pt-BR.png)
+A aprovação revalida permissão, responsabilidade, processo, matrícula e vínculo na transação. A primeira aprovação ou criação de turma docente encerra as demais pendências do UUID. Convites sobrevivem ao reinício, sem expiração automática. Uma aprovação repetida não cria outro vínculo.
 
-| Caso | Procedimento | Esperado |
-| --- | --- | --- |
-| Sem autorização | Abrir com conta sem OP e sem permissão docente | Mensagem de acesso; dados privados e formulário indisponíveis |
-| Criar | Conceder a permissão, recarregar e criar nome/descrição | Turma salva; mesmo formulário passa a Salvar alterações |
-| Validar | Enviar nome vazio/espaços | Erro traduzido, sem criar ou alterar dados |
-| Texto literal | Usar acentos, apóstrofo, `%server.fake`, `<b>texto</b>` e descrição em várias linhas | Conteúdo preservado como texto, sem interpretação como tradução ou layout |
-| Editar | Alterar campos, salvar, fechar e reabrir | Mesma turma, com valores atualizados |
-| Reiniciar | Encerrar completamente o servidor, iniciar e abrir de novo | Mesma turma e vínculo, sem criar outra |
-| Revogar | Retirar permissão com a página aberta e tentar salvar | Operação negada; formulário ocultado; dados preservados |
-| Página encerrada | Salvar e fechar/reabrir durante a operação | Dados salvos aparecem ao reabrir; resposta antiga não altera outra página |
-| Idiomas/layout | Conferir campos, descrição com rolagem, botões e erros em en-US e pt-BR | Conteúdo legível, sem cortes ou sobreposição na escala usada |
-| Diagnóstico | Executar `/classroom --probe` | Contador independente, com o fluxo já conhecido |
+Vinculado, o aluno consulta a própria turma e ficha, incluindo mensagem do dia. Matrículas de colegas e pendências de outras pessoas não são fornecidas. **Sair da turma** exige confirmação. Saída/remoção encerra o vínculo e conserva histórico; novo ingresso precisa de novo processo e vínculo. Uma confirmação antiga não remove o vínculo novo.
 
-Registrar build ID, data, idioma, resolução/escala e resultado por caso. O checksum fica em `build/libs/LogicGates-1.4.0-rc.2.jar.sha256` e a identidade em `build/release-metadata/release.json`.
+## Atualizações e conexão
 
-## Prova mínima — registro histórico de rc.1
+Atualizações após commit alcançam as páginas interessadas. Campos de edição e revisões apresentados ao usuário são preservados durante atualizações automáticas. Uma gravação desatualizada recebe erro; copie os campos e use **Recarregar** para revisar os dados. Recarregar, navegar e selecionar outro registro substituem os respectivos campos; não há salvamento automático.
 
-A página de contador permanece em `/classroom --probe`: envia somente a ação, mantém o contador por abertura e reinicia em zero ao reabrir. Em rc.1, o comando era `/classroom` sem flag.
+Fechar/dispensar não cancela uma gravação aceita. Sua resposta não atualiza outra página. Ao concluir, a alteração pode ser vista na próxima abertura. Desconexão limpa listeners da conta; callbacks também conferem referência, mundo, conexão e página ativa.
 
-### Roteiro de regressão da prova mínima
+A mensagem do dia aparece no painel e é enviada em chat privado após o primeiro PlayerReadyEvent de cada conexão, quando preenchida e o vínculo permite acesso. Trocar de mundo não repete a mensagem. Reconectar cria nova sessão. Mudanças de vínculo/turma invalidam mensagens antigas ainda enfileiradas. Os nomes conhecidos são atualizados por conexão e ao abrir Classroom.
 
-**Fluxo central confirmado pelo usuário em 24/10/2026**, no build `1.4.0-rc.1+43804c498938`, Hytale 0.7.4, pt-BR: abriu `/classroom`, clicou dez vezes com atualização em todas, fechou, reabriu pelo comando e confirmou o contador resetado. A captura abaixo mostra contador 10, rótulos legíveis e o mesmo build ID. Isso permite iniciar o incremento 1; Esc, reconexão, en-US, jogador sem OP e dois jogadores continuam sem confirmação específica. A resolução/escala completa não foi informada.
+O idioma usa i18n nativa en-US/pt-BR. Textos de usuários são literais. `/classroom --probe` mantém o contador diagnóstico, que reinicia a cada abertura.
 
-![Classroom em pt-BR com contador 10 e build ID visível](evidence/classroom/2026-10-24-probe-pt-BR.png)
+## Dados, migração e backup
 
-| Caso | Procedimento | Esperado |
-| --- | --- | --- |
-| Abrir | Entrar com jogador sem OP e executar `/classroom --probe` | Página e dois botões legíveis; contador 0; build ID visível |
-| Evento/atualização | Clicar cinco vezes em Incrementar contador | 1, 2, 3, 4 e 5; botões continuam respondendo após cada atualização |
-| Fechar | Usar Fechar e movimentar o jogador | Página some e o controle do jogo retorna |
-| Reabrir | Executar `/classroom --probe` novamente | Nova página com contador 0 |
-| Dispensar | Pressionar Esc e reabrir pelo comando | Jogo volta ao controle; nova página responde normalmente |
-| Substituir página | Com a página aberta, executar o comando novamente se o cliente permitir | Página atual funcional, sem atualização de uma abertura antiga |
-| Reconectar | Desconectar com a página aberta, entrar e usar `/classroom --probe` | Nenhuma página residual; novo contador 0 e eventos funcionais |
-| Idiomas | Repetir abrir/clicar/fechar em en-US e pt-BR | Título, instrução, contador e botões traduzidos; parâmetros e acentos corretos |
-| Layout | Conferir na resolução e escala de UI usadas no piloto | Texto, rodapé e botões cabem; sem sobreposição ou corte |
-| Dois jogadores | Abrir nos dois clientes e clicar apenas em um | Somente o contador da página desse jogador muda |
+O log informa `Classroom database: <caminho absoluto>`. Há um `classroom.db` por servidor em `getDataDirectory()`, compartilhado entre mundos. SQLite JDBC 3.53.4.0 e recursos nativos/licenças já estão no JAR. Em execução direta Java 25, use `--enable-native-access=ALL-UNNAMED` antes de `-jar`.
 
-O registro acima corresponde exclusivamente ao build de rc.1 indicado na captura. Nas regressões posteriores, informar a identidade da nova compilação.
+Esquema v1: turma e vínculo docente; v2: diretório, processos, matrícula e histórico; v3: mensagem. A atualização preserva IDs, nome, descrição e revisões existentes. Antes de migrar um banco identificado, guarda uma cópia consistente em `backups/classroom-v<versão>-<UUID>.db` no diretório do plugin, por VACUUM INTO. As alterações de esquema são transacionais. Estruturas incompatíveis ou incompletas tornam Classroom indisponível sem substituir o arquivo; circuitos continuam registrados.
+
+Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um backup v1 aberto na rc.3 será migrado novamente, preservando identidades.
+
+## Roteiro de cliente — rc.3
+
+**Estado: pendente.** Use duas contas e registre build ID, data, idioma, resolução/escala e resultado de cada caso.
+
+| Cenário | Resultado esperado |
+| --- | --- |
+| Abrir sem OP/permissão docente | Descoberta e próprios ingressos acessíveis; criação/administração indisponíveis |
+| Atualizar instalação rc.2 com turma salva | Mesma turma/UUID/conteúdo; backup anterior à migração disponível |
+| Professor criar/editar e reconectar | Uma turma, conteúdo salvo e painel correto |
+| Solicitação com `00123` | Aguarda conferência; professor aprova e aluno passa à própria turma |
+| Matrícula vazia/duplicada | Erro traduzido, sem vínculo parcial; professor pode corrigir e tentar novamente |
+| Convite com destinatário offline | Disponível após conexão e reinício completo; aceite ainda exige aprovação |
+| Convite e solicitação para a mesma turma | Um processo aberto, sem sobrescrever a conferência existente |
+| Duas turmas aprovando o mesmo aluno | Um vínculo efetivado; demais pendências encerradas |
+| Recusar/cancelar/rejeitar | Estado correspondente visível ao aluno; nenhum vínculo criado |
+| Corrigir matrícula/remover/sair | Operação autorizada, confirmação na saída/remoção, vínculo encerrado persistido |
+| Sair e solicitar novamente | Novo vínculo; ação antiga não interfere nele |
+| Mensagem do dia | Painel e chat privado na conexão; vazia não envia; troca de mundo não duplica |
+| Revogar permissão com página aberta | Próxima operação docente negada; turma preservada |
+| Atualização durante edição | Campo digitado mantido; conflito de revisão não sobrescreve alteração alheia |
+| Fechar/Esc/reabrir/desconectar durante I/O | Página atual e controle do jogo funcionais; nenhuma resposta antiga aplicada |
+| Listas com mais de 20 registros e textos longos | Paginação, rolagem, ficha e formulários legíveis nos dois idiomas |
+| `/classroom --probe` | Contagem, fechamento e reset continuam funcionando |
+
+O painel pedagógico completo, atividades e entregas ficam fora desta rodada. Não repetir a campanha manual de circuitos/fabricação/multiplayer já consolidada para aprovar estas telas.
+
+## Evidências históricas
+
+Em 24/10/2026, o usuário confirmou no build `1.4.0-rc.1+43804c498938`, pt-BR: abertura, dez cliques com atualização, fechamento e reabertura com reset.
+
+![Contador dez na rc.1](evidence/classroom/2026-10-24-probe-pt-BR.png)
+
+Na mesma data, build `1.4.0-rc.2+a04a304d984f`, confirmou turma preservada após sair/entrar no mundo e usar Recarregar, além da regressão do contador. O relato não confirma separadamente en-US, revogação ou encerramento completo do processo.
+
+![Turma persistida na rc.2](evidence/classroom/2026-10-24-classroom-rc2-pt-BR.png)
 
 ## O que a automação comprova
 
-- JUnit usa builders, codec de evento e codec de mensagem reais da dependência 0.7.4. A saída para o transporte é capturada: não há cliente simulado nem renderização.
-- Confere documento empacotado, alvos dos bindings, ações, atualizações parciais, contador independente, valor enviado pelo cliente ignorado e eventos posteriores ao encerramento ignorados.
-- Ações desconhecidas ou ausentes são reconhecidas sem alterar o contador, liberando o bloqueio de interação do cliente.
-- Python verifica chaves/parâmetros dos dois idiomas, referências `%server.logicgates.*` em `.ui` e presença dos documentos no JAR distribuído.
-- A integração nativa confere carregamento das traduções e registro de `/classroom` pelo caminho exclusivo de jogadores, antes/depois de reiniciar. Não abre a página em um cliente.
-- O incremento 1 acrescenta testes de domínio, SQLite, rollback, esquema incompatível, concorrência e revogação; um teste isolado carrega o driver apenas do JAR de produção. A matriz CI executa esse teste em Windows/Linux; a execução local não equivale a uma nova aprovação remota de Linux.
-- A integração usa o serviço do plugin de produção, a permissão nativa e o driver empacotado para criar/editar e conferir a mesma turma após reinício. Os campos e a renderização do novo formulário dependem do roteiro do cliente.
+JUnit exercita serviços, SQLite, rollback, concorrência entre conexões, migração de esquema v1 congelado, backup/restauração, seleção por UUID, preservação de revisão/campos, codecs e comandos/bindings reais. O controle de conexão cobre reconexão, troca de mundo e invalidação de mensagens. Um classloader isolado executa JDBC somente a partir do JAR final.
 
-Após validar o formulário do incremento 1, avançar ao incremento 2: ingresso, convites e membros. O plano completo permanece na branch, com seus critérios e pendências explícitos.
+As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo de JAR/ZIP. A integração nativa usa o serviço de produção e permissões Hytale para conferir matrícula, convite e mensagem após reinício, além das regressões consolidadas. Ela não abre páginas nem recebe cliques de um cliente. A CI portável Windows/Linux precisa aprovar a revisão enviada; execução local no Windows não equivale a resultado Linux.
+
+Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
