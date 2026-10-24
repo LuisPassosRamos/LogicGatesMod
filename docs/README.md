@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.7**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.7 ajusta orientações de listas vazias e documenta atividades, ainda sem implementá-las. A abertura docente em pt-BR foi capturada na rc.6; a validação detalhada da candidata e da atualização automática de permissões continua pendente. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.8**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.8 reduz notificações e transporte redundantes. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; reteste das otimizações e demais cenários de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
 
 ## Uso e manutenção
 

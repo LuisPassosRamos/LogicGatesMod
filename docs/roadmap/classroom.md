@@ -4,11 +4,11 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.7 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
+**1.4.0-rc.8 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
 
-O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. A rc.7 ajusta orientações de listas vazias e documenta o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
+O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. A rc.7 ajustou orientações de listas vazias e documentou o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
 
-## Polimento aprovado — rc.5, correções rc.6/rc.7
+## Polimento aprovado — rc.5, correções rc.6/rc.7 e otimização rc.8
 
 Decisões confirmadas: refinar a estrutura atual e atualizar permissões automaticamente por eventos nativos. Não redesenhar a navegação conforme os esboços nem ampliar o domínio neste incremento.
 
@@ -16,9 +16,9 @@ Decisões confirmadas: refinar a estrutura atual e atualizar permissões automat
 | --- | --- |
 | CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
 | CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado. Captura rc.6 confirma visão geral e rótulos de paginação; rc.7 corrige a orientação do rodapé vazio, incluindo páginas posteriores esvaziadas e prioridade de mensagens. Demais telas/interações aguardam cliente. |
-| CL-03 Autorização automática | Implementado: canal por UUID, eventos nativos, gerações de resposta, descarte docente na revogação e restauração sem recarga; aguarda cliente. |
-| CL-04 Verificar e entregar | rc.7 aprovada localmente: 813 JUnit, 37 Python, 78 verificações nativas com reinício real e regressões direcionadas de orientação. Identidade do JAR e evidência no [registro de validação](../validation.md); CI remota separada. |
-| CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Interações e demais casos e orientação ajustada no [roteiro rc.7](../classroom-rc7-acceptance.md) aguardam disponibilidade do usuário. |
+| CL-03 Autorização automática | Implementado e com revogação automática relatada após rc.7. rc.8 indexa assinaturas por UUID e ignora eventos sem mudança efetiva. Restauração e transporte otimizado aguardam cliente. |
+| CL-04 Verificar e entregar | rc.7 possui rodada preservada. rc.8 tem regressões direcionadas aprovadas; fullCheck, benchmark comparativo e identidade final serão registrados em [validação](../validation.md). |
+| CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Multiplayer e revogação automática relatados após rc.7. O [roteiro rc.8](../classroom-rc8-acceptance.md) retesta carregamento inicial, bindings, campos e demais casos pendentes. |
 
 Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
 

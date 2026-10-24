@@ -1,6 +1,6 @@
 # Ensino, idiomas e comandos
 
-Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.7 mantém o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
+Este guia descreve a ajuda e os comandos atuais. A pré-versão 1.4.0-rc.8 mantém o MVP administrativo Classroom com ingresso aprovado, matrícula, membros e mensagem em SQLite.
 
 ## Orientação e leitura
 
@@ -42,7 +42,7 @@ A razão da porta distingue lógica normal, ausência de entradas, seção indis
 
 ## Diagnóstico e idiomas
 
-`/classroom` abre a turma do professor/aluno ou a descoberta e os próprios ingressos de quem ainda não tem vínculo; operações docentes exigem `sisso.logicgates.classroom.teach` e responsabilidade pela turma. `/classroom --probe` mantém a página de contador sem permissão especial. Consulte [autorização e roteiro Classroom](classroom.md); os fluxos centrais da rc.4 foram confirmados em pt-BR; a rc.6 teve abertura docente confirmada em pt-BR; a rc.7 orienta listas vazias e mantém os testes detalhados pendentes. O [contrato de atividades](roadmap/classroom-learning-contracts.md) está aprovado para implementação posterior.
+`/classroom` abre a turma do professor/aluno ou a descoberta e os próprios ingressos de quem ainda não tem vínculo; operações docentes exigem `sisso.logicgates.classroom.teach` e responsabilidade pela turma. `/classroom --probe` mantém a página de contador sem permissão especial. Consulte [autorização e roteiro Classroom](classroom.md); os fluxos centrais da rc.4 foram confirmados em pt-BR; a rc.6 teve abertura docente confirmada em pt-BR; a rc.7 teve multiplayer e revogação automática relatados. A rc.8 reduz atualizações redundantes e mantém o reteste de interação pendente. O [contrato de atividades](roadmap/classroom-learning-contracts.md) está aprovado para implementação posterior.
 
 `/logicenergy`, com `sisso.logicgates.debug`, informa versão/ID, totais por mundo e tempos em milissegundos. O monitoramento e a avaliação têm janelas limitadas; p95 não significa tempo máximo. Consulte [desempenho](performance.md).
 

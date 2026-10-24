@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.7.
+Nenhuma alteração registrada após 1.4.0-rc.8.
+
+## [1.4.0-rc.8] - 2026-10-24
+
+### Redução de atualizações e análise de escala
+- Assinaturas de autorização indexadas por UUID; eventos de grupo percorrem cada conta com página aberta uma vez. Eventos que mantêm a autorização efetiva não reconsultam nem redesenham as páginas.
+- Filtro de contexto imutável evita agendar trabalho no mundo para páginas sem relação com uma mudança de dados. Durante I/O, eventos são agrupados em lote limitado e conferidos contra o contexto resultante. Rajadas agendam no máximo uma tarefa pendente por página/canal.
+- Transporte incremental conserva linhas/bindings quando os registros não mudam e envia somente propriedades alteradas. Valores dos campos continuam sempre enviados quando explicitamente solicitados, preservando recarga e descarte na revogação. Respostas vazias mantêm a confirmação exigida pelo cliente nativo.
+- Benchmark isolado compara consultas, rajadas concorrentes, assinaturas e tamanho dos pacotes com a rc.7; não mede jogadores reais, rede, renderização ou tick do mundo. Registra relato do usuário sobre multiplayer, atualização de permissão confirmada e demora na primeira interação de cada personagem.
+- Esquema SQLite v3, autorização por operação, regras de vínculo, layout e circuitos preservados. O tempo de carregamento inicial do cliente ainda exige reteste; não há promessa de capacidade de jogadores baseada em assinaturas sintéticas.
 
 ## [1.4.0-rc.7] - 2026-10-24
 

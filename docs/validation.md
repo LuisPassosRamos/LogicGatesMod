@@ -136,3 +136,9 @@ A regressão direcionada `ClassroomPolishTest` passou com seis testes, também i
 As mudanças de produção se limitam ao renderer, às traduções e à versão. Layout, comandos, APIs públicas, domínio, esquema SQLite v3 e fontes/assets dos circuitos permanecem preservados. Os testes de transporte/markup não substituem renderização no cliente.
 
 Atividades possuem [contrato aprovado](roadmap/classroom-learning-contracts.md), sem implementação ou casos de atividade executados. A [captura rc.6](evidence/classroom/2026-10-24-rc6-client.md) continua evidência histórica de abertura docente; **cliente rc.7 pendente** conforme o [roteiro](classroom-rc7-acceptance.md). Os cenários de autorização automática, campos em edição, conteúdo longo, listas, idiomas/resoluções e regressão funcional aguardam disponibilidade do usuário. Não há aceite estável ou tag.
+
+## Desempenho e atualização incremental — rc.8
+
+O usuário [relatou multiplayer e revogação automática após a rc.7](evidence/classroom/2026-10-24-rc7-multiplayer-report.md), com demora somente na primeira interação de cada personagem. O build/checksum instalado não foi confirmado separadamente. A [medição isolada da rc.7](evidence/classroom/2026-10-24-rc7-performance.json) e o [guia de desempenho](performance.md#classroom--consultas-notificações-e-transporte) distinguem espera de I/O, notificações e transporte de renderização no cliente.
+
+A rc.8 passou nas regressões direcionadas de autorização, contexto, transporte incremental, valores locais e respostas anteriores. O fullCheck e a comparação final ainda serão registrados. Cliente rc.8 pendente conforme o [roteiro](classroom-rc8-acceptance.md); não declarar o carregamento inicial resolvido sem reteste. Domínio, SQLite v3, layout e circuitos preservados. Atividades continuam somente documentadas.
