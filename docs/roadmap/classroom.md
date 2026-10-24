@@ -4,21 +4,21 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.6 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
+**1.4.0-rc.7 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
 
-O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. Atividades, entregas e avaliação continuam conceituais, sem tabelas/telas antecipadas. Veja [contratos futuros](classroom-learning-contracts.md).
+O núcleo é independente da API Hytale, com esquema v3 e migração preservando a turma da v1. A rc.7 ajusta orientações de listas vazias e documenta o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
 
-## Polimento aprovado — rc.5, correção rc.6
+## Polimento aprovado — rc.5, correções rc.6/rc.7
 
 Decisões confirmadas: refinar a estrutura atual e atualizar permissões automaticamente por eventos nativos. Não redesenhar a navegação conforme os esboços nem ampliar o domínio neste incremento.
 
 | Tarefa | Estado e conclusão |
 | --- | --- |
 | CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
-| CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado. Captura rc.6 confirma visão geral e rótulos de paginação; demais telas/interações e orientação do rodapé vazio pendentes. |
+| CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado. Captura rc.6 confirma visão geral e rótulos de paginação; rc.7 corrige a orientação do rodapé vazio, incluindo páginas posteriores esvaziadas e prioridade de mensagens. Demais telas/interações aguardam cliente. |
 | CL-03 Autorização automática | Implementado: canal por UUID, eventos nativos, gerações de resposta, descarte docente na revogação e restauração sem recarga; aguarda cliente. |
-| CL-04 Verificar e entregar | rc.6 aprovada localmente: 810 JUnit, 37 Python e 78 verificações nativas; inclui regressão da ordem de parâmetros que falhou na rc.5. Identidade no [registro de validação](../validation.md); CI remota separada. |
-| CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Interações e demais casos do [roteiro rc.6](../classroom-rc6-acceptance.md) aguardam disponibilidade do usuário. |
+| CL-04 Verificar e entregar | rc.6 possui rodada automatizada preservada. rc.7 passou nas regressões direcionadas de orientação; fullCheck e identidade final serão registrados no [registro de validação](../validation.md); CI remota separada. |
+| CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Interações e demais casos e orientação ajustada no [roteiro rc.7](../classroom-rc7-acceptance.md) aguardam disponibilidade do usuário. |
 
 Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
 
@@ -41,7 +41,7 @@ O professor abre diretamente sua turma, com lista de alunos à esquerda e detalh
 | 1 | Professor cria/edita nome e descrição da turma; painel vazio e SQLite | Reinício preserva dados; segunda turma e acesso indevido são recusados |
 | 2 | Lista pública, solicitações, convites, conferência de matrícula, membros e ficha básica | Dois caminhos convergem para o mesmo vínculo; concorrência e reconexão cobertas |
 | 3 | Mensagem do dia, correção de matrícula, remoção/saída e refinamento visual | Permissões, navegação e persistência verificadas com professor e aluno |
-| 4 | Publicação e detalhes de atividades versionadas | Definir contrato de publicação antes de implementar |
+| 4 | Publicação e detalhes de atividades versionadas | Contrato aprovado e documentado na rc.7; implementação em incremento separado |
 | 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Escolher formato da entrega e fluxo de correção antes de implementar |
 
 A página de prova evolui para a entrada real após validação do incremento 0. Cada incremento inclui código, testes relevantes, documentação e commits por assunto. Usar pré-versões de `1.4.0`; tags são marcos explícitos de aprovação. Preservar circuitos, IDs, codecs, mundos e aparência. Novas portas e conexões verticais estão fora deste trabalho.
@@ -72,11 +72,13 @@ Persistência iniciada no incremento 1 e ampliada na rc.3:
 
 | Contrato | Conteúdo mínimo |
 | --- | --- |
-| Atividade | ID, turma, versão publicada, título e enunciado |
+| Atividade | ID, turma, versão publicada, título, enunciado, prazo e valor |
 | Entrega | ID, atividade/versão, aluno, revisão, instante e referência a conteúdo versionado |
 | Avaliação | Revisão avaliada, professor, feedback e resultado |
 
-Esses contratos não definem ainda coordenadas, seleção de área ou snapshot/prefab. A escolha precisa garantir uma revisão reproduzível e a experiência do professor. A implementação futura usará um adaptador para conteúdo versionado, sem acoplar Classroom ao circuito vivo. Não criar tabelas, botões ou telas de entrega antes dessa decisão.
+O [contrato de atividades](classroom-learning-contracts.md) define rascunho/publicação, prazo obrigatório futuro em Brasília, valor positivo padrão 10 com até duas casas, nota ainda não atribuída como —/valor, arquivamento/restauração e acesso por vínculo. Sua implementação será um incremento separado; os testes de cliente pendentes não impedem esta especificação, mas mantêm o aceite do polimento e a versão estável em aberto.
+
+O conteúdo das entregas não define ainda coordenadas, seleção de área ou snapshot/prefab. A escolha precisa garantir uma revisão reproduzível e a experiência do professor. A implementação futura usará um adaptador para conteúdo versionado, sem acoplar Classroom ao circuito vivo. Não criar tabelas, botões ou telas de entrega antes dessa decisão. A rc.7 não cria estruturas ou telas de atividades antecipadamente.
 
 Avaliação automática virá depois do feedback manual. Deve usar snapshots/casos esperados sem acionar o circuito vivo do aluno; indisponibilidade de seção é falha de contexto, não resposta lógica incorreta. Proteção de bancadas, instâncias, arquivamento e retenção definitiva exigem seus próprios contratos futuros.
 

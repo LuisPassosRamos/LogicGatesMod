@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.6.
+Nenhuma alteração registrada após 1.4.0-rc.7.
+
+## [1.4.0-rc.7] - 2026-10-24
+
+### Orientação das listas e contrato de atividades
+- Listas vazias apresentam orientação específica para membros, ingressos do professor, histórico do aluno, busca de jogadores e descoberta de turmas. Páginas posteriores vazias orientam voltar por Anterior e não afirmam que a turma inteira está vazia.
+- Confirmação, atualização e mensagens explícitas de gravação, erro e resultado conservam prioridade sobre as orientações. Seleções mantidas durante atualização preservam a orientação da ficha em edição.
+- Seis textos novos correspondentes em pt-BR/en-US, sem alterar o markup ou a estrutura do layout. Regressões cobrem contextos vazios, paginação, seleção preservada e prioridade das mensagens.
+- Documentado o contrato aprovado de atividades: rascunho/publicação versionada, título, enunciado, prazo futuro obrigatório em Brasília, valor positivo padrão 10, nota ainda não atribuída como —/valor, arquivamento/restauração e acesso por vínculo. Atividades, entregas e avaliação ainda não têm código, tabelas ou telas.
+- Abertura docente da rc.6 em pt-BR permanece evidência parcial histórica; interação, autorização automática, textos longos e demais cenários de cliente continuam pendentes na candidata. Esquema SQLite v3, regras de vínculo, comandos e circuitos preservados.
 
 ## [1.4.0-rc.6] - 2026-10-24
 

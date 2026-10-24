@@ -1,10 +1,10 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.6**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. A [abertura e a visão geral docente em pt-BR foram capturadas na rc.6](evidence/classroom/2026-10-24-rc6-client.md); interação, demais telas e atualização visual automática continuam pendentes de aceite.**
+Disponível em **1.4.0-rc.7**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. A [abertura e a visão geral docente em pt-BR foram capturadas na rc.6](evidence/classroom/2026-10-24-rc6-client.md); a rc.7 ajusta orientações das listas vazias. Interação, demais telas e atualização visual automática continuam pendentes de aceite.**
 
 ## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.6.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.6.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A atualização para rc.6 mantém o esquema v3 e não requer apagar dados.
+Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.7.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.7.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A atualização para rc.7 mantém o esquema v3 e não requer apagar dados.
 
 Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
@@ -24,7 +24,7 @@ Sem vínculo, use **Criar turma**. Nome obrigatório, 1–64 caracteres; descri�
 - **Convidar jogador:** pesquisa jogadores conhecidos pelo Classroom, incluindo offline. Nome é apresentação; a seleção conserva o UUID. Jogadores já vinculados não são elegíveis.
 - **Administração:** nome, descrição e mensagem do dia são salvos juntos, em uma transação e revisão. Mensagem opcional de até 2048 caracteres; vazia suprime apresentação/envio.
 
-As listas exibem até 20 registros por página. O registro selecionado recebe uma marca lateral. Nomes e matrículas longos podem ser resumidos na lista; a ficha/editor conserva seu conteúdo completo. Matrícula, confirmação e Salvar ficam fora da área rolável dos detalhes. Isso não limita o tamanho da turma. Não há remoção automática por ausência, promoção de outro professor ou exclusão de turma neste MVP.
+As listas exibem até 20 registros por página. Sem registros e sem seleção em edição, o rodapé orienta a próxima ação conforme a seção. Uma página posterior vazia orienta voltar por Anterior; confirmação, atualização e mensagens explícitas de erro/gravação/resultado conservam prioridade. O registro selecionado recebe uma marca lateral. Nomes e matrículas longos podem ser resumidos na lista; a ficha/editor conserva seu conteúdo completo. Matrícula, confirmação e Salvar ficam fora da área rolável dos detalhes. Isso não limita o tamanho da turma. Não há remoção automática por ausência, promoção de outro professor ou exclusão de turma neste MVP.
 
 ## Aluno e ingresso
 
@@ -58,9 +58,9 @@ Esquema v1: turma e vínculo docente; v2: diretório, processos, matrícula e hi
 
 Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um backup v1 aberto na rc.3 será migrado novamente, preservando identidades.
 
-## Roteiro de cliente — rc.6
+## Roteiro de cliente — rc.7
 
-**Estado rc.6: aceite parcial no cliente.** A [captura da visão geral docente](evidence/classroom/2026-10-24-rc6-client.md) confirma abertura em pt-BR e rótulos Anterior/Próxima completos. Fechar/Esc/reabrir e os testes detalhados continuam pendentes. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte também o [roteiro de aceite da rc.6](classroom-rc6-acceptance.md).
+**Estado rc.7: pendente no cliente.** A rc.6 permanece com aceite parcial histórico. A [captura da visão geral docente](evidence/classroom/2026-10-24-rc6-client.md) confirma abertura em pt-BR e rótulos Anterior/Próxima completos. Fechar/Esc/reabrir e os testes detalhados continuam pendentes. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte o [roteiro de aceite da rc.7](classroom-rc7-acceptance.md).
 
 | Cenário | Resultado esperado |
 | --- | --- |
@@ -83,7 +83,7 @@ Antes de instalar uma atualização, encerre o servidor normalmente e copie o di
 | Listas com mais de 20 registros e textos longos | Paginação, rolagem, ficha e formulários legíveis nos dois idiomas |
 | `/classroom --probe` | Contagem, fechamento e reset continuam funcionando |
 
-O painel pedagógico completo, atividades e entregas ficam fora desta rodada. Não repetir a campanha manual de circuitos/fabricação/multiplayer já consolidada para aprovar estas telas.
+A rc.7 documenta o [contrato aprovado de atividades](roadmap/classroom-learning-contracts.md): rascunho, publicação, prazo, valor e arquivamento. Atividades, entregas e avaliação ainda não possuem código, tabelas ou telas e ficam fora desta rodada. Não repetir a campanha manual de circuitos/fabricação/multiplayer já consolidada para aprovar estas telas.
 
 ## Evidências históricas
 
