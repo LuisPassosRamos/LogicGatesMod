@@ -17,7 +17,7 @@ Decisões confirmadas: refinar a estrutura atual e atualizar permissões automat
 | CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
 | CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado; aguarda cliente. |
 | CL-03 Autorização automática | Implementado: canal por UUID, eventos nativos, gerações de resposta, descarte docente na revogação e restauração sem recarga; aguarda cliente. |
-| CL-04 Verificar e entregar | rc.5 aprovada na automação, mas recusada pelo parser do cliente. rc.6 acrescenta regressão da ordem de parâmetros; verificação final no [registro de validação](../validation.md). |
+| CL-04 Verificar e entregar | rc.6 aprovada localmente: 810 JUnit, 37 Python e 78 verificações nativas; inclui regressão da ordem de parâmetros que falhou na rc.5. Identidade no [registro de validação](../validation.md); CI remota separada. |
 | CL-05 Aceite | Pendente: [roteiro rc.6](../classroom-rc6-acceptance.md), começando por entrada/abertura sem erro de markup, com pt-BR/en-US, duas resoluções e contas de professor/aluno. |
 
 Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. Esquema v3 e regras de vínculo permanecem iguais. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
