@@ -95,3 +95,9 @@ logicgates.classroom.error.name = Use um nome de 1 a 64 caracteres, sem quebras 
 logicgates.classroom.error.description = Use uma descrição de até 2048 caracteres, sem caracteres de controle além de quebras de linha e tabulações.
 logicgates.classroom.error.stale = A turma mudou desde que esta página foi carregada. Copie suas alterações e recarregue antes de salvar novamente.
 logicgates.classroom.error.unavailable = Classroom indisponível. Tente novamente mais tarde.
+
+logicgates.classroom.error.enrollment = Use uma matrícula com 1 a 64 caracteres, sem quebras de linha ou caracteres de controle.
+logicgates.classroom.error.duplicateEnrollment = Esta matrícula já pertence a um aluno ativo desta turma.
+logicgates.classroom.error.message = Use uma mensagem com até 2048 caracteres.
+logicgates.classroom.error.notFound = Este registro não está mais disponível. Recarregue a página.
+logicgates.classroom.error.closed = Este processo ou vínculo já foi encerrado. Recarregue a página.

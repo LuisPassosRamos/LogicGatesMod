@@ -87,3 +87,11 @@ Os testes capturam o transporte e exercitam builders/codecs reais. O usuário co
 A fila dedicada inicializa o repositório antes de atender requisições e preserva os sistemas elétricos se Classroom falhar. O encerramento drena a fila por até cinco segundos e resolve pendências como indisponíveis se for interrompido. Cada callback volta à thread do mundo e verifica referência, Store, mundo e identidade da página ativa antes de publicar; não há I/O no tick. Fechar a página não cancela uma gravação já aceita.
 
 O driver JDBC é empacotado por uma configuração Gradle exclusiva, com recursos nativos e licenças; a dependência Hytale não é incorporada. JUnit carrega o JAR de produção em um classloader isolado e executa uma consulta real. A matriz CI roda essa verificação em Windows/Linux. A integração nativa usa o serviço real e confere a turma após reinício; o formulário continua dependente de validação no cliente.
+
+## Classroom — núcleo de ingresso e administração
+
+O domínio usa DTOs imutáveis distintos para resumo público, vínculo, processo de ingresso e entrada por papel. A permissão docente continua sendo consultada por operação; o repositório revalida responsabilidade e estado na transação. Solicitação e convite convergem para conferência antes da criação do vínculo. A primeira aprovação (ou criação de turma docente) encerra as outras pendências do UUID.
+
+Esquema v2 acrescenta diretório, processos e matrícula/histórico; v3 acrescenta mensagem. A migração da v1 preserva IDs/revisões e cria um backup consistente por VACUUM INTO antes da transação. Matrícula ativa é única por turma com comparação BINARY; pendências não reservam matrícula. Falhas de migração não substituem o banco. Verificações auditam também a definição dos índices únicos.
+
+A fila de I/O possui limite de 256 operações pendentes. Notificações internas carregam IDs, sem dados privados, e são emitidas após commit; cada página filtra os contextos relevantes e retorna ao mundo antes de atualizar. Os testes de núcleo cobrem concorrência, rollback, idempotência, privacidade, revogação, migração e restauração. A ligação dos novos fluxos às telas ainda está em desenvolvimento.

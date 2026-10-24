@@ -1,178 +1,247 @@
 package sisso.logicsim.classroom.persistence;
 
-import sisso.logicsim.classroom.domain.Classroom;
-import sisso.logicsim.classroom.domain.ClassroomException;
-import sisso.logicsim.classroom.domain.ClassroomRepository;
+import sisso.logicsim.classroom.domain.*;
+import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import static sisso.logicsim.classroom.domain.ClassroomException.Reason.*;
 
-/** Each operation owns its connection. BEGIN IMMEDIATE serializes cross-connection writers. */
+/** Transactions protect invariants across independent connections/worlds, not only our I/O queue. */
 public final class SqliteClassroomRepository implements ClassroomRepository {
-    private static final int APPLICATION_ID = 0x4c47434c; // LGCL
-    public static final int SCHEMA_VERSION = 1;
+    public static final int SCHEMA_VERSION = ClassroomSchema.VERSION;
+    public static final int PAGE_SIZE = 20;
     private final String url;
-
+    private static final String MEMBER = "SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name FROM classroom_memberships m LEFT JOIN classroom_players p ON p.uuid=m.player_uuid ";
+    private static final String INTAKE = "SELECT i.*,c.name AS classroom_name,coalesce(p.name,i.student_uuid) AS student_name FROM classroom_intakes i JOIN classrooms c ON c.id=i.classroom_id LEFT JOIN classroom_players p ON p.uuid=i.student_uuid ";
     public SqliteClassroomRepository(Path path) {
         path = path.toAbsolutePath().normalize();
         url = "jdbc:sqlite:" + path;
         try {
             Files.createDirectories(path.getParent());
             Class.forName("org.sqlite.JDBC");
-            transaction(connection -> {
-                int version = pragma(connection, "user_version");
-                int application = pragma(connection, "application_id");
-                if (version > SCHEMA_VERSION || (application != 0 && application != APPLICATION_ID)) {
-                    throw new SQLException("Unsupported Classroom database version or application ID");
-                }
-                if (version == 0) {
-                    try (var statement = connection.createStatement();
-                         var tables = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")) {
-                        if (tables.next()) throw new SQLException("Refusing to migrate an unversioned non-empty database");
-                    }
-                    try (var statement = connection.createStatement()) {
-                        statement.execute("""
-                                CREATE TABLE classrooms (
-                                  id TEXT PRIMARY KEY NOT NULL,
-                                  teacher_uuid TEXT NOT NULL UNIQUE,
-                                  name TEXT NOT NULL CHECK(length(name) BETWEEN 1 AND 64),
-                                  description TEXT NOT NULL CHECK(length(description) <= 2048),
-                                  revision INTEGER NOT NULL CHECK(revision >= 0))
-                                """);
-                        statement.execute("""
-                                CREATE TABLE classroom_memberships (
-                                  id TEXT PRIMARY KEY NOT NULL,
-                                  classroom_id TEXT NOT NULL REFERENCES classrooms(id),
-                                  player_uuid TEXT NOT NULL,
-                                  role TEXT NOT NULL CHECK(role IN ('TEACHER','STUDENT')),
-                                  active INTEGER NOT NULL CHECK(active IN (0,1)))
-                                """);
-                        statement.execute("CREATE UNIQUE INDEX one_active_classroom_per_player ON classroom_memberships(player_uuid) WHERE active=1");
-                        statement.execute("CREATE UNIQUE INDEX one_active_teacher_per_classroom ON classroom_memberships(classroom_id) WHERE active=1 AND role='TEACHER'");
-                        statement.execute("PRAGMA application_id=" + APPLICATION_ID);
-                        statement.execute("PRAGMA user_version=" + SCHEMA_VERSION);
-                    }
-                } else if (application != APPLICATION_ID) {
-                    throw new SQLException("Classroom database application ID missing");
-                }
-                // Detect damaged/incomplete v1 schemas instead of serving an empty replacement.
-                try (var statement = connection.createStatement()) {
-                    statement.executeQuery("SELECT id,teacher_uuid,name,description,revision FROM classrooms LIMIT 0").close();
-                    statement.executeQuery("SELECT id,classroom_id,player_uuid,role,active FROM classroom_memberships LIMIT 0").close();
-                    for (String index : new String[]{"one_active_classroom_per_player", "one_active_teacher_per_classroom"}) {
-                        try (var rows = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='index' AND name='" + index + "'")) {
-                            if (!rows.next()) throw new SQLException("Missing Classroom constraint " + index);
-                        }
-                    }
-                    try (var rows = statement.executeQuery("PRAGMA foreign_key_check")) {
-                        if (rows.next()) throw new SQLException("Broken Classroom foreign key");
-                    }
-                }
-                return null;
-            });
-        } catch (Exception failure) {
-            throw new ClassroomException(UNAVAILABLE, failure);
-        }
+            try (var c = connect()) { ClassroomSchema.initialize(c, path); }
+        } catch (Exception failure) { throw new ClassroomException(UNAVAILABLE, failure); }
     }
-
     private Connection connect() throws SQLException {
-        var connection = DriverManager.getConnection(url);
-        try (var statement = connection.createStatement()) {
-            statement.execute("PRAGMA foreign_keys=ON");
-            statement.execute("PRAGMA busy_timeout=5000");
-        } catch (SQLException failure) {
-            connection.close();
-            throw failure;
-        }
-        return connection;
+        var c = DriverManager.getConnection(url);
+        try (var s = c.createStatement()) { s.execute("PRAGMA foreign_keys=ON"); s.execute("PRAGMA busy_timeout=5000"); }
+        catch (SQLException failure) { c.close(); throw failure; }
+        return c;
     }
-
-    private static int pragma(Connection connection, String name) throws SQLException {
-        try (var statement = connection.createStatement(); var rows = statement.executeQuery("PRAGMA " + name)) {
-            if (!rows.next()) throw new SQLException("Missing PRAGMA " + name);
-            return rows.getInt(1);
-        }
+    @Override public Optional<Classroom> findByMember(UUID player) {
+        return read(c -> one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE m.player_uuid=? AND m.active=1", SqliteClassroomRepository::classroom, player));
     }
-
-    @Override public Optional<Classroom> findByMember(UUID playerId) {
-        try (var connection = connect()) { return findByMember(connection, playerId); }
-        catch (SQLException failure) { throw new ClassroomException(UNAVAILABLE, failure); }
+    @Override public Optional<Member> member(UUID player) { return read(c -> active(c, player)); }
+    private Optional<Member> active(Connection c, UUID player) throws SQLException {
+        return one(c, MEMBER + "WHERE m.player_uuid=? AND m.active=1", SqliteClassroomRepository::membership, player);
     }
-
-    private Optional<Classroom> findByMember(Connection connection, UUID playerId) throws SQLException {
-        try (var statement = connection.prepareStatement("""
-                SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id
-                WHERE m.player_uuid=? AND m.active=1
-                """)) {
-            statement.setString(1, playerId.toString());
-            try (var rows = statement.executeQuery()) { return rows.next() ? Optional.of(read(rows)) : Optional.empty(); }
-        }
+    private Classroom owned(Connection c, UUID actor) throws SQLException {
+        return one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE c.teacher_uuid=? AND m.player_uuid=? AND m.role='TEACHER' AND m.active=1",
+                SqliteClassroomRepository::classroom, actor, actor).orElseThrow(() -> new ClassroomException(FORBIDDEN));
     }
-
-    @Override public Classroom create(UUID teacherId, String name, String description) {
-        return transaction(connection -> {
-            if (findByMember(connection, teacherId).isPresent()) throw new ClassroomException(ALREADY_MEMBER);
-            var classroom = new Classroom(UUID.randomUUID(), teacherId, name, description, 0);
-            try (var statement = connection.prepareStatement("INSERT INTO classrooms VALUES(?,?,?,?,0)")) {
-                statement.setString(1, classroom.id().toString());
-                statement.setString(2, teacherId.toString());
-                statement.setString(3, name);
-                statement.setString(4, description);
-                statement.executeUpdate();
-            }
-            try (var statement = connection.prepareStatement("INSERT INTO classroom_memberships VALUES(?,?,?,'TEACHER',1)")) {
-                statement.setString(1, UUID.randomUUID().toString());
-                statement.setString(2, classroom.id().toString());
-                statement.setString(3, teacherId.toString());
-                statement.executeUpdate();
-            }
-            return classroom;
+    @Override public Classroom create(UUID teacher, String name, String description) {
+        return transaction(c -> {
+            eligible(c, teacher);
+            UUID id = UUID.randomUUID();
+            execute(c, "INSERT INTO classrooms(id,teacher_uuid,name,description,revision,search_name) VALUES(?,?,?,?,0,?)", id, teacher, name, description, lower(name));
+            execute(c, "INSERT INTO classroom_memberships(id,classroom_id,player_uuid,role,active,joined_at) VALUES(?,?,?,'TEACHER',1,?)", UUID.randomUUID(), id, teacher, now());
+            supersede(c, teacher);
+            return new Classroom(id, teacher, name, description, 0);
         });
     }
-
-    @Override public Classroom update(UUID teacherId, UUID classroomId, long revision, String name, String description) {
-        return transaction(connection -> {
-            var current = findByMember(connection, teacherId).orElseThrow(() -> new ClassroomException(FORBIDDEN));
-            if (!current.id().equals(classroomId) || !current.teacherId().equals(teacherId)) throw new ClassroomException(FORBIDDEN);
-            if (current.revision() != revision) throw new ClassroomException(STALE);
-            try (var statement = connection.prepareStatement("UPDATE classrooms SET name=?,description=?,revision=revision+1 WHERE id=? AND revision=?")) {
-                statement.setString(1, name);
-                statement.setString(2, description);
-                statement.setString(3, classroomId.toString());
-                statement.setLong(4, revision);
-                if (statement.executeUpdate() != 1) throw new ClassroomException(STALE);
-            }
-            return new Classroom(classroomId, teacherId, name, description, revision + 1);
+    @Override public Classroom update(UUID teacher, UUID id, long revision, String name, String description) {
+        return transaction(c -> {
+            var old = owned(c, teacher); sameClass(old, id); revision(old.revision(), revision);
+            execute(c, "UPDATE classrooms SET name=?,description=?,search_name=?,revision=revision+1 WHERE id=?", name, description, lower(name), id);
+            return new Classroom(id, teacher, name, description, revision + 1, old.message());
         });
     }
-
-    private static Classroom read(ResultSet rows) throws SQLException {
-        try {
-            return new Classroom(UUID.fromString(rows.getString("id")), UUID.fromString(rows.getString("teacher_uuid")),
-                    rows.getString("name"), rows.getString("description"), rows.getLong("revision"));
-        } catch (IllegalArgumentException malformed) { throw new SQLException("Invalid persisted Classroom UUID", malformed); }
+    @Override public Classroom message(UUID teacher, UUID id, long revision, String message) {
+        return transaction(c -> {
+            var old = owned(c, teacher); sameClass(old, id); revision(old.revision(), revision);
+            execute(c, "UPDATE classrooms SET message=?,revision=revision+1 WHERE id=?", message, id);
+            return new Classroom(id, teacher, old.name(), old.description(), revision + 1, message);
+        });
     }
-
-    private <T> T transaction(SqlAction<T> action) {
-        try (var connection = connect(); var transaction = connection.createStatement()) {
-            transaction.execute("BEGIN IMMEDIATE");
-            try {
-                T value = action.run(connection);
-                transaction.execute("COMMIT");
-                return value;
-            } catch (Exception failure) {
-                try { transaction.execute("ROLLBACK"); } catch (SQLException rollback) { failure.addSuppressed(rollback); }
-                if (failure instanceof ClassroomException expected) throw expected;
-                throw new ClassroomException(UNAVAILABLE, failure);
+    @Override public void remember(UUID id, String name) {
+        transaction(c -> { execute(c, "INSERT INTO classroom_players(uuid,name,search_name) VALUES(?,?,?) ON CONFLICT(uuid) DO UPDATE SET name=excluded.name,search_name=excluded.search_name", id, name, lower(name)); return null; });
+    }
+    @Override public String playerName(UUID id) {
+        return read(c -> one(c, "SELECT name FROM classroom_players WHERE uuid=?", r -> r.getString(1), id).orElse(id.toString()));
+    }
+    @Override public Page<Summary> browse(String query, int page) {
+        return read(c -> page(c, """
+            SELECT c.id,c.name,c.description,c.teacher_uuid,coalesce(p.name,c.teacher_uuid) AS teacher_name
+            FROM classrooms c LEFT JOIN classroom_players p ON p.uuid=c.teacher_uuid
+            WHERE instr(c.search_name,?)>0 OR instr(coalesce(p.search_name,''),?)>0
+            ORDER BY c.search_name,c.id LIMIT 21 OFFSET ?
+            """, r -> new Summary(uuid(r,"id"),r.getString("name"),r.getString("description"),uuid(r,"teacher_uuid"),r.getString("teacher_name")), page, lower(query), lower(query), page * PAGE_SIZE));
+    }
+    @Override public Page<Profile> players(UUID teacher, String query, int page) {
+        return read(c -> {
+            owned(c, teacher);
+            return page(c, """
+                SELECT p.* FROM classroom_players p WHERE instr(p.search_name,?)>0 AND p.uuid<>?
+                AND NOT EXISTS(SELECT 1 FROM classroom_memberships m WHERE m.player_uuid=p.uuid AND m.active=1)
+                ORDER BY p.search_name,p.uuid LIMIT 21 OFFSET ?
+                """, r -> new Profile(uuid(r,"uuid"),r.getString("name")), page, lower(query), teacher, page * PAGE_SIZE);
+        });
+    }
+    @Override public Page<Member> members(UUID teacher, int page) {
+        return read(c -> page(c, MEMBER + "WHERE m.classroom_id=? AND m.role='STUDENT' AND m.active=1 ORDER BY coalesce(p.search_name,m.player_uuid),m.id LIMIT 21 OFFSET ?",
+                SqliteClassroomRepository::membership, page, owned(c, teacher).id(), page * PAGE_SIZE));
+    }
+    @Override public int studentCount(UUID teacher) {
+        return read(c -> one(c, "SELECT count(*) FROM classroom_memberships WHERE classroom_id=? AND role='STUDENT' AND active=1", r -> r.getInt(1), owned(c, teacher).id()).orElse(0));
+    }
+    @Override public Page<Intake> intakes(UUID actor, boolean teacher, int page) {
+        return read(c -> {
+            String scope = teacher ? "i.classroom_id=?" : "i.student_uuid=?";
+            Object id = teacher ? owned(c, actor).id() : actor;
+            return page(c, INTAKE + "WHERE " + scope + " AND i.state IN('INVITED','REQUESTED') ORDER BY i.created_at,i.id LIMIT 21 OFFSET ?",
+                    SqliteClassroomRepository::intake, page, id, page * PAGE_SIZE);
+        });
+    }
+    @Override public Intake request(UUID student, UUID classroom, String enrollment) {
+        return transaction(c -> {
+            eligible(c, student);
+            one(c, "SELECT * FROM classrooms WHERE id=?", SqliteClassroomRepository::classroom, classroom).orElseThrow(() -> new ClassroomException(NOT_FOUND));
+            var pending = open(c, classroom, student);
+            if (pending.isPresent()) {
+                var i = pending.get();
+                if (i.state() == State.INVITED) return accept(c, student, i.id(), i.revision(), enrollment);
+                return i; // A repeated request must not overwrite a draft under review.
             }
-        } catch (SQLException failure) { throw new ClassroomException(UNAVAILABLE, failure); }
+            UUID id = UUID.randomUUID();
+            execute(c, "INSERT INTO classroom_intakes(id,classroom_id,student_uuid,origin,state,enrollment,created_at) VALUES(?,?,?,'REQUEST','REQUESTED',?,?)", id, classroom, student, enrollment, now());
+            return intake(c, id);
+        });
     }
-
-    @FunctionalInterface private interface SqlAction<T> { T run(Connection connection) throws SQLException; }
+    @Override public Intake invite(UUID teacher, UUID target) {
+        return transaction(c -> {
+            var classroom = owned(c, teacher); eligible(c, target);
+            one(c, "SELECT uuid FROM classroom_players WHERE uuid=?", r -> r.getString(1), target).orElseThrow(() -> new ClassroomException(NOT_FOUND));
+            var pending = open(c, classroom.id(), target);
+            if (pending.isPresent()) return pending.get();
+            UUID id = UUID.randomUUID();
+            execute(c, "INSERT INTO classroom_intakes(id,classroom_id,student_uuid,origin,state,created_at) VALUES(?,?,?,'INVITE','INVITED',?)", id, classroom.id(), target, now());
+            return intake(c, id);
+        });
+    }
+    @Override public Intake accept(UUID student, UUID id, long revision, String enrollment) {
+        return transaction(c -> accept(c, student, id, revision, enrollment));
+    }
+    private Intake accept(Connection c, UUID student, UUID id, long expected, String enrollment) throws SQLException {
+        var i = intake(c, id); student(i, student); eligible(c, student);
+        if (i.state() == State.REQUESTED) return i;
+        revision(i.revision(), expected); state(i, State.INVITED);
+        execute(c, "UPDATE classroom_intakes SET state='REQUESTED',enrollment=?,revision=revision+1 WHERE id=?", enrollment, id);
+        return intake(c, id);
+    }
+    @Override public Intake closeIntake(UUID actor, UUID id, long expected, boolean teacher) {
+        return transaction(c -> {
+            var i = intake(c, id);
+            if (teacher) sameClass(owned(c, actor), i.classroomId()); else student(i, actor);
+            if (!open(i)) return i;
+            revision(i.revision(), expected);
+            String next = teacher ? (i.state() == State.INVITED ? "CANCELLED" : "REJECTED") : (i.state() == State.INVITED ? "DECLINED" : "CANCELLED");
+            execute(c, "UPDATE classroom_intakes SET state=?,revision=revision+1 WHERE id=?", next, id);
+            return intake(c, id);
+        });
+    }
+    @Override public Member approve(UUID teacher, UUID id, long expected, String enrollment) {
+        return transaction(c -> {
+            var i = intake(c, id); sameClass(owned(c, teacher), i.classroomId());
+            if (i.state() == State.APPROVED) {
+                return one(c, MEMBER + "WHERE m.id=(SELECT membership_id FROM classroom_intakes WHERE id=?)", SqliteClassroomRepository::membership, id).orElseThrow(() -> new ClassroomException(UNAVAILABLE));
+            }
+            revision(i.revision(), expected); state(i, State.REQUESTED); eligible(c, i.studentId());
+            uniqueEnrollment(c, i.classroomId(), enrollment, null);
+            UUID membership = UUID.randomUUID();
+            execute(c, "INSERT INTO classroom_memberships(id,classroom_id,player_uuid,role,active,enrollment,joined_at) VALUES(?,?,?,'STUDENT',1,?,?)", membership, i.classroomId(), i.studentId(), enrollment, now());
+            execute(c, "UPDATE classroom_intakes SET state='APPROVED',enrollment=?,membership_id=?,revision=revision+1 WHERE id=?", enrollment, membership, id);
+            supersede(c, i.studentId());
+            return membership(c, membership);
+        });
+    }
+    @Override public Member correct(UUID teacher, UUID id, long expected, String enrollment) {
+        return transaction(c -> {
+            var m = membership(c, id); sameClass(owned(c, teacher), m.classroomId());
+            if (m.role() != Role.STUDENT || !m.active()) throw new ClassroomException(CLOSED);
+            revision(m.revision(), expected); uniqueEnrollment(c, m.classroomId(), enrollment, id);
+            execute(c, "UPDATE classroom_memberships SET enrollment=?,revision=revision+1 WHERE id=?", enrollment, id);
+            return membership(c, id);
+        });
+    }
+    @Override public Member end(UUID actor, UUID id, long expected, boolean teacher) {
+        return transaction(c -> {
+            var m = membership(c, id);
+            if (teacher) sameClass(owned(c, actor), m.classroomId());
+            else if (!m.playerId().equals(actor)) throw new ClassroomException(FORBIDDEN);
+            if (m.role() != Role.STUDENT) throw new ClassroomException(FORBIDDEN);
+            if (!m.active()) return m;
+            revision(m.revision(), expected);
+            execute(c, "UPDATE classroom_memberships SET active=0,ended_at=?,revision=revision+1 WHERE id=?", now(), id);
+            return membership(c, id);
+        });
+    }
+    private void uniqueEnrollment(Connection c, UUID classroom, String enrollment, UUID exclude) throws SQLException {
+        if (one(c, "SELECT id FROM classroom_memberships WHERE classroom_id=? AND enrollment=? COLLATE BINARY AND active=1 AND role='STUDENT' AND id<>?", r -> r.getString(1), classroom, enrollment, exclude == null ? "" : exclude).isPresent()) throw new ClassroomException(DUPLICATE_ENROLLMENT);
+    }
+    private void eligible(Connection c, UUID student) throws SQLException { if (active(c, student).isPresent()) throw new ClassroomException(ALREADY_MEMBER); }
+    private void supersede(Connection c, UUID student) throws SQLException { execute(c, "UPDATE classroom_intakes SET state='SUPERSEDED',revision=revision+1 WHERE student_uuid=? AND state IN('INVITED','REQUESTED')", student); }
+    private Optional<Intake> open(Connection c, UUID classroom, UUID student) throws SQLException {
+        return one(c, INTAKE + "WHERE i.classroom_id=? AND i.student_uuid=? AND i.state IN('INVITED','REQUESTED')", SqliteClassroomRepository::intake, classroom, student);
+    }
+    private Intake intake(Connection c, UUID id) throws SQLException { return one(c, INTAKE + "WHERE i.id=?", SqliteClassroomRepository::intake, id).orElseThrow(() -> new ClassroomException(NOT_FOUND)); }
+    private Member membership(Connection c, UUID id) throws SQLException { return one(c, MEMBER + "WHERE m.id=?", SqliteClassroomRepository::membership, id).orElseThrow(() -> new ClassroomException(NOT_FOUND)); }
+    private static boolean open(Intake i) { return i.state() == State.INVITED || i.state() == State.REQUESTED; }
+    private static void student(Intake i, UUID actor) { if (!i.studentId().equals(actor)) throw new ClassroomException(FORBIDDEN); }
+    private static void state(Intake i, State expected) { if (i.state() != expected) throw new ClassroomException(CLOSED); }
+    private static void revision(long actual, long expected) { if (actual != expected) throw new ClassroomException(STALE); }
+    private static void sameClass(Classroom c, UUID id) { if (!c.id().equals(id)) throw new ClassroomException(FORBIDDEN); }
+    private static String lower(String value) { return value.toLowerCase(Locale.ROOT); }
+    private static long now() { return System.currentTimeMillis(); }
+    private static UUID uuid(ResultSet r, String field) throws SQLException {
+        try { return UUID.fromString(r.getString(field)); } catch (RuntimeException e) { throw new SQLException("Invalid Classroom UUID", e); }
+    }
+    private static Classroom classroom(ResultSet r) throws SQLException {
+        return new Classroom(uuid(r,"id"),uuid(r,"teacher_uuid"),r.getString("name"),r.getString("description"),r.getLong("revision"),r.getString("message"));
+    }
+    private static Member membership(ResultSet r) throws SQLException {
+        long end = r.getLong("ended_at"); Long endedAt = r.wasNull() ? null : end;
+        return new Member(uuid(r,"id"),uuid(r,"classroom_id"),uuid(r,"player_uuid"),r.getString("player_name"),Role.valueOf(r.getString("role")),r.getString("enrollment"),r.getInt("active")==1,r.getLong("joined_at"),endedAt,r.getLong("revision"));
+    }
+    private static Intake intake(ResultSet r) throws SQLException {
+        return new Intake(uuid(r,"id"),uuid(r,"classroom_id"),r.getString("classroom_name"),uuid(r,"student_uuid"),r.getString("student_name"),Origin.valueOf(r.getString("origin")),State.valueOf(r.getString("state")),r.getString("enrollment"),r.getLong("revision"),r.getLong("created_at"));
+    }
+    private static void bind(PreparedStatement s, Object... args) throws SQLException { for (int n=0;n<args.length;n++) s.setObject(n+1,args[n] instanceof UUID ? args[n].toString() : args[n]); }
+    private static void execute(Connection c, String sql, Object... args) throws SQLException {
+        try (var s = c.prepareStatement(sql)) { bind(s,args); s.executeUpdate(); }
+    }
+    private static <T> List<T> query(Connection c, String sql, Row<T> map, Object... args) throws SQLException {
+        try (var s=c.prepareStatement(sql)) { bind(s,args); try(var r=s.executeQuery()) { var rows=new ArrayList<T>(); while(r.next()) rows.add(map.read(r)); return rows; } }
+    }
+    private static <T> Optional<T> one(Connection c, String sql, Row<T> map, Object... args) throws SQLException { return query(c,sql,map,args).stream().findFirst(); }
+    private static <T> Page<T> page(Connection c, String sql, Row<T> map, int page, Object... args) throws SQLException {
+        var rows=query(c,sql,map,args); return new Page<>(rows.subList(0,Math.min(rows.size(),PAGE_SIZE)),page,rows.size()>PAGE_SIZE);
+    }
+    private <T> T read(Action<T> action) {
+        try(var c=connect()) { return action.run(c); }
+        catch(ClassroomException expected) { throw expected; }
+        catch(Exception failure) { throw new ClassroomException(UNAVAILABLE,failure); }
+    }
+    private <T> T transaction(Action<T> action) {
+        return read(c -> {
+            try(var s=c.createStatement()) {
+                s.execute("BEGIN IMMEDIATE");
+                try { T result=action.run(c); s.execute("COMMIT"); return result; }
+                catch(Exception failure) { try { s.execute("ROLLBACK"); } catch(SQLException rollback) { failure.addSuppressed(rollback); } throw failure; }
+            }
+        });
+    }
+    @FunctionalInterface private interface Row<T> { T read(ResultSet r) throws SQLException; }
+    @FunctionalInterface private interface Action<T> { T run(Connection c) throws Exception; }
 }

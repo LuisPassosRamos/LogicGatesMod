@@ -135,6 +135,11 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             case ALREADY_MEMBER -> text("classroom.error.alreadyMember");
             case INVALID_NAME -> text("classroom.error.name");
             case INVALID_DESCRIPTION -> text("classroom.error.description");
+            case INVALID_ENROLLMENT -> text("classroom.error.enrollment");
+            case DUPLICATE_ENROLLMENT -> text("classroom.error.duplicateEnrollment");
+            case INVALID_MESSAGE -> text("classroom.error.message");
+            case NOT_FOUND -> text("classroom.error.notFound");
+            case CLOSED -> text("classroom.error.closed");
             case STALE -> text("classroom.error.stale");
             case UNAVAILABLE -> text("classroom.error.unavailable");
         };

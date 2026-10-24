@@ -37,7 +37,7 @@ class ClassroomRepositoryTest {
         assertEquals(1, saved.revision());
         assertEquals(saved, new ClassroomService(repository(), actor -> true).own(teacher).orElseThrow());
         assertTrue(repository().findByMember(UUID.randomUUID()).isEmpty());
-        assertEquals(1, scalar("PRAGMA user_version"));
+        assertEquals(SqliteClassroomRepository.SCHEMA_VERSION, scalar("PRAGMA user_version"));
         assertEquals(1, scalar("SELECT count(*) FROM classroom_memberships WHERE role='TEACHER' AND active=1"));
     }
 
@@ -73,7 +73,8 @@ class ClassroomRepositoryTest {
     @Test void existingStudentLinkAlsoPreventsCreatingATeacherClassroom() throws Exception {
         var service = service();
         var classroom = service.create(UUID.randomUUID(), "Existing class", "");
-        sql("INSERT INTO classroom_memberships VALUES('" + UUID.randomUUID() + "','" + classroom.id() + "','" + teacher + "','STUDENT',1)");
+        var request = service.request(teacher, classroom.id(), "00123");
+        service.approve(classroom.teacherId(), request.id(), request.revision(), "00123");
         expect(ALREADY_MEMBER, () -> service.create(teacher, "Second link", ""));
         expect(FORBIDDEN, () -> service.own(teacher));
         assertEquals(1, scalar("SELECT count(*) FROM classrooms"));
@@ -112,7 +113,7 @@ class ClassroomRepositoryTest {
 
     @Test void incompatibleSchemaIsPreservedAndNotReplaced() throws Exception {
         repository();
-        sql("PRAGMA user_version=2");
+        sql("PRAGMA user_version=999");
         byte[] before = Files.readAllBytes(database());
         expect(UNAVAILABLE, this::repository);
         assertArrayEquals(before, Files.readAllBytes(database()));

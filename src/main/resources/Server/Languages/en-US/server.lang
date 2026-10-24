@@ -104,3 +104,9 @@ logicgates.classroom.error.name = Use a class name with 1 to 64 characters, with
 logicgates.classroom.error.description = Use a description of up to 2048 characters, without control characters other than line breaks and tabs.
 logicgates.classroom.error.stale = The class has changed since this page loaded. Copy your edits, then reload before saving again.
 logicgates.classroom.error.unavailable = Classroom is unavailable. Please try again later.
+
+logicgates.classroom.error.enrollment = Use an enrollment ID with 1 to 64 characters, without line breaks or control characters.
+logicgates.classroom.error.duplicateEnrollment = This enrollment ID is already assigned to an active student in this class.
+logicgates.classroom.error.message = Use a message of up to 2048 characters.
+logicgates.classroom.error.notFound = This record is no longer available. Reload the page.
+logicgates.classroom.error.closed = This process or membership is already closed. Reload the page.
