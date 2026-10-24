@@ -38,6 +38,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private volatile java.util.function.Predicate<ClassroomRuntime.Change> notificationInterest=change->true;
     private final ClassroomPageUpdates updates=new ClassroomPageUpdates();
     private final ClassroomPageRefresh dataRefresh=new ClassroomPageRefresh(), authorizationRefresh=new ClassroomPageRefresh();
+    private final ClassroomPageChanges dataChanges=new ClassroomPageChanges();
     private volatile boolean dismissed;
     private AutoCloseable subscription, authorizationSubscription;
     private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings"};
@@ -70,10 +71,10 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         }
         if (subscription == null) {
             subscription = runtime.listen(playerRef.getUuid(),change -> busy || notificationInterest.test(change), change -> {
+                dataChanges.add(change);
                 try { dataRefresh.schedule(world::execute,() -> {
                     if (!active(ref,store)) { dispose(); return; }
-                    // The immutable filter already accepted this change, or an in-flight query needs a follow-up.
-                    if (busy) refreshPending = true; else refresh(ref,store,false,null);
+                    if (!busy) refreshIfPending(ref,store);
                 }); } catch (RuntimeException stoppedWorld) { dispose(); }
             });
         }
@@ -88,6 +89,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     }
     private void refresh(Ref<EntityStore> ref, Store<EntityStore> store, boolean reset, Message status) {
         busy = true; refreshPending = false;
+        dataChanges.clear(); // These committed changes precede the query about to be enqueued.
         var waiting = new UICommandBuilder(); discardRevokedDraft(waiting); controls(waiting,true); publish(ref,store,waiting,new UIEventBuilder());
         notificationInterest=model.interest(playerRef.getUuid());
         var stamp = access.current();
@@ -98,7 +100,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                 if (failure != null) {
                     validatedAccess = stamp;
                     failed(ref,store,failure);
-                    if (refreshPending) refresh(ref,store,false,null);
+                    refreshIfPending(ref,store);
                     return;
                 }
                 var c = new UICommandBuilder(); var e = new UIEventBuilder();
@@ -106,7 +108,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                 busy = false;
                 validatedAccess = stamp;
                 publish(ref,store,c,e);
-                if (refreshPending) refresh(ref,store,false,null);
+                refreshIfPending(ref,store);
             }); } catch (RuntimeException stoppedWorld) { dispose(); }
         });
     }
@@ -177,7 +179,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                 if (!access.current(stamp)) { busy=false; refresh(ref,store,false,null); return; }
                 if (failure != null) failed(ref,store,failure);
                 else refresh(ref,store,true,text("classroom.done"));
-                if (failure != null && refreshPending) refresh(ref,store,false,null);
+                if (failure != null) refreshIfPending(ref,store);
             }); } catch (RuntimeException stoppedWorld) { dispose(); }
         });
     }
@@ -214,6 +216,10 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             model.revoked(); ClassroomScreenRenderer.denied(c);
         }
     }
+    private void refreshIfPending(Ref<EntityStore> ref,Store<EntityStore> store) {
+        boolean changed=dataChanges.drain(change->model.interested(change,playerRef.getUuid()));
+        if (refreshPending || changed) refresh(ref,store,false,null);
+    }
     static Message error(Throwable failure) {
         Throwable cause=unwrap(failure);
         if (!(cause instanceof ClassroomException ex)) return text("classroom.error.unavailable");
@@ -238,6 +244,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     }
     private void dispose() {
         dismissed=true;
+        dataChanges.clear();
         if(subscription!=null) { try { subscription.close(); } catch(Exception ignored) { } subscription=null; }
         if(authorizationSubscription!=null) { try { authorizationSubscription.close(); } catch(Exception ignored) { } authorizationSubscription=null; }
     }
