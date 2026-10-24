@@ -168,6 +168,22 @@ class ClassroomPolishTest {
         assertTrue(interest.test(closure)); assertTrue(model.interested(closure,student));
         assertFalse(interest.test(new sisso.logicsim.classroom.ClassroomRuntime.Change(UUID.randomUUID(),teacher,true)));
     }
+    @Test void selectedAdmissionBecomesReadOnlyWhenClosureCancelsItDuringEditing() {
+        UUID classroom=UUID.randomUUID(), student=UUID.randomUUID();
+        var invited=new Intake(UUID.randomUUID(),classroom,"Class",student,"Student",Origin.INVITE,State.INVITED,null,0,1);
+        var cancelled=new Intake(invited.id(),classroom,"Class",student,"Student",Origin.INVITE,State.CANCELLED,null,1,1);
+        var page=new ClassroomPage(null,null,null); var home=new Home(null,null,"",false);
+        page.model.apply(new Screen(home,Kind.INTAKES,new Page<>(List.of(invited),0,false),0),true);
+        assertTrue(page.model.select(invited.id().toString()));
+        assertFalse(page.model.apply(new Screen(home,Kind.INTAKES,new Page<>(List.of(cancelled),0,false),0),false));
+        assertEquals(cancelled,page.model.selected);
+        var c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),false);
+        assertFalse(value(c,"#Primary.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#Secondary.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#EnrollmentForm.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#MetaState.TextSpans").toString().contains("server.logicgates.classroom.state.cancelled"));
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(command->command.selector!=null && command.selector.endsWith(".Value")));
+    }
     private static String resource(String path) throws Exception {
         try(var stream=ClassroomPolishTest.class.getResourceAsStream("/Common/UI/Custom/"+path)) { assertNotNull(stream); return new String(stream.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8); }
     }

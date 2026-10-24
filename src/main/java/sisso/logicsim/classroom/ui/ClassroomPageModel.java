@@ -41,6 +41,14 @@ final class ClassroomPageModel {
                 || !Objects.equals(classroomId(screen), classroomId(next)) || !Objects.equals(membershipId(screen), membershipId(next));
         if (contextChanged) { selected = null; confirming = false; reset = true; }
         screen = next; kind = next.kind(); page = next.rows().number();
+        if (selected instanceof Intake previous) {
+            var latest=next.rows().items().stream().filter(row->row instanceof Intake i && i.id().equals(previous.id()))
+                    .map(Intake.class::cast).findFirst().orElse(null);
+            // Terminal processes have no editable operation left. Preserve local fields, but remove stale actions.
+            if (latest!=null && latest.state()!=previous.state() && latest.state()!=State.INVITED && latest.state()!=State.REQUESTED) {
+                selected=latest; confirming=false;
+            }
+        }
         if (selected != null && next.rows().items().stream().noneMatch(row -> id(row).equals(id(selected)))) {
             // Absence from one page may mean reordering/pagination. Keep the draft and old UUID/revision until explicit reload.
             confirming = false;

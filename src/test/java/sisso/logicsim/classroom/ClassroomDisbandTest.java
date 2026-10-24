@@ -52,6 +52,17 @@ class ClassroomDisbandTest {
         var again=reopened.request(student,next.id(),"00123"); reopened.approve(teacher,again.id(),again.revision(),"00123");
         assertEquals(next.id(),reopened.home(student).classroom().id());
     }
+    @Test void closureDoesNotCancelAdmissionsOrLinksOfAnotherClassroom() {
+        var s=service(); var original=s.create(teacher,"Original",""); UUID other=UUID.randomUUID();
+        var unrelated=s.create(other,"Unrelated",""); var active=s.request(student,unrelated.id(),"00123");
+        s.approve(other,active.id(),active.revision(),"00123");
+        s.request(applicant,original.id(),"002"); var pending=s.request(applicant,unrelated.id(),"003");
+        s.disband(teacher,original.id(),original.revision());
+        assertEquals(unrelated,s.home(student).classroom()); assertEquals(unrelated,s.own(other).orElseThrow());
+        assertEquals(List.of(pending),s.intakes(other,true,0).items());
+        assertEquals(1,s.browse(applicant,"",0).items().size());
+        s.approve(other,pending.id(),pending.revision(),"003"); assertEquals(unrelated,s.home(applicant).classroom());
+    }
     @Test void permissionOwnershipAndPresentedRevisionAreRequired() {
         var allowed=new AtomicBoolean(true); var repo=new SqliteClassroomRepository(db());
         var s=new ClassroomService(repo,id->allowed.get()); var c=s.create(teacher,"Original","");
