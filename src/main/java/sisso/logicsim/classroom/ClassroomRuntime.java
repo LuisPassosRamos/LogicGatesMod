@@ -32,39 +32,69 @@ public final class ClassroomRuntime implements AutoCloseable {
     // Accessed only on the executor. Initialization is enqueued before all operations.
     private ClassroomService service;
     public record Change(UUID classroom, UUID player, boolean directory) { }
-    private record Listener(UUID owner, Consumer<Change> callback) { }
+    private record Listener(UUID owner, Predicate<Change> interested, Consumer<Change> callback) { }
     private final java.util.Map<UUID, Listener> listeners = new ConcurrentHashMap<>();
-    private record AuthorizationListener(UUID owner, Consumer<Boolean> callback) { }
-    private final java.util.Map<UUID, AuthorizationListener> authorizationListeners = new ConcurrentHashMap<>();
+    private static final class AuthorizationListeners {
+        final java.util.Map<UUID, Consumer<Boolean>> callbacks = new ConcurrentHashMap<>();
+        Boolean allowed;
+    }
+    private final java.util.Map<UUID, AuthorizationListeners> authorizationListeners = new ConcurrentHashMap<>();
     public AutoCloseable listenAuthorization(UUID owner, Consumer<Boolean> listener) {
         java.util.Objects.requireNonNull(owner);
         UUID token = UUID.randomUUID();
-        if (!closed) authorizationListeners.put(token, new AuthorizationListener(owner, listener));
-        if (closed) authorizationListeners.remove(token);
-        return () -> authorizationListeners.remove(token);
+        java.util.Objects.requireNonNull(listener);
+        authorizationListeners.compute(owner,(id,group)->{
+            if (closed) return group;
+            if (group==null) group=new AuthorizationListeners();
+            group.callbacks.put(token,listener); return group;
+        });
+        return () -> authorizationListeners.computeIfPresent(owner,(id,group)->{
+            group.callbacks.remove(token); return group.callbacks.isEmpty() ? null : group;
+        });
     }
     /** Native permission events are separate from committed data changes and never resend the MOTD. */
     public void authorizationChanged(UUID player) {
-        if (closed) return;
-        boolean allowed = canTeach.test(player);
-        authorizationListeners.values().stream().filter(listener -> listener.owner().equals(player)).forEach(listener -> {
-            try { listener.callback().accept(allowed); } catch (RuntimeException failure) { log.accept(failure); }
-        });
+        var group=authorizationListeners.get(player);
+        if (group!=null) authorizationChanged(player,group);
+    }
+    private void authorizationChanged(UUID player,AuthorizationListeners group) {
+        boolean allowed;
+        java.util.List<Consumer<Boolean>> callbacks;
+        synchronized(group) {
+            if (closed || group.callbacks.isEmpty()) return;
+            allowed=canTeach.test(player);
+            if (group.allowed!=null && group.allowed==allowed) return;
+            group.allowed=allowed;
+            callbacks=java.util.List.copyOf(group.callbacks.values());
+        }
+        for(var callback:callbacks) {
+            try { callback.accept(allowed); } catch (RuntimeException failure) { log.accept(failure); }
+        }
     }
     public void authorizationChangedForOpenPages() {
-        authorizationListeners.values().stream().map(AuthorizationListener::owner).distinct().forEach(this::authorizationChanged);
+        authorizationListeners.forEach(this::authorizationChanged);
     }
     /** A token belongs to one page, not to the player's name or current list position. */
     public AutoCloseable listen(UUID owner, Consumer<Change> listener) {
-        UUID token = UUID.randomUUID(); listeners.put(token, new Listener(owner, listener));
+        return listen(owner,change->true,listener);
+    }
+    /** Filter immutable page context before scheduling work on a world. Presence keeps the unfiltered channel. */
+    public AutoCloseable listen(UUID owner, Predicate<Change> interested, Consumer<Change> listener) {
+        java.util.Objects.requireNonNull(interested); java.util.Objects.requireNonNull(listener);
+        UUID token = UUID.randomUUID();
+        if (!closed) listeners.put(token, new Listener(owner, interested, listener));
+        if (closed) listeners.remove(token);
         return () -> listeners.remove(token);
     }
     public void forget(UUID player) {
         listeners.values().removeIf(listener -> player.equals(listener.owner()));
-        authorizationListeners.values().removeIf(listener -> player.equals(listener.owner()));
+        authorizationListeners.remove(player);
     }
     private void changed(Change change) {
-        listeners.values().forEach(listener -> { try { listener.callback().accept(change); } catch (RuntimeException failure) { log.accept(failure); } });
+        listeners.values().forEach(listener -> {
+            try { if(listener.interested().test(change)) listener.callback().accept(change); }
+            catch (RuntimeException failure) { log.accept(failure); }
+        });
     }
 
     public ClassroomRuntime(Path dataDirectory, Predicate<UUID> canTeach, Consumer<Throwable> log) {

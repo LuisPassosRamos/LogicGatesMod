@@ -60,7 +60,7 @@ final class ClassroomServerChecks {
             permissions.addUserToGroup(subject,group);
             permissions.addGroupPermission(group,teacherPermission);
             permissions.removeGroupPermission(group,teacherPermission);
-            check(values.equals(List.of(true,false,true,false,false,true,false)),"native permission/OP/group events refresh authorization subscribers");
+            check(values.equals(List.of(true,false,true,false,true,false)),"native permission/OP/group events refresh only effective authorization transitions");
             check(data.get()==0,"permission invalidations do not publish data/MOTD changes");
             passed.add("native individual permission, OP and group permission events reach production authorization listeners without data or MOTD notifications");
         } catch(Exception failure) { throw new CompletionException(failure); }

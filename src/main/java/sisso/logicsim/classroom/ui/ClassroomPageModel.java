@@ -4,6 +4,7 @@ import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import sisso.logicsim.classroom.ClassroomRuntime.Change;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /** World-thread state, without Hytale dependencies. Selected revisions remain those actually presented to the user. */
 final class ClassroomPageModel {
@@ -17,12 +18,20 @@ final class ClassroomPageModel {
     void revoked() { screen = null; selected = null; confirming = false; editRevision = 0; }
     boolean teacher() { return screen != null && screen.home().member() != null && screen.home().member().role() == Role.TEACHER; }
     boolean interested(Change change, UUID actor) {
+        return interested(screen,kind,change,actor);
+    }
+    Predicate<Change> interest(UUID actor) {
+        Screen snapshot=screen; Kind section=kind;
+        return change -> interested(snapshot,section,change,actor);
+    }
+    private static boolean interested(Screen screen,Kind kind,Change change,UUID actor) {
         if (actor.equals(change.player())) return true;
         var classroom = screen == null ? null : screen.home().classroom();
         if (classroom != null && (classroom.id().equals(change.classroom()) || classroom.teacherId().equals(change.player()))) return true;
         if (change.directory() && (kind == Kind.BROWSE || kind == Kind.PLAYERS)) return true;
         // Creating any active link can close this class's requests, including ones outside the current page.
-        if (change.directory() && change.classroom() != null && teacher() && kind == Kind.INTAKES) return true;
+        if (change.directory() && change.classroom() != null && screen!=null && screen.home().member()!=null
+                && screen.home().member().role()==Role.TEACHER && kind == Kind.INTAKES) return true;
         return screen != null && screen.rows().items().stream().anyMatch(row ->
                 row instanceof Member m && m.playerId().equals(change.player())
                 || row instanceof Intake i && i.studentId().equals(change.player()));

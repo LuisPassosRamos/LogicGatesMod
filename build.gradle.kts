@@ -167,6 +167,16 @@ tasks.register<JavaExec>("benchmarkCircuit") {
     args(layout.buildDirectory.file("reports/benchmarks/circuit.json").get().asFile.absolutePath)
 }
 
+tasks.register<JavaExec>("benchmarkClassroom") {
+    description = "Measures isolated Classroom queries, permission fan-out and native UI packet sizes; excludes client and world ticks."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("sisso.logicsim.classroom.ui.ClassroomBenchmark")
+    jvmArgs("--enable-native-access=ALL-UNNAMED", "-Djava.util.logging.manager=com.hypixel.hytale.logger.backend.HytaleLogManager")
+    args(layout.buildDirectory.file("reports/benchmarks/classroom.json").get().asFile.absolutePath)
+}
+
 tasks.register<JavaExec>("prepareClassroomUiFixture") {
     description = "Creates a new isolated Classroom database for UI testing; requires classroomFixtureTeacher/Student UUIDs."
     group = "verification"

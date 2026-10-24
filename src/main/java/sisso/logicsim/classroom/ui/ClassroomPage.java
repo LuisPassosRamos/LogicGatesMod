@@ -5,7 +5,6 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.protocol.packets.interface_.CustomPage;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.Message;
@@ -34,7 +33,10 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     final ClassroomPageModel model = new ClassroomPageModel();
     final ClassroomPageAccess access = new ClassroomPageAccess();
     private ClassroomPageAccess.Stamp validatedAccess = access.current();
-    private boolean busy = true, refreshPending;
+    private volatile boolean busy = true;
+    private boolean refreshPending;
+    private volatile java.util.function.Predicate<ClassroomRuntime.Change> notificationInterest=change->true;
+    private final ClassroomPageUpdates updates=new ClassroomPageUpdates();
     private volatile boolean dismissed;
     private AutoCloseable subscription, authorizationSubscription;
     private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings"};
@@ -66,7 +68,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             });
         }
         if (subscription == null) {
-            subscription = runtime.listen(playerRef.getUuid(), change -> {
+            subscription = runtime.listen(playerRef.getUuid(),change -> busy || notificationInterest.test(change), change -> {
                 try { world.execute(() -> {
                     if (!active(ref,store)) { dispose(); return; }
                     if (!model.interested(change,playerRef.getUuid())) return;
@@ -86,6 +88,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private void refresh(Ref<EntityStore> ref, Store<EntityStore> store, boolean reset, Message status) {
         busy = true; refreshPending = false;
         var waiting = new UICommandBuilder(); discardRevokedDraft(waiting); controls(waiting,true); publish(ref,store,waiting,new UIEventBuilder());
+        notificationInterest=model.interest(playerRef.getUuid());
         var stamp = access.current();
         runtime.screen(playerRef.getUuid(),model.kind,model.query,model.page).whenComplete((screen,failure) -> {
             try { world.execute(() -> {
@@ -97,9 +100,9 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
                     if (refreshPending) refresh(ref,store,false,null);
                     return;
                 }
-                busy = false;
                 var c = new UICommandBuilder(); var e = new UIEventBuilder();
                 if (!renderResponse(stamp,screen,reset,status,c,e)) { refresh(ref,store,false,null); return; }
+                busy = false;
                 validatedAccess = stamp;
                 publish(ref,store,c,e);
                 if (refreshPending) refresh(ref,store,false,null);
@@ -183,6 +186,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         // A query can finish before the queued permission handler runs. Consume revocation here too.
         discardRevokedDraft(c);
         boolean fields=model.apply(screen,reset);
+        if(playerRef!=null) notificationInterest=model.interest(playerRef.getUuid());
         render(c,e,fields);
         c.set("#Status.TextSpans",status!=null ? status : ClassroomScreenRenderer.status(model,!fields));
         return access.current(stamp);
@@ -228,7 +232,8 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private void acknowledge(Ref<EntityStore> ref,Store<EntityStore> store) { publish(ref,store,new UICommandBuilder(),new UIEventBuilder()); }
     private void publish(Ref<EntityStore> ref,Store<EntityStore> store,UICommandBuilder c,UIEventBuilder e) {
         if (!active(ref,store)) return;
-        store.getComponent(ref,Player.getComponentType()).getPageManager().updateLegacyCustomPage(new CustomPage(getClass().getName(),false,false,getLifetime(),c.getCommands(),e.getEvents()));
+        store.getComponent(ref,Player.getComponentType()).getPageManager().updateLegacyCustomPage(
+                updates.packet(getClass().getName(),getLifetime(),c,e,model.screen==null ? null : model.screen.rows().items()));
     }
     private void dispose() {
         dismissed=true;
