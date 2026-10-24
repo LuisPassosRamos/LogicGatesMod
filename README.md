@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.6**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Classroom implementa o MVP administrativo com turmas, ingresso, matrícula, membros e mensagem do dia em SQLite; a rc.6 corrige a leitura das telas refinadas na rc.5 e mantém a atualização automática de permissões, aguardando validação no cliente.
+Mod educacional de circuitos para **Hytale 0.7.4**, pré-versão **1.4.0-rc.6**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas. Classroom implementa o MVP administrativo com turmas, ingresso, matrícula, membros e mensagem do dia em SQLite; a rc.6 corrige a leitura das telas refinadas na rc.5 e mantém a atualização automática de permissões, com abertura docente capturada em pt-BR e validação detalhada de interação pendente.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 

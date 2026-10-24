@@ -1,6 +1,6 @@
 # Classroom rc.6 — roteiro de aceite
 
-**Pendente no cliente.** A [rc.5 falhou na leitura do markup](evidence/classroom/2026-10-24-rc5-client.md) antes de testar `/classroom`; rc.6 corrige Buscar e Próxima. Não converter aprovação de JUnit, CI ou servidor iniciado em aprovação destas telas. As [evidências rc.4](evidence/classroom/2026-10-24-rc4-client.md) permanecem históricas. Não é necessário repetir a campanha manual consolidada de circuitos/fabricação.
+**Aceite parcial no cliente.** A [visão geral docente em pt-BR foi capturada](evidence/classroom/2026-10-24-rc6-client.md), com build ID rc.6 e controles Anterior/Próxima legíveis. São quatro arquivos idênticos da mesma tela; abertura confirmada, interações e demais telas ainda pendentes. O usuário retomará os testes detalhados quando puder. A [rc.5 falhou na leitura do markup](evidence/classroom/2026-10-24-rc5-client.md) antes de testar `/classroom`; rc.6 corrige Buscar e Próxima. Não converter aprovação de JUnit, CI ou servidor iniciado em aprovação destas telas. As [evidências rc.4](evidence/classroom/2026-10-24-rc4-client.md) permanecem históricas. Não é necessário repetir a campanha manual consolidada de circuitos/fabricação.
 
 Instalar somente o JAR rc.6, com o servidor/save encerrado, substituindo o antigo. Preservar banco e mundos. Registrar build ID, idioma, resolução e escala. Executar em pt-BR/en-US, 1280×720 e 1920×1080 com escala padrão. Capturar resultados representativos e todas as falhas, sem registrar cada clique.
 

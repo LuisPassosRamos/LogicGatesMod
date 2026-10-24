@@ -1,6 +1,6 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.6**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. O novo layout e a atualização visual automática permanecem pendentes de aceite.**
+Disponível em **1.4.0-rc.6**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. A [abertura e a visão geral docente em pt-BR foram capturadas na rc.6](evidence/classroom/2026-10-24-rc6-client.md); interação, demais telas e atualização visual automática continuam pendentes de aceite.**
 
 ## Instalar e autorizar
 
@@ -60,7 +60,7 @@ Antes de instalar uma atualização, encerre o servidor normalmente e copie o di
 
 ## Roteiro de cliente — rc.6
 
-**Estado rc.6: pendente no cliente.** Primeiro, entrar no mundo sem erro de markup e abrir/fechar/reabrir `/classroom`. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte também o [roteiro de aceite da rc.6](classroom-rc6-acceptance.md).
+**Estado rc.6: aceite parcial no cliente.** A [captura da visão geral docente](evidence/classroom/2026-10-24-rc6-client.md) confirma abertura em pt-BR e rótulos Anterior/Próxima completos. Fechar/Esc/reabrir e os testes detalhados continuam pendentes. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. Consulte também o [roteiro de aceite da rc.6](classroom-rc6-acceptance.md).
 
 | Cenário | Resultado esperado |
 | --- | --- |
