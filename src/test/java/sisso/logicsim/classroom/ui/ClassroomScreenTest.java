@@ -20,6 +20,59 @@ class ClassroomScreenTest {
     }
     Home teacherHome(Classroom c) { return new Home(c,teacherLink,"Professor",true); }
     Screen screen(Home home,Kind kind,Object...rows) { return new Screen(home,kind,new Page<>(List.of(rows),0,false),rows.length); }
+    @Test void allScreensSendWholeAnchorObjectsWithTheNativeHeightAndMargins() {
+        var longClassroom=new Classroom(id,teacher,"T".repeat(64),"D".repeat(90)+"\nSegunda linha",3,"M".repeat(60)+"\n00123");
+        var pupil=member(student,Role.STUDENT,"00123",0);
+        var applicant=new Home(null,null,"",true);
+        var request=new Intake(UUID.randomUUID(),id,longClassroom.name(),student,"Aluno",Origin.REQUEST,State.REQUESTED,"00123",0,1770000000000L);
+        var invite=new Intake(UUID.randomUUID(),id,longClassroom.name(),student,"Aluno",Origin.INVITE,State.INVITED,null,0,1770000000000L);
+        var screens=List.of(
+                screen(teacherHome(longClassroom),Kind.MEMBERS),
+                screen(teacherHome(longClassroom),Kind.MEMBERS,pupil),
+                screen(teacherHome(longClassroom),Kind.INTAKES,request),
+                screen(teacherHome(longClassroom),Kind.INTAKES,invite),
+                screen(teacherHome(longClassroom),Kind.PLAYERS,new Profile(student,"Aluno")),
+                screen(teacherHome(longClassroom),Kind.SETTINGS),
+                screen(new Home(longClassroom,pupil,"Professor",false),Kind.DETAIL),
+                screen(applicant,Kind.BROWSE),
+                screen(applicant,Kind.BROWSE,new Summary(id,longClassroom.name(),longClassroom.description(),teacher,"Professor")),
+                screen(applicant,Kind.INTAKES,invite),
+                screen(applicant,Kind.INTAKES,request),
+                screen(applicant,Kind.SETTINGS));
+        for (var screen:screens) for (boolean reset:new boolean[]{true,false}) {
+            var page=new ClassroomPage(null,null,null);
+            page.model.apply(screen,true);
+            if (!screen.rows().items().isEmpty()) assertTrue(page.model.select(ClassroomPageModel.id(screen.rows().items().getFirst()).toString()));
+            var commands=new UICommandBuilder(); page.render(commands,new UIEventBuilder(),reset);
+            var anchors=new HashMap<String,BsonDocument>();
+            for (var command:commands.getCommands()) {
+                assertFalse(command.selector!=null && command.selector.contains(".Anchor."),
+                        "Nested Anchor selectors disconnect the 0.7.4 client: "+command.selector);
+                if (command.selector!=null && command.selector.endsWith(".Anchor")) {
+                    assertEquals(CustomUICommandType.Set,command.type);
+                    var anchor=BsonDocument.parse(command.data).getDocument("0");
+                    assertEquals(Set.of("Height","Bottom"),anchor.keySet());
+                    assertTrue(anchor.getInt32("Height").getValue()>0);
+                    anchors.put(command.selector,anchor);
+                }
+            }
+            assertEquals(screen.home().classroom()==null ? 34 : 84,anchors.get("#HeaderTitle.Anchor").getInt32("Height").getValue());
+            assertEquals(0,anchors.get("#HeaderTitle.Anchor").getInt32("Bottom").getValue());
+            if (screen.kind()!=Kind.SETTINGS) {
+                assertEquals(8,anchors.get("#DetailTitle.Anchor").getInt32("Bottom").getValue());
+                assertEquals(12,anchors.get("#DescriptionText.Anchor").getInt32("Bottom").getValue());
+                if (screen.rows().items().isEmpty() && screen.home().classroom()!=null) {
+                    assertEquals(112,anchors.get("#DetailTitle.Anchor").getInt32("Height").getValue());
+                    assertEquals(108,anchors.get("#DescriptionText.Anchor").getInt32("Height").getValue());
+                }
+            }
+            if (screen.home().classroom()!=null) {
+                assertEquals(84,anchors.get("#MessageText.Anchor").getInt32("Height").getValue());
+                assertEquals(12,anchors.get("#MessageText.Anchor").getInt32("Bottom").getValue());
+            }
+            assertEquals((screen.kind()==Kind.SETTINGS?1:3)+(screen.home().classroom()==null?0:1),anchors.size());
+        }
+    }
     @Test void selectionUsesStableMembershipUuidAndRefreshKeepsThePresentedRevision() {
         var model=new ClassroomPageModel(); var a=member(student,Role.STUDENT,"00123",0);
         var b=member(UUID.randomUUID(),Role.STUDENT,"002",0);

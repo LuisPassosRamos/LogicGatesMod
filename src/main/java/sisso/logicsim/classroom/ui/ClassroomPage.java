@@ -11,6 +11,8 @@ import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
+import com.hypixel.hytale.server.core.ui.Anchor;
+import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
@@ -167,7 +169,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         c.set("#NavSettings.Visible",teacher || !linked && home.canTeach());
         c.set("#NavSettings.Text",linked ? text("classroom.nav.settings") : text("classroom.create"));
         c.set("#HeaderTitle.TextSpans",classroom==null ? text("classroom.title") : Message.raw(classroom.name()));
-        c.set("#HeaderTitle.Anchor.Height",classroom==null ? 34 : Math.max(34,((classroom.name().codePointCount(0,classroom.name().length())+29)/30)*28));
+        height(c,"#HeaderTitle",classroom==null ? 34 : Math.max(34,((classroom.name().codePointCount(0,classroom.name().length())+29)/30)*28),0);
         c.set("#HeaderInfo.TextSpans",classroom==null ? text("classroom.oneClass") : teacher
                 ? text("classroom.classInfo").param("teacher",home.teacherName()).param("count",model.screen.studentCount())
                 : text("classroom.studentInfo").param("teacher",home.teacherName()).param("enrollment",home.member().enrollment()));
@@ -217,7 +219,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             if (model.kind==Kind.DETAIL) { meta=memberText(home.member()); action(c,"Danger",model.confirming?text("classroom.confirmLeave"):text("classroom.leave")); }
             c.set("#DetailTitle.TextSpans",title); c.set("#DetailMeta.TextSpans",meta); literal(c,"#DescriptionText",description);
             String rawTitle=title.getRawText();
-            c.set("#DetailTitle.Anchor.Height",rawTitle==null ? 64 : Math.max(40,((rawTitle.codePointCount(0,rawTitle.length())+19)/20)*28));
+            height(c,"#DetailTitle",rawTitle==null ? 64 : Math.max(40,((rawTitle.codePointCount(0,rawTitle.length())+19)/20)*28),8);
             c.set("#CancelConfirm.Visible",model.confirming);
         }
         if (resetFields) {
@@ -234,7 +236,14 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private static void literal(UICommandBuilder c,String selector,String content) {
         c.set(selector+".TextSpans",Message.raw(content));
         int lines=content.lines().mapToInt(line->Math.max(1,(line.codePointCount(0,line.length())+29)/30)).sum();
-        c.set(selector+".Anchor.Height",Math.max(40,lines*24+12));
+        height(c,selector,Math.max(40,lines*24+12),12);
+    }
+    private static void height(UICommandBuilder c,String selector,int height,int bottom) {
+        // Hytale 0.7.4 resolves Anchor as a whole markup property, not Anchor.Height.
+        var anchor=new Anchor();
+        anchor.setHeight(Value.of(height));
+        anchor.setBottom(Value.of(bottom));
+        c.setObject(selector+".Anchor",anchor);
     }
     private static void action(UICommandBuilder c,String selector,Message label) { c.set("#"+selector+".Visible",true); c.set("#"+selector+".Text",label); }
     private static void controls(UICommandBuilder c,boolean disabled) { for(String control:OPERATIONS) c.set(control+".Disabled",disabled); }
