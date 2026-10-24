@@ -37,6 +37,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private boolean refreshPending;
     private volatile java.util.function.Predicate<ClassroomRuntime.Change> notificationInterest=change->true;
     private final ClassroomPageUpdates updates=new ClassroomPageUpdates();
+    private final ClassroomPageRefresh dataRefresh=new ClassroomPageRefresh(), authorizationRefresh=new ClassroomPageRefresh();
     private volatile boolean dismissed;
     private AutoCloseable subscription, authorizationSubscription;
     private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings"};
@@ -59,7 +60,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         if (authorizationSubscription == null) {
             authorizationSubscription = runtime.listenAuthorization(playerRef.getUuid(), allowed -> {
                 access.changed(allowed); // Invalidates old callbacks before scheduling any world work.
-                try { world.execute(() -> {
+                try { authorizationRefresh.schedule(world::execute,() -> {
                     if (!active(ref,store)) { dispose(); return; }
                     var c = new UICommandBuilder(); discardRevokedDraft(c); controls(c,true);
                     publish(ref,store,c,new UIEventBuilder());
@@ -69,9 +70,9 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         }
         if (subscription == null) {
             subscription = runtime.listen(playerRef.getUuid(),change -> busy || notificationInterest.test(change), change -> {
-                try { world.execute(() -> {
+                try { dataRefresh.schedule(world::execute,() -> {
                     if (!active(ref,store)) { dispose(); return; }
-                    if (!model.interested(change,playerRef.getUuid())) return;
+                    // The immutable filter already accepted this change, or an in-flight query needs a follow-up.
                     if (busy) refreshPending = true; else refresh(ref,store,false,null);
                 }); } catch (RuntimeException stoppedWorld) { dispose(); }
             });
