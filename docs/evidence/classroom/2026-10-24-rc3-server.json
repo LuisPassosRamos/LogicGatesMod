@@ -1,25 +1,19 @@
 {
   "build": {
-    "buildId": "1.4.0-rc.3+d4a6c2c77d19",
+    "buildId": "1.4.0-rc.3+db6586d63971",
     "dirty": "false",
     "hytaleVersion": "0.7.4",
-    "revision": "68aa3db9aa1d",
-    "sourceFingerprint": "d4a6c2c77d195821d7a9bc1f332393a8d70141940fcd5cfb43cefcf1d98613c2",
+    "revision": "d560cd697b95",
+    "sourceFingerprint": "db6586d63971b4fd14caa40309d3a12224d913c174f9e7657cc53f8ba9626ff6",
     "version": "1.4.0-rc.3"
   },
-  "sha256": "40d1d1c10d5fc10e4c20392eb7c50bce149f8a625336eb8df26ccb137a65ea3f",
+  "sha256": "fd5e9cce042f3dbd10ea5a45461fe62d720c16bbab64254f7783a37f0c0c1614",
   "hytaleVersion": "0.7.4",
   "passed": true,
   "phases": [
     {
-      "measurements": {
-        "meanEvaluationMs": 0.349205859375,
-        "p95EvaluationMs": 0.4844,
-        "evaluationSamples": 256,
-        "monitoringMeanMs": 0.07316953125,
-        "nodes": 47,
-        "lastEvaluationMs": 0.2921
-      },
+      "error": "",
+      "phase": "create",
       "checks": [
         "all 64 terminal power/connection states load with compact physical and selection hitboxes",
         "lever and lamp: all 16 connection masks in four horizontal rotations match their neighbors",
@@ -75,18 +69,25 @@
         "production Classroom request requires approval, preserves 00123 and persists an offline invitation and literal message",
         "native teacher permission revocation, classroom ownership and one-active-link policy reject unauthorized mutations"
       ],
-      "phase": "create",
-      "error": "",
+      "measurements": {
+        "lastEvaluationMs": 0.2229,
+        "nodes": 47,
+        "monitoringMeanMs": 0.083779296875,
+        "evaluationSamples": 256,
+        "p95EvaluationMs": 0.4788,
+        "meanEvaluationMs": 0.287184375
+      },
       "passed": true
     },
     {
+      "passed": true,
       "measurements": {
-        "meanEvaluationMs": 2.6376923076923076,
-        "p95EvaluationMs": 11.8141,
+        "meanEvaluationMs": 2.820476923076923,
+        "p95EvaluationMs": 12.5703,
         "evaluationSamples": 13,
-        "monitoringMeanMs": 0.00421,
+        "monitoringMeanMs": 0.004196666666666667,
         "nodes": 47,
-        "lastEvaluationMs": 1.8671
+        "lastEvaluationMs": 1.7428
       },
       "checks": [
         "real server restart rebuilds independent networks and restores source",
@@ -114,8 +115,7 @@
         "native teacher permission revocation, classroom ownership and one-active-link policy reject unauthorized mutations"
       ],
       "phase": "reload",
-      "error": "",
-      "passed": true
+      "error": ""
     }
   ]
 }

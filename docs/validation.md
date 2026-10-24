@@ -95,7 +95,7 @@ Na rodada local de 23/10/2026: **751 testes JUnit**, **28 testes Python** e **64
 
 ## Classroom administrativo — rc.3
 
-Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **800 testes JUnit**, **32 testes Python** e **76 verificações nativas** (53 na criação, 23 após reinício real). Build `1.4.0-rc.3+d4a6c2c77d19`, revisão de produção `68aa3db9aa1d`, árvore limpa na compilação. SHA-256 do JAR: `40d1d1c10d5fc10e4c20392eb7c50bce149f8a625336eb8df26ccb137a65ea3f`.
+Em 24/10/2026, `fullCheck` local Windows/Java 25 foi aprovado: **801 testes JUnit**, **32 testes Python** e **76 verificações nativas** (53 na criação, 23 após reinício real). Build `1.4.0-rc.3+db6586d63971`, revisão de produção `d560cd697b95`, árvore limpa na compilação. SHA-256 do JAR: `fd5e9cce042f3dbd10ea5a45461fe62d720c16bbab64254f7783a37f0c0c1614`.
 
 A [evidência nativa preservada](evidence/classroom/2026-10-24-rc3-server.json) identifica o pacote exato e seus cenários. Confirma persistência da matrícula `00123`, convite offline e mensagem literal entre processos, além de aprovação, correção, saída, reingresso e remoção. As regressões de circuitos/receitas/assets continuam aprovadas pela automação.
 
