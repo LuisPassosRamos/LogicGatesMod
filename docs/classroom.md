@@ -1,10 +1,10 @@
 # Classroom — MVP administrativo e validação
 
-Disponível em **1.4.0-rc.3**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **As novas telas aguardam validação no cliente com professor e aluno em en-US/pt-BR.** Os relatos de rc.1/rc.2 aprovam os cenários históricos abaixo, sem aprovar automaticamente esta compilação.
+Disponível em **1.4.0-rc.4**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros e mensagem do dia estão implementados. **A rc.3 desconectou o cliente ao abrir a página; rc.4 corrige os comandos de âncora e aguarda nova validação com professor e aluno em en-US/pt-BR.** Os relatos de rc.1/rc.2 aprovam os cenários históricos abaixo, sem aprovar automaticamente esta compilação.
 
 ## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. Instale apenas `build/libs/LogicGates-1.4.0-rc.3.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.3.zip` inclui o JAR, checksum e documentação. Preserve os mundos e faça backup antes de atualizar o banco.
+Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.4.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.4.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A correção rc.3 → rc.4 não muda o esquema nem requer apagar dados.
 
 Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
@@ -56,12 +56,13 @@ Esquema v1: turma e vínculo docente; v2: diretório, processos, matrícula e hi
 
 Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um backup v1 aberto na rc.3 será migrado novamente, preservando identidades.
 
-## Roteiro de cliente — rc.3
+## Roteiro de cliente — rc.4
 
 **Estado: pendente.** Use duas contas e registre build ID, data, idioma, resolução/escala e resultado de cada caso.
 
 | Cenário | Resultado esperado |
 | --- | --- |
+| Reabrir após a falha rc.3; navegar por turma, ingressos, convite e administração | Sem desconexão por seletor; títulos, descrição e mensagem legíveis; fechar/Esc e reabrir funcionam |
 | Abrir sem OP/permissão docente | Descoberta e próprios ingressos acessíveis; criação/administração indisponíveis |
 | Atualizar instalação rc.2 com turma salva | Mesma turma/UUID/conteúdo; backup anterior à migração disponível |
 | Professor criar/editar e reconectar | Uma turma, conteúdo salvo e painel correto |
@@ -91,6 +92,10 @@ Em 24/10/2026, o usuário confirmou no build `1.4.0-rc.1+43804c498938`, pt-BR: a
 Na mesma data, build `1.4.0-rc.2+a04a304d984f`, confirmou turma preservada após sair/entrar no mundo e usar Recarregar, além da regressão do contador. O relato não confirma separadamente en-US, revogação ou encerramento completo do processo.
 
 ![Turma persistida na rc.2](evidence/classroom/2026-10-24-classroom-rc2-pt-BR.png)
+
+Na mesma data, a abertura de `/classroom` no build instalado `1.4.0-rc.3+db6586d63971` desconectou o cliente com `CustomUI Set command selector doesn't match a markup property. Selector: #HeaderTitle.Anchor.Height`. A captura e o log do cliente confirmam falha de resolução do seletor. O JAR instalado correspondia ao pacote rc.3; o ZIP não foi a causa. A rc.4 envia o objeto `Anchor` completo para os dois títulos, descrição e mensagem, preservando margens. Testes de transporte passaram; o reteste no cliente permanece pendente.
+
+![Erro de seletor no cliente rc.3](evidence/classroom/2026-10-24-rc3-anchor-client-error.png)
 
 ## O que a automação comprova
 

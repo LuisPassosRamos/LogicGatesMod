@@ -41,6 +41,12 @@ O usuário confirmou [abertura, dez cliques com atualização, fechamento e reab
 
 Na rc.2, `/classroom` abre o formulário e `/classroom --probe` mantém a prova original. Os campos usam os componentes nativos TextField/MultilineTextField e bindings `@Name`/`@Description`. A resposta do banco retorna ao mundo e confere a instância da página ativa antes de chamar `PageManager.updateLegacyCustomPage`, sem outra passagem assíncrona que pudesse atualizar uma página substituída. A sintaxe nativa de concessão de permissão é `perm user add <UUID> <permissão>`; a integração também verifica esse caminho.
 
+### Atualização de âncoras
+
+O cliente 0.7.4 recusou `#HeaderTitle.Anchor.Height` e desconectou na rc.3. Para alterar dimensões, enviar a propriedade inteira: criar `Anchor`, definir `setHeight(Value.of(height))` e usar `UICommandBuilder.setObject("#HeaderTitle.Anchor", anchor)`. Preservar também margens como `Bottom` ao substituir o objeto. Esse padrão foi conferido no próprio JAR 0.7.4: `com.hypixel.hytale.builtin.adventure.memories.page.MemoriesPage` constrói `Anchor`/`Value` e chama `setObject(selector + ".Anchor", anchor)` para posicionar marcadores. O builder serializa via `Anchor.CODEC`; aceitar um seletor como string no servidor não comprova que ele existe no markup do cliente.
+
+Na rc.4, a regressão de transporte exercita todos os tipos de tela e seleção, com textos longos e multilinha; confere as propriedades `Height`/`Bottom` no objeto serializado e impede o retorno de `.Anchor.*`. Esse teste não implementa o interpretador de UI do cliente.
+
 ## Mudança de versão
 
 Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.

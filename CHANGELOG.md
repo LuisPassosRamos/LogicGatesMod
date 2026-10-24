@@ -4,7 +4,15 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.3.
+Nenhuma alteração registrada após 1.4.0-rc.4.
+
+## [1.4.0-rc.4] - 2026-10-24
+
+### Correção de Custom UI
+- Corrigida a desconexão ao abrir `/classroom`: alturas dos títulos, descrição e mensagem agora usam `setObject(selector + ".Anchor", Anchor)` com o codec nativo 0.7.4, preservando as margens do layout. Seletores como `#HeaderTitle.Anchor.Height` eram recusados pelo cliente.
+- Regressão de transporte cobre as seis telas, seleções e atualizações, incluindo textos longos e multilinha. Confere objetos de âncora serializados e rejeita seletores de subpropriedades; não substitui renderização no cliente.
+- Documentação distingue o JAR instalável do ZIP de entrega e registra a falha real no cliente rc.3. A rc.4 requer repetir abertura, navegação e o roteiro com professor/aluno.
+- Esquema SQLite, dados existentes, circuitos e assets preservados.
 
 ## [1.4.0-rc.3] - 2026-10-24
 
