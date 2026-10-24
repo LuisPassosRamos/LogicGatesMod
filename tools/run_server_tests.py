@@ -39,6 +39,7 @@ def main():
     parser.add_argument("--assets", type=Path)
     parser.add_argument("--timeout", type=int, default=180, help="Seconds per server process")
     parser.add_argument("--keep-world", action="store_true", help="Keep the successful temporary universe")
+    parser.add_argument("--benchmark", action="store_true", help="Measure isolated native workloads instead of create/restart tests")
     args = parser.parse_args()
     config = configuration()
     target_version = config["hytaleVersion"]
@@ -91,7 +92,7 @@ def main():
                "hytaleVersion": target_version, "passed": False, "phases": []}
     print(f"Testing {identity['buildId']}; isolated universe: {work}", flush=True)
     try:
-        for phase in ("create", "reload"):
+        for phase in (("benchmark",) if args.benchmark else ("create", "reload")):
             log = reports / f"{phase}.log"
             command = [java, "-Xmx2G", "-jar", str(server),
                        "--assets", str(assets), "--auth-mode", "offline",
@@ -122,7 +123,7 @@ def main():
         (reports / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     if not args.keep_world:
         remove_test_universe(work)
-    print(f"PASS: create + real restart. Reports: {reports}", flush=True)
+    print(f"PASS: {'native benchmark' if args.benchmark else 'create + real restart'}. Reports: {reports}", flush=True)
 
 
 if __name__ == "__main__":

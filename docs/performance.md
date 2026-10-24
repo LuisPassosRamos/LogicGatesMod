@@ -1,46 +1,69 @@
 # Medições de desempenho
 
-## Como reproduzir
+## Reproduzir e interpretar
 
 ```powershell
 .\gradlew.bat benchmarkCircuit
+.\gradlew.bat benchmarkServer
 ```
 
-O relatório fica em `build/reports/benchmarks/circuit.json`, com ID da compilação, Java, sistema, processadores disponíveis, heap máximo, aquecimento, amostras, mediana, p95 e bytes alocados por avaliação (quando suportado pela JVM).
+Ambos usam dez aquecimentos e 25 amostras por cenário, mediana/p95 e bytes alocados na thread medida quando a JVM oferece esse recurso. Não há limiar de aprovação de desempenho no CI: máquinas, JIT e carga variam. Asserções funcionais impedem medir cenários vazios ou uma lâmpada que não acompanha a fonte.
 
-São 12 cenários: linhas e grades de cabos, cadeias das sete portas e redes independentes, em 100, 1.000 e 10.000 componentes principais. As fontes/consumidores podem acrescentar um ou dois nós ao total. Cada cenário aquece 10 vezes e mede 25 avaliações completas. Não há limiar de aprovação de desempenho no CI, pois máquinas e carga variam.
+`benchmarkCircuit` mede somente o avaliador Java: linhas, grades, cadeias das sete portas e redes independentes em 100, 1.000 e 10.000 componentes principais. Reconstrói o grafo em cada amostra; exclui Hytale, jogadores e renderização. Grava `build/reports/benchmarks/circuit.json`.
 
-O benchmark mede o avaliador Java e reconstrói o grafo em cada amostra, como uma avaliação real. Exclui descoberta de seções/holders, publicação no Hytale, física, renderização e jogadores. As entradas permanecem constantes durante cada série; tabelas, alterações de topologia e desligamento continuam cobertos pelos testes funcionais.
+`benchmarkServer` exige `Assets.zip`, aceita `HYTALE_ASSETS` ou `-PhytaleAssets` como `fullCheck` e usa um universo descartável próprio. Mede blocos, seções e holders reais do servidor 0.7.4; cronometra separadamente o monitoramento em repouso e alternância de fonte/coleta/solução/publicação visual. A matriz varia redes independentes, alteração de uma única fonte, grade de 1.024 cabos e 128 bancadas não elétricas. Os nós, tipos e holders são conferidos e registrados; não basta cronometrar uma chamada sem circuitos.
 
-## No servidor
-
-`/logicenergy` informa os tempos da avaliação completa, do avaliador e do monitoramento de mudanças, com janela de até 256 amostras por mundo. Média, p95, máximo e última medição pertencem à janela atual; não são estatísticas persistidas. Consultar métricas não grava dados no mundo.
-
-Os JSONs nativos por fase incluem uma amostra dos tempos do pequeno universo de integração. Eles demonstram a instrumentação, não a capacidade de uma turma. Para investigar custo em repouso, deixar um circuito carregado sem alterações e observar o monitoramento; depois alternar fontes/remover cabos e comparar as avaliações.
-
-## Decisão de otimização
-
-Ainda se monitora o conjunto carregado por tick e a invalidação pode reconstruir todos os circuitos carregados do mundo. Uma alteração localizada não implica custo somente local. O próximo experimento deve variar tamanho da rede, quantidade de redes independentes, blocos com holders não lógicos, seções e jogadores.
-
-Não definir número máximo de alunos ou afirmar ausência de lag a partir deste benchmark. Introduzir invalidação por rede/região somente se as medições no uso real indicarem necessidade, preservando os testes de seções vazias, orientação e reconstrução.
+As séries nativas executam dentro de uma tarefa na thread do mundo. Incluem APIs reais de blocos, mas **não** a espera até o próximo tick, trânsito de rede, jogadores, física entre amostras, renderização ou concorrência de outras tarefas. São uma referência controlada de custo, não um ensaio completo de servidor com alunos. Relatórios ficam em `build/reports/server-integration/<execução>/selftest-benchmark.json` e `summary.json`, com build e SHA-256 do JAR. O workflow nativo manual executa também esse benchmark; a CI Windows/Linux mantém o benchmark puro sem exigir assets licenciados.
 
 ## Referência local de 23/10/2026
 
-Medição do incremento 1.2.0, ID `1.2.0+794c65612510`, Windows/Java 25.0.3+9-LTS. Valores desta máquina, sem clientes conectados; não são metas de CI.
+Windows 11, Java 25.0.3+9-LTS, 12 processadores disponíveis, heap de 2 GiB, sem clientes. Horários UTC nos JSONs podem cair em 24/10; esta data usa America/Sao_Paulo.
+
+Avaliador: ID `1.3.3+321dbcd773a9`. Valores em milissegundos; fontes/consumidores podem acrescentar um ou dois nós.
 
 | Cenário | Componentes principais | Mediana (ms) | p95 (ms) |
 | --- | --- | --- | --- |
-| `cable-line` | 100 | 0.346 | 0.574 |
-| `cable-grid` | 100 | 0.329 | 0.496 |
-| `mixed-gate-chain` | 100 | 0.631 | 1.053 |
-| `independent-networks` | 100 | 0.106 | 0.129 |
-| `cable-line` | 1000 | 0.879 | 1.508 |
-| `cable-grid` | 1000 | 0.600 | 0.851 |
-| `mixed-gate-chain` | 1000 | 1.520 | 1.862 |
-| `independent-networks` | 1000 | 1.218 | 1.564 |
-| `cable-line` | 10000 | 6.225 | 7.319 |
-| `cable-grid` | 10000 | 2.881 | 5.022 |
-| `mixed-gate-chain` | 10000 | 7.875 | 10.879 |
-| `independent-networks` | 10000 | 4.080 | 7.003 |
+| `cable-line` | 100 | 0.543 | 0.883 |
+| `cable-grid` | 100 | 0.352 | 0.503 |
+| `mixed-gate-chain` | 100 | 0.521 | 1.040 |
+| `independent-networks` | 100 | 0.294 | 0.460 |
+| `cable-line` | 1000 | 1.035 | 1.479 |
+| `cable-grid` | 1000 | 0.743 | 1.635 |
+| `mixed-gate-chain` | 1000 | 1.882 | 2.626 |
+| `independent-networks` | 1000 | 0.952 | 1.392 |
+| `cable-line` | 10000 | 5.293 | 6.481 |
+| `cable-grid` | 10000 | 3.263 | 3.828 |
+| `mixed-gate-chain` | 10000 | 12.074 | 13.510 |
+| `independent-networks` | 10000 | 5.426 | 7.397 |
 
-Os relatórios JSON de cada execução guardam as condições e alocações. Pequenas diferenças entre rodadas são esperadas; comparar versões nas mesmas condições. O teste nativo adicional confirmou coleta de tempos e comandos, mas não substitui medição com alunos/jogadores.
+Servidor: ID `1.3.3+321dbcd773a9`, execução `20261023-231935-16e847`. O cenário manteve 220 seções carregadas. As bancadas acrescentam 128 holders reais não elétricos, mantendo 1.025 nós lógicos.
+
+| Cenário | Nós | Monitor mediana / p95 (ms) | Alternar e avaliar mediana / p95 (ms) |
+| --- | --- | --- | --- |
+| `loaded-empty-sections` | 0 | 0.086 / 0.142 | 0.104 / 0.135 |
+| `independent-networks-16` | 64 | 0.208 / 0.278 | 1.715 / 2.417 |
+| `independent-networks-128` | 512 | 0.389 / 0.653 | 3.637 / 4.633 |
+| `one-source-in-128-networks` | 512 | 0.107 / 0.117 | 0.993 / 1.991 |
+| `connected-grid-1024` | 1025 | 0.122 / 0.156 | 1.822 / 2.750 |
+| `grid-with-128-unrelated-benches` | 1025 | 0.156 / 0.234 | 1.890 / 2.784 |
+
+## Mudança medida e limites
+
+O monitoramento antigo reconstruía mapas de holders em todo tick, inclusive sem alterações. A versão 1.3.3 compara os vínculos do índice anterior, reaproveita o snapshot em repouso e usa chaves primitivas. Somente mudanças reais alocam outro índice; troca de holder na mesma posição, retirada/retorno e seções vazias continuam detectadas.
+
+A tabela compara alocações por chamada de monitoramento na mesma máquina e matriz. Antes: `1.3.3+eee3c401535b`, execução `20261023-231332-39a89c`; depois: ID acima. São duas execuções sequenciais, não uma garantia de tempo sob toda carga. Não houve mudança no avaliador booleano.
+
+| Cenário | Antes (bytes) | Depois (bytes) |
+| --- | --- | --- |
+| `loaded-empty-sections` | 24879 | 14233 |
+| `independent-networks-16` | 35276 | 21583 |
+| `independent-networks-128` | 114264 | 73544 |
+| `one-source-in-128-networks` | 88664 | 47944 |
+| `connected-grid-1024` | 113840 | 38752 |
+| `grid-with-128-unrelated-benches` | 116912 | 41824 |
+
+Na grade de 1.024 cabos, a alocação observada no monitoramento caiu aproximadamente 66%. Continua havendo trabalho por seção/porta e a invalidação ainda pode reconstruir todos os circuitos carregados do mundo. O caso de uma fonte entre 128 redes explicita esse custo global; não introduz atualização por região.
+
+`/logicenergy` apresenta monitoramento e avaliação completa/solver numa janela limitada a 256 amostras por mundo. Consultar métricas não grava dados. O teste multiplayer do usuário aprovou funcionamento, sem instrumentação que permita inferir quantidade máxima de alunos.
+
+Antes de mudar o escopo de invalidação, medir vários jogadores, mundos e construções maiores, incluindo custo em repouso e alternância contínua. Preservar regressões de orientação, ciclos, holders, seções vazias e reconstrução. Os relatórios são regeneráveis; comparar versões nas mesmas condições.

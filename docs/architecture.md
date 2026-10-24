@@ -26,7 +26,7 @@ Entradas aceitam cabo, alavanca ou saída de outra porta. Saídas alimentam cabo
 
 | Local em `src/main/java/sisso/logicsim/` | Responsabilidade |
 | --- | --- |
-| `LogicSimPlugin` | Registro de componentes, sistemas, interação e comando |
+| `LogicSimPlugin` | Registro de componentes, sistemas, interação e comandos |
 | `circuit/` | Posições, faces, compatibilidade, grafo, avaliação e resultado; sem acesso ao mundo Hytale |
 | `components/` | Intenção persistente da alavanca e identificação de cabo, lâmpada e porta |
 | `systems/` | Índices por mundo, ciclo de vida de entidades/seções e avaliação após invalidação |
@@ -34,7 +34,7 @@ Entradas aceitam cabo, alavanca ou saída de outra porta. Saídas alimentam cabo
 | `util/LogicBlockTypes` | Identificadores e estados dos blocos |
 | `util/BuildInfo` | Identificação da compilação empacotada |
 | `interactions/` | Acionamento da alavanca |
-| `commands/` | Diagnóstico `/logicenergy` |
+| `commands/` | Ajuda `/logichelp`, inspeção `/logicinspect` e diagnóstico `/logicenergy` |
 
 `CircuitWorldState` é transitório e pertence ao ChunkStore de um mundo, acessado na thread apropriada. O índice acompanha entidades ativas e holders estacionados em seções carregadas. Mudanças na orientação e na disponibilidade das faces invalidam a avaliação, inclusive quando uma seção vazia retorna.
 
@@ -52,7 +52,7 @@ Somente a intenção da alavanca é fonte autoritativa persistente. Componentes/
 
 Consultas não forçam carregamento de seções. Qualquer face de entrada relevante indisponível suspende a porta com saída/indicador desligados; indisponível não é uma entrada removida. As laterais fechadas do NOT não o suspendem. Redes deixam de incluir seus trechos descarregados.
 
-A invalidação atual pode reconstruir o conjunto carregado do mundo, e há verificações de holders/topologia por tick. Medir tempo de avaliação, custo em repouso e múltiplos jogadores antes de trocar isso por invalidação localizada. Ainda não há benchmark que justifique uma promessa de capacidade máxima.
+A invalidação atual pode reconstruir o conjunto carregado do mundo, e há verificações de holders/topologia por tick. Medir tempo de avaliação, custo em repouso e múltiplos jogadores antes de trocar isso por invalidação localizada. `benchmarkServer` mede descoberta/publicação em seções reais, em cenários controlados sem clientes; não justifica uma promessa de capacidade máxima. O monitoramento compara identidade/posição/quantidade dos holders com o índice anterior e só reconstrói esse índice quando muda. Seções vazias e holders não elétricos não criam mapas temporários por tick.
 
 ## Ensino, inspeção e métricas (1.2.0)
 

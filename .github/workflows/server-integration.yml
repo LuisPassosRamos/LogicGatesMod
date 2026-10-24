@@ -20,10 +20,10 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Full check (Unix)
         if: runner.os != 'Windows'
-        run: bash ./gradlew --no-daemon fullCheck
+        run: bash ./gradlew --no-daemon fullCheck benchmarkServer
       - name: Full check (Windows)
         if: runner.os == 'Windows'
-        run: .\gradlew.bat --no-daemon fullCheck
+        run: .\gradlew.bat --no-daemon fullCheck benchmarkServer
       - name: Upload verified distribution
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:

@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Resource;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import sisso.logicsim.circuit.BlockPosition;
 import sisso.logicsim.circuit.CircuitSnapshot;
 import sisso.logicsim.diagnostics.CircuitMetrics;
@@ -17,7 +18,7 @@ import java.util.Set;
 public final class CircuitWorldState implements Resource<ChunkStore> {
     public final Map<Ref<ChunkStore>, BlockPosition> liveNodes = new HashMap<>();
     public final Set<Ref<ChunkStore>> sections = new HashSet<>();
-    public final Map<Ref<ChunkStore>, Map<Short, Holder<ChunkStore>>> parkedNodes = new HashMap<>();
+    public final Map<Ref<ChunkStore>, Short2ObjectMap<Holder<ChunkStore>>> parkedNodes = new HashMap<>();
     public final Map<BlockPosition, GateTopology> gateTopologies = new HashMap<>();
     public boolean dirty = true;
     public boolean scheduled;

@@ -2,13 +2,14 @@ package sisso.logicsim.systems;
 
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.system.tick.TickingSystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockComponentSection;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.ChunkSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectMaps;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import sisso.logicsim.LogicSimPlugin;
 import sisso.logicsim.circuit.BlockPosition;
 import sisso.logicsim.circuit.CircuitEvaluator;
@@ -18,7 +19,6 @@ import sisso.logicsim.util.BlockComponentAccess;
 import sisso.logicsim.util.LogicBlockTypes;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 
 /** Coalesces changes and evaluates after ECS processing, on the same world thread. */
@@ -49,28 +49,59 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
     private static void detectParkedChanges(Store<ChunkStore> store, CircuitWorldState state) {
         // Parked holders are not live ECS entities: their addition/removal emits no RefSystem callback.
         // Compare only logic holder bindings in already-loaded sections; never scan block palettes.
-        var current = new HashMap<Ref<ChunkStore>, Map<Short, Holder<ChunkStore>>>();
+        int seen = 0;
+        for (var sectionRef : state.sections) {
+            if (!sectionRef.isValid()) continue;
+            var entities = store.getComponent(sectionRef, BlockComponentSection.getComponentType());
+            var previous = state.parkedNodes.get(sectionRef);
+            int count = 0;
+            if (entities != null && entities.getBlockHolders() != null) {
+                var iterator = Short2ObjectMaps.fastIterator(entities.getBlockHolders());
+                while (iterator.hasNext()) {
+                    var entry = iterator.next();
+                    if (!isLogic(entry.getValue())) continue;
+                    count++;
+                    // Identity matters: replacing a holder at the same position/count
+                    // must invalidate, including an electrically identical replacement.
+                    if (previous == null || previous.get(entry.getShortKey()) != entry.getValue()) {
+                        rebuildParkedIndex(store, state);
+                        return;
+                    }
+                }
+            }
+            if (previous != null) {
+                seen++;
+                if (count != previous.size()) { rebuildParkedIndex(store, state); return; }
+            }
+        }
+        if (seen != state.parkedNodes.size()) rebuildParkedIndex(store, state);
+    }
+
+    private static void rebuildParkedIndex(Store<ChunkStore> store, CircuitWorldState state) {
+        // Allocate snapshots only after an actual binding change; idle ticks reuse them.
+        state.parkedNodes.clear();
         for (var sectionRef : state.sections) {
             if (!sectionRef.isValid()) continue;
             var entities = store.getComponent(sectionRef, BlockComponentSection.getComponentType());
             if (entities == null || entities.getBlockHolders() == null) continue;
-            var nodes = new HashMap<Short, Holder<ChunkStore>>();
-            for (var entry : entities.getBlockHolders().short2ObjectEntrySet()) {
-                var holder = entry.getValue();
-                if (holder.getComponent(LogicSimPlugin.getLeverComponentType()) != null
-                        || holder.getComponent(LogicSimPlugin.getLampComponentType()) != null
-                        || holder.getComponent(LogicSimPlugin.getCableComponentType()) != null
-                        || holder.getComponent(LogicSimPlugin.getGateComponentType()) != null) {
-                    nodes.put(entry.getShortKey(), holder);
-                }
+            Short2ObjectOpenHashMap<Holder<ChunkStore>> nodes = null;
+            var iterator = Short2ObjectMaps.fastIterator(entities.getBlockHolders());
+            while (iterator.hasNext()) {
+                var entry = iterator.next();
+                if (!isLogic(entry.getValue())) continue;
+                if (nodes == null) nodes = new Short2ObjectOpenHashMap<>();
+                nodes.put(entry.getShortKey(), entry.getValue());
             }
-            if (!nodes.isEmpty()) current.put(sectionRef, nodes);
+            if (nodes != null) state.parkedNodes.put(sectionRef, nodes);
         }
-        if (!current.equals(state.parkedNodes)) {
-            state.parkedNodes.clear();
-            state.parkedNodes.putAll(current);
-            state.invalidate();
-        }
+        state.invalidate();
+    }
+
+    private static boolean isLogic(Holder<ChunkStore> holder) {
+        return holder.getComponent(LogicSimPlugin.getLeverComponentType()) != null
+                || holder.getComponent(LogicSimPlugin.getLampComponentType()) != null
+                || holder.getComponent(LogicSimPlugin.getCableComponentType()) != null
+                || holder.getComponent(LogicSimPlugin.getGateComponentType()) != null;
     }
 
     public static void recalculate(World world) {
@@ -87,10 +118,7 @@ public final class EnergyPropagationSystem extends TickingSystem<ChunkStore> {
             if (section == null || entities == null || entities.getBlockHolders() == null) continue;
             for (var entry : entities.getBlockHolders().short2ObjectEntrySet()) {
                 var holder = entry.getValue();
-                if (holder.getComponent(LogicSimPlugin.getLeverComponentType()) == null
-                        && holder.getComponent(LogicSimPlugin.getLampComponentType()) == null
-                        && holder.getComponent(LogicSimPlugin.getCableComponentType()) == null
-                        && holder.getComponent(LogicSimPlugin.getGateComponentType()) == null) continue;
+                if (!isLogic(holder)) continue;
                 int blockIndex = entry.getShortKey() & 0xffff;
                 positions.add(new BlockPosition(
                         (section.getX() << 5) + ChunkUtil.xFromIndex(blockIndex),

@@ -54,14 +54,14 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
 
     private final class SelfTestCommand extends CommandBase {
         private final RequiredArg<String> phase =
-                withRequiredArg("phase", "create or reload", ArgTypes.STRING);
+                withRequiredArg("phase", "create, reload or benchmark", ArgTypes.STRING);
         SelfTestCommand() { super("logic-selftest", "Runs isolated LogicGates server tests."); }
         @Override
         protected void executeSync(CommandContext context) {
             if (context.isPlayer()) throw new IllegalStateException("Console-only test command");
             String action = phase.get(context);
-            if (!action.equals("create") && !action.equals("reload")) {
-                throw new IllegalArgumentException("Expected create or reload");
+            if (!List.of("create", "reload", "benchmark").contains(action)) {
+                throw new IllegalArgumentException("Expected create, reload or benchmark");
             }
             run(action);
         }
@@ -97,7 +97,13 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
             if (failure != null) { finish(phase, failure); return; }
             world.execute(() -> {
                 try {
-                    if (phase.equals("create")) {
+                    if (phase.equals("benchmark")) {
+                        new NativeCircuitBenchmark().run(world).whenComplete((report, error) -> {
+                            if (report != null) measurements = report;
+                            if (error == null) passed.add("native workload node counts, stable idle polling and changed lamp publication");
+                            finish(phase, error);
+                        });
+                    } else if (phase.equals("create")) {
                         create(world);
                         var gates = new GateServerChecks(passed);
                         gates.create(world);
@@ -106,6 +112,7 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                         var parity = new ParityServerChecks(gates, passed);
                         parity.create(world);
                         new WorkshopServerChecks(passed).create(world);
+                        ParkedIndexServerChecks.run(world, passed);
                         gates.automaticUpdates(world).thenCompose(ignored -> inverters.automaticUpdates(world))
                                 .thenCompose(ignored -> parity.automaticUpdates(world))
                                 .thenCompose(ignored -> automaticUpdates(world))

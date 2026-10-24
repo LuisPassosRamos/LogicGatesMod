@@ -135,6 +135,17 @@ tasks.register("fullCheck") {
     dependsOn(serverIntegrationTest)
 }
 
+tasks.register<Exec>("benchmarkServer") {
+    description = "Measures actual loaded sections, idle monitoring and world publication; requires local Assets.zip."
+    group = "verification"
+    dependsOn(tasks.build, "serverTestJar")
+    workingDir(projectDir)
+    val arguments = mutableListOf(python.get(), "tools/run_server_tests.py", "--benchmark",
+        "--production-jar", productionJar.get().asFile.absolutePath)
+    providers.gradleProperty("hytaleAssets").orNull?.let { arguments.addAll(listOf("--assets", it)) }
+    commandLine(arguments)
+}
+
 tasks.register<JavaExec>("benchmarkCircuit") {
     description = "Measures evaluator median/p95 and allocations at 100, 1000 and 10000 components."
     group = "verification"
