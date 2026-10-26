@@ -30,6 +30,24 @@ Depois de `build serverTestJar`, também é possível chamar `python tools/run_s
 
 `runServer` mantém a configuração de assets do launcher do ScaffoldIt. O Devtools antigo foi excluído do runtime por incompatibilidade com 0.7.4; recompile e reinicie após alterações Java. O build não regrava o manifest de origem.
 
+## Verificação proporcional à alteração
+
+Manter a cobertura existente e ajustar a frequência ao risco. A [revisão de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) registra custos e limites; não muda automaticamente o workflow CI atual.
+
+| Durante o trabalho | Verificação local apropriada |
+| --- | --- |
+| Documentação, evidência ou revisão sem produção | `python tools/verify_project.py repository`; sem novo JAR ou servidor |
+| Classroom: UI, permissões, banco ou regra | `.\gradlew.bat test --tests "sisso.logicsim.classroom.*" --console=plain`; conferir projeto se houver traduções/markup |
+| Avaliador de circuitos | `.\gradlew.bat test --tests "sisso.logicsim.circuit.*" --console=plain`; ampliar se houver integração/asset afetado |
+| Verificador Python específico | `python -m unittest discover -s tools/tests -p test_custom_ui.py`, trocando o padrão pelo arquivo afetado |
+| Artes, receitas, modelos ou gerador | Gerador/verificador afetado em `--check` e regressões de assets correspondentes |
+| Desempenho alterado | Benchmark do subsistema, comparando condições equivalentes; benchmark nativo quando envolver mundo/publicação |
+| Candidata final de produção | `fullCheck` na revisão final; roteiro de cliente nos cenários afetados e CI Windows/Linux |
+
+Não executar `check`, `build` e `fullCheck` em sequência como três etapas independentes sobre a mesma revisão aprovada: a última já contém as anteriores. Testes direcionados durante a edição não substituem a validação completa de entrega. Repetir a bateria depois de nova alteração de produção, falha ou preocupação material não resolvida; alterações apenas de documentação não exigem reiniciar servidor para provar código que não mudou.
+
+Guardar a saída completa e os relatórios em disco, trazendo ao contexto de análise contagens, resultado e trechos úteis de falhas. Não reler arquivos e logs inteiros já examinados sem nova razão. Essas escolhas reduzem trabalho repetido e volume de contexto sem excluir cenários. Não regenerar um JAR já distribuído/testado apenas para incorporar o registro de sua validação.
+
 ## Fonte única de versão
 
 Edite `Version` em `src/main/resources/manifest.json` e registre a mesma versão em [CHANGELOG.md](../CHANGELOG.md). `ServerVersion` é também a fonte única do alvo Hytale, consumida pelo settings Gradle, ferramentas e plugin de integração. Não há uma segunda versão do mod em `gradle.properties`.

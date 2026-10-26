@@ -1,6 +1,6 @@
 # Classroom rc.9 — roteiro de aceite
 
-**Pendente no cliente.** O usuário ainda não testou a rc.8. Esta candidata acrescenta encerramento de turma pelo professor e preserva as otimizações anteriores; os relatos/capturas da rc.4/rc.6/rc.7 continuam históricos. Atividades permanecem somente especificadas.
+**Aceite parcial por relato em 25/10/2026.** O usuário confirmou que o encerramento funcionou perfeitamente após a entrega rc.9; veja o [escopo do relato](evidence/classroom/2026-10-25-rc9-client-report.md). Os demais cenários abaixo continuam sem confirmação individual. As otimizações da rc.8 permanecem e sua demora inicial não foi reavaliada explicitamente. Os relatos/capturas da rc.4/rc.6/rc.7 continuam históricos. Atividades permanecem somente especificadas.
 
 Instale somente o JAR rc.9, com o mundo/servidor parado, substituindo o anterior. Guarde o ZIP fora de `mods`. Preserve banco e mundos; há migração v4 com backup automático. Voltar a uma versão antiga exige restaurar também o banco correspondente. Candidata automatizada: **`1.4.0-rc.9+e16132240905`**. SHA-256: `395c4b5bec09337c1428c20e9b14d9053f13970aba58c750d86c81dce6c4d8b9`. O resultado automatizado e a identidade exata ficam no [registro de validação](validation.md#encerramento-de-turma--rc9).
 

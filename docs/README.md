@@ -31,3 +31,5 @@ A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo fic
 - [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.
 
 A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. [Roteiro atual](classroom-rc9-acceptance.md); nenhuma interação desta candidata foi aprovada no cliente.
+
+A [revisão de otimização e testes de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) distingue ajustes de runtime, código sem chamadas internas e execução proporcional das verificações. O [relato rc.9](evidence/classroom/2026-10-25-rc9-client-report.md) confirma o encerramento da turma, mantendo pendências sem confirmação individual.
