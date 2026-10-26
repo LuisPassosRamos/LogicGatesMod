@@ -1,6 +1,6 @@
 # Classroom — aceite da 1.4.0-rc.12
 
-**Cliente: reteste pendente.** Esta candidata corrige a [desconexão da rc.11](evidence/classroom/2026-10-26-rc11-client-blocker.md) causada por `.Disabled` em campos de texto. A correção não muda o esquema v5 nem o conteúdo já salvo. As verificações automatizadas não aprovam renderização no cliente.
+**Cliente: fluxo principal confirmado em multiplayer**, por [capturas e relatos discriminados](evidence/classroom/2026-10-26-rc12-client.md). Abertura, atividade, entrega sem OP, preview, cópia, edição/proteção, revisões, nota e limpeza ao retornar ao mundo foram confirmados no escopo descrito. Resoluções/escalas e casos complementares permanecem pendentes. Esta candidata corrige a [desconexão da rc.11](evidence/classroom/2026-10-26-rc11-client-blocker.md) causada por `.Disabled` em campos de texto. A correção não muda o esquema v5 nem o conteúdo já salvo. As verificações automatizadas não aprovam renderização no cliente.
 
 Com o mundo parado, substitua o JAR anterior por `LogicGates-1.4.0-rc.12.jar` em `mods`, mantendo apenas uma versão do mod. Guarde o ZIP fora de `mods`. Preserve o banco e a pasta `submissions`; não apague dados para corrigir este erro.
 
