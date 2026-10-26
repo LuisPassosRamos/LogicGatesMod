@@ -182,7 +182,7 @@ tasks.register<JavaExec>("prepareClassroomUiFixture") {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
-    mainClass.set("sisso.logicsim.classroom.ClassroomUiFixture")
+    mainClass.set("sisso.logicsim.classroom.LearningUiFixture")
     jvmArgs("--enable-native-access=ALL-UNNAMED")
     doFirst {
         val teacher = providers.gradleProperty("classroomFixtureTeacher").orNull

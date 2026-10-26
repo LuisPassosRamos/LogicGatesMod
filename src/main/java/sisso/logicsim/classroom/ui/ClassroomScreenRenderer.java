@@ -26,6 +26,7 @@ final class ClassroomScreenRenderer {
         var home=model.screen.home(); var classroom=home.classroom(); boolean teacher=model.teacher();
         boolean linked=home.member()!=null, settings=model.kind==Kind.SETTINGS;
         boolean list=!settings && model.kind!=Kind.DETAIL;
+        c.set("#Activities.Visible",linked);
         int width=list ? 600 : 900;
         c.set("#Navigation.Visible",true); c.set("#Details.Visible",true); c.set("#NoAccess.Visible",false);
         c.set("#NavClass.Text",teacher ? text("classroom.nav.class") : linked ? text("classroom.nav.myClass") : text("classroom.nav.browse"));
@@ -140,6 +141,7 @@ final class ClassroomScreenRenderer {
         return model.selected==null ? text("classroom.ready") : text("classroom.recordHint");
     }
     static void denied(UICommandBuilder c) {
+        c.set("#Activities.Visible",false);
         c.clear("#Rows"); c.set("#Navigation.Visible",false); c.set("#ListPanel.Visible",false); c.set("#Details.Visible",true);
         for(String panel:new String[]{"View","Form","ActionDock"}) c.set("#"+panel+".Visible",false);
         c.set("#NoAccess.Visible",true); c.set("#HeaderTitle.TextSpans",text("classroom.title")); height(c,"#HeaderTitle",34,4);
@@ -166,7 +168,7 @@ final class ClassroomScreenRenderer {
         c.setObject(selector+".Anchor",anchor); // 0.7.4 rejects selectors such as .Anchor.Height.
     }
     /** Conservative wrapping estimate by region; actual font/layout remains a client acceptance check. */
-    private static int textHeight(String value,int width,int font,int lineHeight,int minimum) {
+    static int textHeight(String value,int width,int font,int lineHeight,int minimum) {
         int lines=0;
         for (String paragraph:value.split("\\n",-1)) {
             lines++; double used=0; var words=WORD.matcher(paragraph);

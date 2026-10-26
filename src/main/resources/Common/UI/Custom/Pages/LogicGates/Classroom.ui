@@ -121,6 +121,7 @@ $C.@Container {
       Anchor: (Height: 40);
       $C.@SecondaryTextButton #Reload { @Anchor = (Width: 160, Right: 10); @Text = %server.logicgates.classroom.reload; }
       $C.@CancelTextButton #Close { @Anchor = (Width: 130, Right: 12); @Text = %server.logicgates.classroom.probe.close; }
+      $C.@SecondaryTextButton #Activities { @Anchor = (Width: 150, Right: 12); @Text = %server.logicgates.learning.activities; Visible: false; }
       Label #Build { FlexWeight: 1; Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
     }
   }

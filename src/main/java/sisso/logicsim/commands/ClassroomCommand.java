@@ -30,7 +30,11 @@ public final class ClassroomCommand extends AbstractPlayerCommand {
         if (player == null) return;
         if (Boolean.TRUE.equals(probe.get(context))) {
             player.getPageManager().openCustomPage(ref, store, new ClassroomProbePage(playerRef));
+        } else if (sisso.logicsim.LogicSimPlugin.getAreas()!=null && sisso.logicsim.LogicSimPlugin.getAreas().current(playerRef,world)!=null) {
+            var session=sisso.logicsim.LogicSimPlugin.getAreas().current(playerRef,world);
+            sisso.logicsim.classroom.ui.LearningPage.open(ref,store,playerRef,runtime,world,session.activity,session.submission);
         } else {
+            if(sisso.logicsim.LogicSimPlugin.getAreas()!=null)sisso.logicsim.LogicSimPlugin.getAreas().observe(playerRef,world);
             var page = new ClassroomPage(playerRef, runtime, world);
             player.getPageManager().openCustomPage(ref, store, page);
             page.load(ref, store);

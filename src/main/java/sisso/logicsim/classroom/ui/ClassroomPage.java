@@ -41,7 +41,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private final ClassroomPageChanges dataChanges=new ClassroomPageChanges();
     private volatile boolean dismissed;
     private AutoCloseable subscription, authorizationSubscription;
-    private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings"};
+    private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings","#Activities"};
 
     public ClassroomPage(PlayerRef playerRef, ClassroomRuntime runtime, World world) {
         super(playerRef, CustomPageLifetime.CanDismiss, ActionEvent.CODEC);
@@ -50,7 +50,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     @Override public void build(Ref<EntityStore> ref, UICommandBuilder c, UIEventBuilder e, Store<EntityStore> store) {
         c.append(LAYOUT);
         c.set("#Build.TextSpans", text("build").param("build", BuildInfo.BUILD_ID).param("hytale", BuildInfo.HYTALE_VERSION));
-        for (String action : new String[]{"Close","Reload","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm"}) bind(e,"#"+action,action);
+        for (String action : new String[]{"Close","Reload","Activities","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm"}) bind(e,"#"+action,action);
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Save",EventData.of("Action","Save")
                 .append("@Name","#Name.Value").append("@Description","#Description.Value").append("@Message","#Message.Value"));
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Primary",EventData.of("Action","Primary").append("@Enrollment","#Enrollment.Value"));
@@ -118,6 +118,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         if (busy || !access.current(validatedAccess) || event.action == null) { acknowledge(ref,store); return; }
         if (model.screen == null && !"Reload".equals(event.action)) { acknowledge(ref,store); return; }
         switch (event.action) {
+            case "Activities" -> { if(model.screen.home().member()!=null) { dispose(); LearningPage.open(ref,store,playerRef,runtime,world,null,null); } else acknowledge(ref,store); }
             case "Reload" -> refresh(ref,store,true,null);
             case "NavClass" -> navigate(ref,store,model.teacher() ? Kind.MEMBERS : Kind.BROWSE);
             case "NavIntakes" -> navigate(ref,store,Kind.INTAKES);
