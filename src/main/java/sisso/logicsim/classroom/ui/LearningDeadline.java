@@ -27,7 +27,7 @@ final class LearningDeadline {
         if(p.day.isEmpty() && p.month.isEmpty() && p.year.isEmpty())return null;
         if(p.day.isEmpty() || p.month.isEmpty() || p.year.isEmpty() || p.hour.isEmpty() || p.minute.isEmpty())throw new Invalid("learning.deadlineIncomplete");
         try {
-            var date=LocalDate.of(number(p.year,1,9999),number(p.month,1,12),number(p.day,1,31));
+            var date=LocalDate.of(year(p.year),number(p.month,1,12),number(p.day,1,31));
             var time=LocalTime.of(number(p.hour,0,23),number(p.minute,0,59));
             return LearningViews.deadline(LearningViews.DATE.format(LocalDateTime.of(date,time)));
         }catch(DateTimeException failure){throw new Invalid("learning.deadlineInvalid");}
@@ -42,8 +42,8 @@ final class LearningDeadline {
         var months=new ArrayList<DropdownEntryInfo>();months.add(placeholder("month"));
         for(int m=1;m<=12;m++)months.add(new DropdownEntryInfo(LocalizableString.fromMessageId(MONTHS[m-1]),Integer.toString(m)));
         c.set("#DeadlineMonth.Entries",months);
-        var years=new TreeSet<Integer>();for(int y=currentYear;y<=Math.min(9999,currentYear+10);y++)years.add(y);
-        if(!p.year.isEmpty())years.add(number(p.year,1,9999));
+        var years=new TreeSet<Integer>();for(int y=currentYear;y<=currentYear+10;y++)years.add(y);
+        if(!p.year.isEmpty())years.add(year(p.year));
         var entries=new ArrayList<DropdownEntryInfo>();entries.add(placeholder("year"));
         years.forEach(y->entries.add(raw(Integer.toString(y),Integer.toString(y))));c.set("#DeadlineYear.Entries",entries);
         c.set("#DeadlineHour.Entries",range(0,23,true));c.set("#DeadlineMinute.Entries",range(0,59,true));
@@ -54,7 +54,7 @@ final class LearningDeadline {
     /** Updating month/year touches only the day control; no I/O and no reset of other drafts. */
     static boolean days(UICommandBuilder c,Parts p) {
         int maximum=31;
-        if(!p.month.isEmpty() && !p.year.isEmpty())maximum=YearMonth.of(number(p.year,1,9999),number(p.month,1,12)).lengthOfMonth();
+        if(!p.month.isEmpty() && !p.year.isEmpty())maximum=YearMonth.of(year(p.year),number(p.month,1,12)).lengthOfMonth();
         var entries=new ArrayList<DropdownEntryInfo>();entries.add(placeholder("day"));entries.addAll(range(1,maximum,false));
         c.set("#DeadlineDay.Entries",entries);
         boolean reset=!p.day.isEmpty() && number(p.day,1,31)>maximum;
@@ -63,6 +63,10 @@ final class LearningDeadline {
     private static int number(String value,int min,int max) {
         if(!value.matches("[0-9]{1,4}"))throw new Invalid("learning.deadlineInvalid");
         int result=Integer.parseInt(value);if(result<min || result>max)throw new Invalid("learning.deadlineInvalid");return result;
+    }
+    private static int year(String value) {
+        if(!value.matches("[+-]?[0-9]{1,9}"))throw new Invalid("learning.deadlineInvalid");
+        return Year.of(Integer.parseInt(value)).getValue();
     }
     private static List<DropdownEntryInfo> range(int from,int to,boolean padded) {
         var entries=new ArrayList<DropdownEntryInfo>();for(int n=from;n<=to;n++)entries.add(raw(padded?two(n):Integer.toString(n),padded?two(n):Integer.toString(n)));return entries;

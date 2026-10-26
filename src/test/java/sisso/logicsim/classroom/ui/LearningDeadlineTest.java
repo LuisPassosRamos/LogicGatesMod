@@ -58,6 +58,14 @@ class LearningDeadlineTest {
         assertTrue(value(c,"#DeadlineMonth.Entries").toString().contains("server.logicgates.learning.month12"));
         assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector.contains(".Anchor.") || x.selector.endsWith(".Disabled")));
     }
+    @Test void aStoredYearOutsideTheConventionalFourDigitsAddsNoNewDomainRestriction() {
+        for(String year:List.of("0","-4","10000")) {
+            var date=parts("1","1",year,"23","59");long instant=LearningDeadline.deadline(date);
+            assertEquals(date,LearningDeadline.parts(instant));var c=new UICommandBuilder();LearningDeadline.render(c,instant,2026);
+            assertEquals(year,value(c,"#DeadlineYear.Value").asString().getValue());
+            assertEquals(13,value(c,"#DeadlineYear.Entries").asArray().size());
+        }
+    }
     @Test void thePageCodecCarriesAllFivePartsWithoutTrustingAnEpochFromTheClient() throws Exception {
         var event=LearningPage.Event.CODEC.decodeJson(new RawJsonReader("{\"@Day\":\"29\",\"@Month\":\"2\",\"@Year\":\"2028\",\"@Hour\":\"23\",\"@Minute\":\"59\",\"@Deadline\":\"forged\"}".toCharArray()),new ExtraInfo());
         assertEquals(parts("29","2","2028","23","59"),event.dateParts());
