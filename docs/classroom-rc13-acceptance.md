@@ -1,5 +1,7 @@
 # Classroom — aceite da 1.4.0-rc.13
 
+Build entregue: **1.4.0-rc.13+33d7e296575a**, revisão de produção `1f9982578bfb`. JAR SHA-256 `78a3c8ef3224e8200f752f31791da1122582abc111dde4a35e91d9e6c79e34c7`. [Verificações automatizadas](evidence/classroom/2026-10-26-rc13-server.json).
+
 **Cliente desta candidata: pendente.** O [fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado em multiplayer. Isso não aprova a renderização do novo dimensionamento ou dos dropdowns. Esquema SQLite v5, entregas e versões preservados; sem publicação estável, tag ou merge em `main`.
 
 Com o mundo parado, instale somente `LogicGates-1.4.0-rc.13.jar` em `mods`, substituindo o anterior. Guarde o ZIP fora de `mods`. Faça backup conjunto de `classroom.db`, `submissions`, configuração e mundos; não apague dados para testar a interface. Identifique cada resultado pelo build ID e SHA-256 entregues.
@@ -38,6 +40,6 @@ Monte uma turma descartável com rascunho privado, publicada, publicada com edi�
 
 Enquanto edita campos e seletores, provoque atualização comum pelo outro computador: campos permanecem. Revogue/restaure a permissão docente com a página aberta: painel restrito desaparece, rascunho visual docente é descartado, restauração carrega os dados persistidos; callback antigo não restaura acesso. Aluno sem OP continua consultando e entregando.
 
-Reaproveite o [gerador isolado de listas extensas](classroom-rc11-acceptance.md#massa-paginada-isolada), sem tocar no banco real, para busca, seleção, paginação e textos grandes. Não use a massa como estimativa de capacidade de jogadores.
+Reaproveite o [gerador isolado de listas extensas](classroom-rc11-acceptance.md#massa-isolada-para-paginação), sem tocar no banco real, para busca, seleção, paginação e textos grandes. Não use a massa como estimativa de capacidade de jogadores.
 
 Finalize com regressão curta: ingresso/matrícula, entrega, preview, colagem, descarte e nota na revisão correta. A campanha rc.12 permanece histórica; as novas interações e a matriz acima exigem seus próprios resultados. Logging ampliado, materiais adicionais e avaliação automática estão fora desta entrega.
