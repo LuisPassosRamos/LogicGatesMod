@@ -30,6 +30,44 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         catch (SQLException failure) { c.close(); throw failure; }
         return c;
     }
+    @Override public Home readHome(UUID actor, boolean canTeach) {
+        return read(c -> home(c,actor,canTeach));
+    }
+    @Override public Screen readScreen(UUID actor, Kind requested, String query, int number, boolean canTeach) {
+        return transaction("BEGIN DEFERRED",c -> {
+            var home=home(c,actor,canTeach);
+            Kind kind=ClassroomReadPolicy.kind(home,requested);
+            boolean teacher=ClassroomReadPolicy.teacher(home);
+            int page=kind==Kind.SETTINGS || kind==Kind.DETAIL ? 0 : ClassroomReadPolicy.page(number);
+            UUID scope=teacher ? home.classroom().id() : actor;
+            Page<?> rows=switch(kind) {
+                case BROWSE -> browse(c,ClassroomReadPolicy.query(query),page);
+                case MEMBERS -> members(c,scope,page);
+                case INTAKES -> intakes(c,scope,teacher,page);
+                case PLAYERS -> players(c,actor,ClassroomReadPolicy.query(query),page);
+                case SETTINGS, DETAIL -> new Page<>(List.of(),0,false);
+            };
+            return new Screen(home,kind,rows,teacher ? studentCount(c,scope) : 0);
+        });
+    }
+    private Home home(Connection c,UUID actor,boolean canTeach) throws SQLException {
+        var home=one(c,"""
+            SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name,
+              c.id AS context_id,c.teacher_uuid AS context_teacher,c.name AS context_name,
+              c.description AS context_description,c.revision AS context_revision,c.message AS context_message,
+              c.closed_at AS context_closed_at,coalesce(t.name,c.teacher_uuid) AS teacher_name
+            FROM classroom_memberships m LEFT JOIN classrooms c ON c.id=m.classroom_id
+            LEFT JOIN classroom_players p ON p.uuid=m.player_uuid
+            LEFT JOIN classroom_players t ON t.uuid=c.teacher_uuid
+            WHERE m.player_uuid=? AND m.active=1
+            """,r -> {
+                if (r.getString("context_id")==null || r.getObject("context_closed_at")!=null) throw new ClassroomException(UNAVAILABLE);
+                var classroom=new Classroom(uuid(r,"context_id"),uuid(r,"context_teacher"),r.getString("context_name"),
+                        r.getString("context_description"),r.getLong("context_revision"),r.getString("context_message"));
+                return new Home(classroom,membership(r),r.getString("teacher_name"),canTeach);
+            },actor).orElseGet(()->new Home(null,null,"",canTeach));
+        return ClassroomReadPolicy.authorize(home);
+    }
     @Override public Optional<Classroom> findByMember(UUID player) {
         return read(c -> one(c, "SELECT c.* FROM classrooms c JOIN classroom_memberships m ON m.classroom_id=c.id WHERE m.player_uuid=? AND m.active=1 AND c.closed_at IS NULL", SqliteClassroomRepository::classroom, player));
     }
@@ -88,39 +126,41 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
     @Override public String playerName(UUID id) {
         return read(c -> one(c, "SELECT name FROM classroom_players WHERE uuid=?", r -> r.getString(1), id).orElse(id.toString()));
     }
-    @Override public Page<Summary> browse(String query, int page) {
-        return read(c -> page(c, """
+    @Override public Page<Summary> browse(String query, int page) { return read(c -> browse(c,query,page)); }
+    private Page<Summary> browse(Connection c,String query,int page) throws SQLException {
+        return page(c,"""
             SELECT c.id,c.name,c.description,c.teacher_uuid,coalesce(p.name,c.teacher_uuid) AS teacher_name
             FROM classrooms c LEFT JOIN classroom_players p ON p.uuid=c.teacher_uuid
             WHERE c.closed_at IS NULL AND (instr(c.search_name,?)>0 OR instr(coalesce(p.search_name,''),?)>0)
             ORDER BY c.search_name,c.id LIMIT 21 OFFSET ?
-            """, r -> new Summary(uuid(r,"id"),r.getString("name"),r.getString("description"),uuid(r,"teacher_uuid"),r.getString("teacher_name")), page, lower(query), lower(query), page * PAGE_SIZE));
+            """, r -> new Summary(uuid(r,"id"),r.getString("name"),r.getString("description"),uuid(r,"teacher_uuid"),r.getString("teacher_name")), page, lower(query), lower(query), page * PAGE_SIZE);
     }
     @Override public Page<Profile> players(UUID teacher, String query, int page) {
-        return read(c -> {
-            owned(c, teacher);
-            return page(c, """
-                SELECT p.* FROM classroom_players p WHERE instr(p.search_name,?)>0 AND p.uuid<>?
-                AND NOT EXISTS(SELECT 1 FROM classroom_memberships m WHERE m.player_uuid=p.uuid AND m.active=1)
-                ORDER BY p.search_name,p.uuid LIMIT 21 OFFSET ?
-                """, r -> new Profile(uuid(r,"uuid"),r.getString("name")), page, lower(query), teacher, page * PAGE_SIZE);
-        });
+        return read(c -> { owned(c,teacher); return players(c,teacher,query,page); });
     }
-    @Override public Page<Member> members(UUID teacher, int page) {
-        return read(c -> page(c, MEMBER + "WHERE m.classroom_id=? AND m.role='STUDENT' AND m.active=1 ORDER BY coalesce(p.search_name,m.player_uuid),m.id LIMIT 21 OFFSET ?",
-                SqliteClassroomRepository::membership, page, owned(c, teacher).id(), page * PAGE_SIZE));
+    private Page<Profile> players(Connection c,UUID teacher,String query,int page) throws SQLException {
+        return page(c,"""
+            SELECT p.* FROM classroom_players p WHERE instr(p.search_name,?)>0 AND p.uuid<>?
+            AND NOT EXISTS(SELECT 1 FROM classroom_memberships m WHERE m.player_uuid=p.uuid AND m.active=1)
+            ORDER BY p.search_name,p.uuid LIMIT 21 OFFSET ?
+            """, r -> new Profile(uuid(r,"uuid"),r.getString("name")), page, lower(query), teacher, page * PAGE_SIZE);
     }
-    @Override public int studentCount(UUID teacher) {
-        return read(c -> one(c, "SELECT count(*) FROM classroom_memberships WHERE classroom_id=? AND role='STUDENT' AND active=1", r -> r.getInt(1), owned(c, teacher).id()).orElse(0));
+    @Override public Page<Member> members(UUID teacher, int page) { return read(c -> members(c,owned(c,teacher).id(),page)); }
+    private Page<Member> members(Connection c,UUID classroom,int page) throws SQLException {
+        return page(c,MEMBER + "WHERE m.classroom_id=? AND m.role='STUDENT' AND m.active=1 ORDER BY coalesce(p.search_name,m.player_uuid),m.id LIMIT 21 OFFSET ?",
+                SqliteClassroomRepository::membership,page,classroom,page * PAGE_SIZE);
+    }
+    @Override public int studentCount(UUID teacher) { return read(c -> studentCount(c,owned(c,teacher).id())); }
+    private int studentCount(Connection c,UUID classroom) throws SQLException {
+        return one(c,"SELECT count(*) FROM classroom_memberships WHERE classroom_id=? AND role='STUDENT' AND active=1",r -> r.getInt(1),classroom).orElse(0);
     }
     @Override public Page<Intake> intakes(UUID actor, boolean teacher, int page) {
-        return read(c -> {
-            String scope = teacher ? "i.classroom_id=?" : "i.student_uuid=?";
-            Object id = teacher ? owned(c, actor).id() : actor;
-            String states = teacher ? " AND i.state IN('INVITED','REQUESTED') ORDER BY i.created_at,i.id" : " ORDER BY i.created_at DESC,i.id";
-            return page(c, INTAKE + "WHERE " + scope + states + " LIMIT 21 OFFSET ?",
-                    SqliteClassroomRepository::intake, page, id, page * PAGE_SIZE);
-        });
+        return read(c -> intakes(c,teacher ? owned(c,actor).id() : actor,teacher,page));
+    }
+    private Page<Intake> intakes(Connection c,UUID id,boolean teacher,int page) throws SQLException {
+        String scope=teacher ? "i.classroom_id=?" : "i.student_uuid=?";
+        String states=teacher ? " AND i.state IN('INVITED','REQUESTED') ORDER BY i.created_at,i.id" : " ORDER BY i.created_at DESC,i.id";
+        return page(c,INTAKE + "WHERE " + scope + states + " LIMIT 21 OFFSET ?",SqliteClassroomRepository::intake,page,id,page * PAGE_SIZE);
     }
     @Override public Intake request(UUID student, UUID classroom, String enrollment) {
         return transaction(c -> {
@@ -251,10 +291,11 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         catch(ClassroomException expected) { throw expected; }
         catch(Exception failure) { throw new ClassroomException(UNAVAILABLE,failure); }
     }
-    private <T> T transaction(Action<T> action) {
+    private <T> T transaction(Action<T> action) { return transaction("BEGIN IMMEDIATE",action); }
+    private <T> T transaction(String begin,Action<T> action) {
         return read(c -> {
             try(var s=c.createStatement()) {
-                s.execute("BEGIN IMMEDIATE");
+                s.execute(begin);
                 try { T result=action.run(c); s.execute("COMMIT"); return result; }
                 catch(Exception failure) { try { s.execute("ROLLBACK"); } catch(SQLException rollback) { failure.addSuppressed(rollback); } throw failure; }
             }

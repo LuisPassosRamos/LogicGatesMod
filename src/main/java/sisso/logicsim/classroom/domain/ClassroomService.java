@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import static sisso.logicsim.classroom.domain.ClassroomException.Reason.*;
+import static sisso.logicsim.classroom.domain.ClassroomReadPolicy.page;
+import static sisso.logicsim.classroom.domain.ClassroomReadPolicy.query;
 
 /** Pure application policy. The permission predicate is supplied by a trusted server adapter. */
 public final class ClassroomService {
@@ -48,27 +50,11 @@ public final class ClassroomService {
 
     public Home home(UUID actor) {
         identity(actor);
-        var member = repository.member(actor).orElse(null);
-        boolean teaching = canTeach.test(actor);
-        if (member != null && member.role() == Role.TEACHER && !teaching) throw new ClassroomException(FORBIDDEN);
-        var classroom = member == null ? null : repository.findByMember(actor).orElseThrow(() -> new ClassroomException(UNAVAILABLE));
-        return new Home(classroom, member, classroom == null ? "" : repository.playerName(classroom.teacherId()), teaching);
+        return repository.readHome(actor,canTeach.test(actor));
     }
     public Screen screen(UUID actor, Kind requested, String query, int page) {
-        var home = home(actor);
-        Kind kind = requested;
-        boolean teacher = home.member() != null && home.member().role() == Role.TEACHER;
-        if (home.member() != null && !teacher) kind = Kind.DETAIL;
-        else if (teacher && (kind == Kind.BROWSE || kind == Kind.DETAIL)) kind = Kind.MEMBERS;
-        else if (!teacher && kind != Kind.BROWSE && kind != Kind.INTAKES && !(kind == Kind.SETTINGS && home.canTeach())) kind = Kind.BROWSE;
-        Page<?> rows = switch (kind) {
-            case BROWSE -> browse(actor, query, page);
-            case MEMBERS -> members(actor, page);
-            case INTAKES -> intakes(actor, teacher, page);
-            case PLAYERS -> players(actor, query, page);
-            case SETTINGS, DETAIL -> new Page<>(java.util.List.of(), 0, false);
-        };
-        return new Screen(home, kind, rows, teacher ? repository.studentCount(actor) : 0);
+        identity(actor);
+        return repository.readScreen(actor,requested,query,page,canTeach.test(actor));
     }
 
     public void remember(UUID actor, String username) {
@@ -120,8 +106,6 @@ public final class ClassroomService {
         return result;
     }
     private static void identity(UUID actor) { if (actor == null) throw new ClassroomException(FORBIDDEN); }
-    private static int page(int page) { if (page < 0 || page > 100000) throw new ClassroomException(NOT_FOUND); return page; }
-    private static String query(String query) { return query == null ? "" : query.strip().substring(0, Math.min(query.strip().length(), 128)); }
 
     private void authorize(UUID actor) {
         if (actor == null || !canTeach.test(actor)) throw new ClassroomException(FORBIDDEN);

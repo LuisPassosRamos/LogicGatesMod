@@ -9,6 +9,8 @@ import sisso.logicsim.classroom.ClassroomRuntime;
 import sisso.logicsim.classroom.domain.Classroom;
 import sisso.logicsim.classroom.domain.ClassroomException;
 import sisso.logicsim.classroom.domain.ClassroomViews.State;
+import sisso.logicsim.classroom.domain.ClassroomViews.Kind;
+import sisso.logicsim.classroom.domain.ClassroomViews.Member;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -92,13 +94,28 @@ final class ClassroomServerChecks {
             passed.add(create ? "production Classroom queue creates and edits a class using packaged native SQLite"
                     : "real server restart preserves Classroom UUID, teacher link, name, description and revision");
             return admissions(runtime,classroom,create)
+                    .thenCompose(ignored -> screens(runtime,classroom))
                     .thenCompose(ignored -> disband(runtime,create))
                     .thenCompose(ignored -> expect(ALREADY_MEMBER, runtime.create(TEACHER, "Segunda turma", "")))
                     .thenCompose(ignored -> expect(FORBIDDEN, runtime.update(OTHER, classroom.id(), classroom.revision(), "Intrusão", "")))
                     .thenCompose(ignored -> {
                         PermissionsModule.get().removeUserPermission(TEACHER, Set.of(ClassroomRuntime.TEACH_PERMISSION));
-                        return expect(FORBIDDEN, runtime.update(TEACHER, classroom.id(), classroom.revision(), "Revogado", ""));
+                        return expect(FORBIDDEN, runtime.update(TEACHER, classroom.id(), classroom.revision(), "Revogado", ""))
+                                .thenCompose(ignoredRead -> expect(FORBIDDEN,runtime.screen(TEACHER,Kind.MEMBERS,"",0)));
                     }).thenRun(() -> passed.add("native teacher permission revocation, classroom ownership and one-active-link policy reject unauthorized mutations"));
+        });
+    }
+
+    private CompletableFuture<Void> screens(ClassroomRuntime runtime,Classroom classroom) {
+        return runtime.screen(TEACHER,Kind.MEMBERS,"",0).thenCompose(screen->{
+            check(screen.home().classroom().id().equals(classroom.id()),"aggregate screen reads the owned class");
+            check(screen.studentCount()==1 && screen.rows().items().size()==1
+                    && screen.rows().items().getFirst() instanceof Member member && member.playerId().equals(STUDENT),"aggregate member rows and count match");
+            return runtime.screen(STUDENT,Kind.SETTINGS,"",0);
+        }).thenAccept(screen->{
+            check(screen.kind()==Kind.DETAIL && screen.rows().items().isEmpty() && screen.home().member().playerId().equals(STUDENT)
+                    && screen.home().member().enrollment().equals("00123"),"aggregate student view remains private and normalizes teacher tabs");
+            passed.add("production aggregate reads preserve teacher rows/counts and private student detail with native permission checks");
         });
     }
 
