@@ -1,6 +1,6 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.11**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc11-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. As evidências administrativas da rc.10 continuam históricas; não aprovam estas telas novas.
+Implementação candidata em **1.4.0-rc.12**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc12-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. As evidências administrativas da rc.10 continuam históricas; não aprovam estas telas novas.
 
 ## Atividades
 

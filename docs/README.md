@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.11**, Hytale **0.7.4**; circuitos consolidados em **1.3.3**. O MVP administrativo permanece, com os cinco cenários breves da rc.10 confirmados. A candidata acrescenta atividades versionadas, entregas de áreas, preview/cópias temporárias e avaliação manual. [Uso e persistência](classroom-learning.md); [aceite rc.11](classroom-rc11-acceptance.md). A automação e a prova nativa não aprovam seleção/renderização no cliente. Evidências anteriores conservam sua versão e escopo.
+Estado atual: pré-versão **1.4.0-rc.12**, Hytale **0.7.4**; circuitos consolidados em **1.3.3**. O MVP administrativo permanece, com os cinco cenários breves da rc.10 confirmados. A candidata acrescenta atividades versionadas, entregas de áreas, preview/cópias temporárias e avaliação manual. [Uso e persistência](classroom-learning.md); [aceite rc.12](classroom-rc12-acceptance.md). A rc.12 corrige a desconexão na abertura de Atividades da rc.11; o reteste está pendente. A automação e a prova nativa não aprovam seleção/renderização no cliente. Evidências anteriores conservam sua versão e escopo.
 
 ## Uso e manutenção
 
@@ -31,7 +31,7 @@ A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo fic
 
 - [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.
 
-A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preservava o esquema v4; a rc.11 acrescenta v5 e arquivos de conteúdo. [Roteiro atual](classroom-rc11-acceptance.md).
+A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preservava o esquema v4; a rc.11 acrescenta v5 e arquivos de conteúdo. [Roteiro atual](classroom-rc12-acceptance.md).
 
 A [revisão de otimização e testes de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) distingue ajustes de runtime, código sem chamadas internas e execução proporcional das verificações. O [relato rc.9](evidence/classroom/2026-10-25-rc9-client-report.md) confirma o encerramento da turma, mantendo pendências sem confirmação individual.
 

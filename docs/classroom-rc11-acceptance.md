@@ -1,6 +1,6 @@
 # Classroom — aceite da 1.4.0-rc.11
 
-**Cliente: pendente.** A prova no servidor isolado exercita captura, serialização, pacote de preview, colagem, simulação e descarte. Ela não comprova o gesto de seleção sem OP nem a renderização do preview no cliente. Comece por uma turma/atividade e uma área pequena; não é necessário repetir toda a história das candidatas anteriores.
+**Cliente: bloqueado na abertura de Atividades.** A [captura da rc.11](evidence/classroom/2026-10-26-rc11-client-blocker.md) registra desconexão por `#ScoreField.Disabled`. A correção está na [rc.12, com roteiro curto de reteste](classroom-rc12-acceptance.md). A prova no servidor isolado exercita captura, serialização, pacote de preview, colagem, simulação e descarte. Ela não comprova o gesto de seleção sem OP nem a renderização do preview no cliente. Os cenários abaixo continuam pendentes.
 
 Com o mundo parado, instale somente o JAR rc.11 e guarde o ZIP fora de `mods`. A migração cria um backup v4. Para preservar entregas novas, faça backup do banco **junto da pasta `submissions`**, ambos com servidor parado. Consulte [uso, limites e recuperação](classroom-learning.md).
 

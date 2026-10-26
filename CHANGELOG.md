@@ -4,7 +4,14 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.11.
+Nenhuma alteração registrada após 1.4.0-rc.12.
+
+## [1.4.0-rc.12] - 2026-10-26
+
+### Compatibilidade da tela de atividades
+- Remove comandos `.Disabled` de campos de texto da tela de atividades, incompatíveis com o cliente Hytale 0.7.4. A rc.11 desconectava o jogador ao abrir Atividades com o seletor `#ScoreField.Disabled`; o mesmo problema foi corrigido na edição, gravação e recuperação de erros dos seis campos.
+- Mantém bloqueio dos botões durante operações e validação de eventos, permissão, vínculo e revisão no servidor. Banco v5, entregas, circuitos e mundos preservados.
+- Regressões verificam os comandos renderizados contra os tipos dos widgets empacotados, incluindo professor/aluno, rascunho, publicação, arquivamento, nota, gravação, erros e preservação dos campos durante atualização. Renderização e interação ainda exigem reteste no cliente.
 
 ## [1.4.0-rc.11] - 2026-10-26
 
