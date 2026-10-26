@@ -10,7 +10,7 @@ Com o mundo parado, instale somente o JAR rc.11 e guarde o ZIP fora de `mods`. A
 | --- | --- | --- |
 | Atividade | Professor abre Atividades, cria/salva rascunho; aluno não o vê. Preenche título/enunciado, prazo futuro de Brasília e valor 10, publica. Aluno vê os mesmos dados. | Pendente |
 | Seleção sem OP | Aluno usa Entregar; equipa a ferramenta; esquerdo/direito escolhem dois cantos. Ao reabrir `/classroom`, dimensões e atividade correspondem à seleção. Comandos gerais de edição continuam indisponíveis. | Pendente |
-| Entrega pequena | Selecione chão + alavanca ligada → cabos → lâmpada e uma porta girada. Confirme a entrega. Professor encontra atividade → aluno → revisão 1, preview e nota `—/10`. | Pendente |
+| Entrega pequena | Selecione chão + alavanca ligada → cabos → lâmpada e uma porta lógica girada. Confirme a entrega. Professor encontra atividade → aluno → revisão 1, preview e nota `—/10`. | Pendente |
 | Preview | Girar, inclinar, zoom e mover; trocar de aluno/revisão não deixa o conteúdo anterior. Sem reenviar o prefab a cada atualização simples de metadados. | Pendente |
 | Cópia e edição | Professor cola em espaço vazio e testa alavanca/porta/lâmpada; edita um cabo e acrescenta um bloco dentro da reserva. Aluno tenta quebrar/colocar/acionar nessa cópia e é bloqueado. | Pendente |
 | Descarte | Professor descarta; todo o volume fica livre, inclusive edições. Original do aluno e revisão salva continuam intactos. | Pendente |

@@ -129,3 +129,27 @@ Contadores ficam apenas nos testes e medem conexões JDBC e comandos SELECT exte
 A tabela usa a mediana das três medianas por consulta ou dos três p95 por rajada; não mistura amostras nem representa um intervalo de confiança. As medianas de membros variaram entre 5,018–5,619 ms na rc.9 e 1,333–1,647 ms na rc.10. O p95 da rajada 250 variou entre 983,149–1.008,082 ms e 261,420–293,123 ms. Houve zero falhas nas três rajadas de cada uma das seis rodadas. JSONs e logs completos ficam em `build/reports/benchmarks/rc10-comparison/`; o log do `fullCheck` fica em `build/tmp/rc10-fullcheck.log`.
 
 O ganho corresponde à redução de abertura/configuração de conexões e de SELECTs repetidos. A fila continua única e limitada; tempo de rajada inclui sua espera, não o tick do mundo. O journal DELETE pode fazer um escritor aguardar o término de um snapshot de leitura; os testes exercitam aprovação, saída e encerramento concorrentes, sem WAL, pool, cache ou paralelismo novo. Histórico volumoso e duração prolongada não foram simulados. A variação de máquina/JIT/filesystem continua relevante, e os resultados não certificam capacidade de jogadores nem resolvem por evidência a demora visual da primeira troca de aba. Posteriormente, a [rodada breve de cliente rc.10](evidence/classroom/2026-10-26-rc10-client.md) confirmou resposta instantânea nas abas e os outros quatro cenários propostos. As [pendências complementares](classroom-rc10-acceptance.md) permanecem; o relato não mede tempos nem capacidade.
+
+## Classroom — áreas e cópias rc.11
+
+Build `1.4.0-rc.11+31e3c78c7881`, JAR `140d80eae81a91206567b120df4315a87de6ecd1991f656817f5b7e09b7a0c14`. Duas execuções nativas isoladas no mesmo host Windows/Java 25: [dados completos e escopo](evidence/classroom/2026-10-26-rc11-performance.json). A segunda acrescentou medição de arquivo/alocação ao harness, mantendo o JAR idêntico. Não são percentis, médias de produção ou comparação de capacidade.
+
+| Operação/caso | Amostras observadas |
+| --- | --- |
+| Captura pequena, 9 × 2 × 12 posições | 1,67–2,12 ms |
+| Colagem pequena | 2,11–2,30 ms |
+| Arquivo pequeno | 687 bytes comprimidos; gravar/reabrir 34,25–40,49 ms fora do mundo |
+| Captura máxima, 32 × 16 × 32 preenchida com construção | 34,62–55,72 ms no contexto do mundo |
+| Colagem máxima de construção | 42,12–72,31 ms |
+| Descarte máximo de construção | 31,71–88,88 ms |
+| Arquivo máximo de construção | 1.093.689 bytes JSON, 36.521 bytes comprimidos; gravar/reabrir 312,64 ms fora do mundo |
+| Pacote máximo de preview | 278.590 bytes antes da compressão do protocolo; enviado somente à revisão selecionada |
+| Alocação no thread do mundo, captura + pacote + colagem máximos | 12.283.672 bytes alocados na segunda amostra; não é memória retida nem pico de heap |
+| Captura/colagem de volume máximo com 8.192 componentes e 8.192 apoios | 19,91–28,50 / 38,41–58,51 ms |
+| Última avaliação elétrica com a cópia ativa | 16,34–22,03 ms; 8.239 nós no mundo, incluindo 47 do fixture anterior |
+
+A cópia densa respondeu ao acionamento nos ticks reais e foi descartada. O delta líquido de heap variou de zero a 12.247.608 bytes entre amostras e pode ser afetado por GC; **zero não significa ausência de alocação**. A medição por thread acrescenta uma observação mais útil, mas não representa todo o processo, compressão em outro thread, recursos nativos ou pressão de todos os circuitos de um servidor.
+
+Áreas máximas podem causar picos que ultrapassam um tick; tamanho, estado do JIT, disco e simulação alteram o custo. O ensaio de primitivas não inclui latência do jogador nem o custo de todos os eventos de plugins externos de proteção. A fila mantém uma operação pesada ativa + oito aguardando; regressões de rajada verificam serialização, recusa de duplicata/saturação e encerramento de pedidos, sem estimar jogadores suportados. Metadados pedagógicos usam canal separado para não recarregar a administração/MOTD a cada nota/entrega.
+
+Começar o aceite por uma área pequena. Os limites de dimensão, bytes e cota são configuráveis; reduzi-los é uma opção para servidores com uso intenso. Se os testes reais indicarem picos frequentes, o próximo refinamento é fracionar colagem/descarte com revalidação, preservando reserva e recuperação. O arquivo de entrega permanece imutável. A prova não autoriza afirmar “sem lag” ou aumentar os limites com base apenas no tamanho comprimido.

@@ -1,0 +1,56 @@
+{
+  "build": {
+    "buildId": "1.4.0-rc.11+31e3c78c7881",
+    "dirty": "false",
+    "hytaleVersion": "0.7.4",
+    "revision": "d222e32f32ad",
+    "sourceFingerprint": "31e3c78c788193708b0b363bdca475a23c93e151ee3120bcacb89f2bef9579cb",
+    "version": "1.4.0-rc.11"
+  },
+  "sha256": "140d80eae81a91206567b120df4315a87de6ecd1991f656817f5b7e09b7a0c14",
+  "scope": "Two isolated native create/restart runs on the same Windows/Java 25 host. No connected clients or capacity guarantee. Second run adds file and allocation instrumentation without changing the production JAR. Timings are samples, not latency percentiles. Preview bytes are before protocol compression. Thread allocation is total allocated bytes, not retained/peak heap. Net heap delta can be affected by GC.",
+  "samples": [
+    {
+      "report": "20261026-124637-d1b000",
+      "measurements": {
+        "smallCaptureMs": 1.6728,
+        "maxCaptureMs": 34.6194,
+        "withCopyLastEvaluationMs": 16.3351,
+        "smallFileRoundTripMs": 40.4944,
+        "smallFileBytes": 687,
+        "maxCircuitPasteMs": 38.4088,
+        "maxDiscardMs": 31.7061,
+        "maxTransientHeapDeltaBytes": 0,
+        "maxCircuitCaptureMs": 19.9135,
+        "maxPreviewBytes": 278590,
+        "maxPasteMs": 42.1181,
+        "withCopyNodes": 8239,
+        "smallPreviewBytes": 2475,
+        "smallPasteMs": 2.2979
+      }
+    },
+    {
+      "report": "20261026-125150-762e4c",
+      "measurements": {
+        "maxFileBytes": 36521,
+        "maxDiscardMs": 88.8761,
+        "maxCircuitCaptureMs": 28.5046,
+        "smallFileRoundTripMs": 34.2533,
+        "maxCircuitPasteMs": 58.5102,
+        "smallFileBytes": 687,
+        "maxTransientHeapDeltaBytes": 12247608,
+        "maxFileRoundTripMs": 312.6432,
+        "maxPreviewBytes": 278590,
+        "maxPasteMs": 72.3148,
+        "maxCaptureMs": 55.721,
+        "maxWorldThreadAllocatedBytes": 12283672,
+        "smallCaptureMs": 2.116,
+        "smallPreviewBytes": 2475,
+        "maxRawBytes": 1093689,
+        "withCopyLastEvaluationMs": 22.0265,
+        "smallPasteMs": 2.1147,
+        "withCopyNodes": 8239
+      }
+    }
+  ]
+}
