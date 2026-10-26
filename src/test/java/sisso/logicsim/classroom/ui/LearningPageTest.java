@@ -48,17 +48,20 @@ class LearningPageTest {
                 new Scenario(true,false,published,null),new Scenario(true,false,archived,null),
                 new Scenario(true,true,published,null),new Scenario(true,true,published,submission),
                 new Scenario(false,false,published,null),new Scenario(false,false,published,submission))) {
+            for(boolean editing:new boolean[]{false,true}) {
             var page=page(scenario.teacher,scenario.students,scenario.activity,scenario.submission);
+            if(editing && !page.beginEditing())continue;
             for(boolean reset:new boolean[]{true,false}) {
                 var commands=new UICommandBuilder();page.render(commands,new UIEventBuilder(),reset,null,false);
                 assertWidgetProperties(commands);
                 if(!reset)assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value")),"Background refresh must preserve drafts: "+scenario);
-                if(reset && scenario.teacher && !scenario.students && scenario.activity!=null)
+                if(reset && editing)
                     assertTrue(Arrays.stream(commands.getCommands()).anyMatch(c->"#TitleField.Value".equals(c.selector)));
                 if(reset && scenario.teacher && scenario.submission!=null) {
                     var score=Arrays.stream(commands.getCommands()).filter(c->"#ScoreField.Value".equals(c.selector)).findFirst().orElseThrow();
                     assertEquals("7",BsonDocument.parse(score.data).getString("0").getValue());
                 }
+            }
             }
         }
     }
@@ -79,7 +82,7 @@ class LearningPageTest {
             assertWidgetProperties(c);
             for(String id:List.of("ListPanel","New","Filter","Archive","Students"))assertFalse(value(c,"#"+id+".Visible").asBoolean().getValue(),id);
             assertTrue(value(c,"#Discard.Visible").asBoolean().getValue());
-            assertEquals(180,value(c,"#DescriptionField.Anchor").asDocument().getInt32("Height").getValue());
+            assertEquals(260,value(c,"#DescriptionField.Anchor").asDocument().getInt32("Height").getValue());
             assertTrue(value(c,"#Activities.TextSpans").toString().contains("backToActivities"));
             if(saved)assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
         }
@@ -88,6 +91,57 @@ class LearningPageTest {
         page.created(activity);page.backToActivities();set(page,"activity",null);
         c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
         assertTrue(value(c,"#ListPanel.Visible").asBoolean().getValue());assertFalse(value(c,"#Editor.Visible").asBoolean().getValue());
+    }
+
+    @Test void selectingAnActivityOnlyViewsItAndEditingRequiresAnExplicitTeacherAction() throws Exception {
+        var publication=new Publication(ACTIVITY,1,"Saved title","Saved statement",System.currentTimeMillis()+86_400_000,1000,1);
+        var activity=new Activity(ACTIVITY,CLASSROOM,4,false,null,publication);var page=page(true,false,activity,null);
+        assertTrue(page.selectActivity(ACTIVITY));assertFalse(page.editingActivity());
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#Read.Visible").asBoolean().getValue());assertFalse(value(c,"#Editor.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#Edit.Visible").asBoolean().getValue());assertFalse(value(c,"#ActivityActions.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("Saved title"));
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+        assertTrue(page.beginEditing());assertFalse(page.beginEditing());
+        c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);assertWidgetProperties(c);
+        assertTrue(value(c,"#Editor.Visible").asBoolean().getValue());assertFalse(value(c,"#Read.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#Edit.Visible").asBoolean().getValue());assertTrue(value(c,"#CancelEdit.Visible").asBoolean().getValue());
+        assertEquals("Saved title",value(c,"#TitleField.Value").asString().getValue());
+        set(page,"activity",new Activity(ACTIVITY,CLASSROOM,5,false,new Draft("Remote edit","Remote statement",publication.deadline(),1000L),publication));
+        c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertTrue(page.editingActivity());assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+        var revision=LearningPage.class.getDeclaredField("editRevision");revision.setAccessible(true);assertEquals(4,revision.getLong(page));
+        assertTrue(page.viewActivity());assertFalse(page.viewActivity());
+        c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("Remote edit"));
+        assertTrue(page.beginEditing());assertTrue(page.selectActivity(ACTIVITY));assertFalse(page.editingActivity());
+    }
+
+    @Test void archivedStudentAndStudentListContextsNeverOfferOrEnterActivityEditing() throws Exception {
+        var publication=new Publication(ACTIVITY,1,"Title","Statement",System.currentTimeMillis()+86_400_000,1000,1);
+        for(var page:List.of(page(false,false,new Activity(ACTIVITY,CLASSROOM,1,false,null,publication),null),
+                page(true,true,new Activity(ACTIVITY,CLASSROOM,1,false,null,publication),null),
+                page(true,false,new Activity(ACTIVITY,CLASSROOM,1,true,Draft.empty(),publication),null),page(true,false,null,null))) {
+            assertFalse(page.beginEditing());assertFalse(page.editingActivity());
+            var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);assertWidgetProperties(c);
+            assertFalse(value(c,"#Edit.Visible").asBoolean().getValue());assertFalse(value(c,"#Editor.Visible").asBoolean().getValue());
+            assertFalse(value(c,"#CancelEdit.Visible").asBoolean().getValue());
+        }
+    }
+
+    @Test void teachersCanReadSavedPrivateDraftsButStudentsOnlySeeThePublishedVersion() throws Exception {
+        var publication=new Publication(ACTIVITY,3,"Published title","Published statement",System.currentTimeMillis()+86_400_000,1000,1);
+        var activity=new Activity(ACTIVITY,CLASSROOM,4,false,new Draft("Private title","Private statement",null,null),publication);
+        var teacher=page(true,false,activity,null);var c=new UICommandBuilder();teacher.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("Private title"));
+        assertTrue(value(c,"#ReadDescription.TextSpans").toString().contains("Private statement"));
+        assertTrue(value(c,"#DraftNotice.Visible").asBoolean().getValue());assertTrue(value(c,"#ReadMeta.TextSpans").toString().contains("notSet"));
+        assertTrue(value(c,"#ReadState.TextSpans").toString().contains("learning.draft"));
+        var student=page(false,false,activity,null);c=new UICommandBuilder();student.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("Published title"));
+        assertTrue(value(c,"#ReadDescription.TextSpans").toString().contains("Published statement"));
+        assertFalse(value(c,"#DraftNotice.Visible").asBoolean().getValue());
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.data!=null && (x.data.contains("Private title") || x.data.contains("Private statement"))));
     }
 
     private static org.bson.BsonValue value(UICommandBuilder c,String selector) {
@@ -113,6 +167,9 @@ class LearningPageTest {
         for(var command:commands.getCommands()) {
             if(command.selector==null || !command.selector.contains("."))continue;
             assertFalse(command.selector.contains(".Anchor."),command.selector);
+            if(command.selector.matches("#Rows\\[\\d+\\]\\.Anchor")) {
+                assertEquals(Set.of("Height","Bottom"),BsonDocument.parse(command.data).getDocument("0").keySet());continue;
+            }
             var target=Pattern.compile("#(\\w+)\\.(\\w+)$").matcher(command.selector);
             assertTrue(target.find(),command.selector);var type=types.get(target.group(1));assertNotNull(type,command.selector);
             switch(target.group(2)) {

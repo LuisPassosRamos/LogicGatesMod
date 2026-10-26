@@ -4,7 +4,15 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.13.
+Nenhuma alteração registrada após 1.4.0-rc.14.
+
+## [1.4.0-rc.14] - 2026-10-26
+
+### Proporções e consulta de atividades
+- Listas e detalhes compartilham a largura disponível, com limites na lateral. Tipografia, campos, botões e preview foram ampliados; paginação e ações mantêm quebra de linha e conteúdo rolável.
+- Selecionar uma atividade abre sua ficha de consulta. Somente Editar atividade abre o formulário docente; Voltar à visualização encerra a edição sem salvar campos automaticamente. Criação continua ampla; publicar retorna à consulta.
+- Professor consulta rascunhos salvos com indicação de privacidade; aluno continua vendo somente a publicação vigente. Eventos de gravação são recusados fora do editor e arquivadas exigem restauração para editar.
+- Mantém autorização por operação, revisões, contagens, SQLite v5 e conteúdo das entregas. A apresentação final continua sujeita a teste no cliente.
 
 ## [1.4.0-rc.13] - 2026-10-26
 

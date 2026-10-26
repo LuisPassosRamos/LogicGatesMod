@@ -1,7 +1,7 @@
 Button {
-  Anchor: (Height: 116, Bottom: 6);
+  Anchor: (Height: 132, Bottom: 6);
   LayoutMode: Left;
-  Padding: (Full: 8);
+  Padding: (Full: 12);
   Background: (Color: #233047);
   Style: (
     Default: (Background: (Color: #233047)),
@@ -12,8 +12,8 @@ Button {
   Group {
     FlexWeight: 1;
     LayoutMode: Top;
-    Label #RowName { Anchor: (Height: 40); Style: (FontSize: 17, Wrap: true, TextColor: #ffffff); }
-    Label #RowInfo { Anchor: (Height: 36); Style: (FontSize: 14, Wrap: true, TextColor: #b4c4d8); }
-    Label #RowStamp { Visible: false; Anchor: (Height: 20); Style: (FontSize: 11, TextColor: #9daec2); }
+    Label #RowName { Anchor: (Height: 46); Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
+    Label #RowInfo { Anchor: (Height: 40); Style: (FontSize: 16, Wrap: true, TextColor: #b4c4d8); }
+    Label #RowStamp { Visible: false; Anchor: (Height: 22); Style: (FontSize: 13, TextColor: #9daec2); }
   }
 }

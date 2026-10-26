@@ -55,7 +55,7 @@ final class ClassroomScreenRenderer {
             c.set(selector+" #SelectionMark.Visible",model.selected!=null && ClassroomPageModel.id(row).equals(ClassroomPageModel.id(model.selected)));
             c.set(selector+" #RowStamp.Visible",row instanceof Intake);
             if (row instanceof Intake i) c.set(selector+" #RowStamp.TextSpans",text("classroom.rowStamp").param("type",originText(i.origin())).param("date",DATE.format(Instant.ofEpochMilli(i.createdAt()))));
-            height(c,selector,row instanceof Intake ? 116 : 96,6);
+            height(c,selector,row instanceof Intake ? 132 : 112,6);
             e.addEventBinding(CustomUIEventBindingType.Activating,selector,EventData.of("Action","Select").append("Target",ClassroomPageModel.id(row).toString()));
         }
         c.set("#Form.Visible",settings); c.set("#MessageEditor.Visible",settings && classroom!=null);

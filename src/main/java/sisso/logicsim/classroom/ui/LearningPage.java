@@ -43,10 +43,10 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private Page<?> rows=new Page<>(List.of(),0,false);
     private Page<Submission> revisions=new Page<>(List.of(),0,false);
     private LearningStore.Filter filter=LearningStore.Filter.ALL;
-    private boolean students,creating,busy=true,dismissed,pending,saving,discardDrafts;
+    private boolean students,creating,editing,busy=true,dismissed,pending,saving,discardDrafts;
     private int page,revisionPage,gradeRevision;
     private long editRevision;
-    private static final String[] ACTIONS={"New","Filter","Activities","Previous","Next","SaveDraft","Publish","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard"};
+    private static final String[] ACTIONS={"New","Filter","Activities","Previous","Next","Edit","CancelEdit","SaveDraft","Publish","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard"};
     private static final String[] FIELDS={"TitleField","DescriptionField","ValueField","ScoreField","FeedbackField"};
     public LearningPage(PlayerRef player,ClassroomRuntime runtime,World world,UUID activity,UUID submission) {
         super(player,CustomPageLifetime.CanDismiss,Event.CODEC);this.runtime=runtime;this.world=world;this.areas=LogicSimPlugin.getAreas();
@@ -58,7 +58,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     }
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder c,UIEventBuilder e,Store<EntityStore> store) {
         c.append(LAYOUT);c.set("#Build.TextSpans",text("build").param("build",BuildInfo.BUILD_ID).param("hytale",BuildInfo.HYTALE_VERSION));
-        for(String action:new String[]{"Back","Close","Reload","New","Filter","Activities","Previous","Next","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","Paste","Discard"})
+        for(String action:new String[]{"Back","Close","Reload","New","Filter","Activities","Previous","Next","Edit","CancelEdit","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","Paste","Discard"})
             e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action,EventData.of("Action",action));
         for(String action:new String[]{"SaveDraft","Publish"})e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action,EventData.of("Action",action)
                 .append("@Title","#TitleField.Value").append("@Description","#DescriptionField.Value").append("@Value","#ValueField.Value")
@@ -75,7 +75,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             schedule(ref,store,()->{
                 if(!allowed && (context==null || context.teacher())){
                     discardDrafts=true;
-                    creating=false;
+                    creating=false;editing=false;
                     var c=new UICommandBuilder();for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());c.set("#Details.Visible",false);publish(ref,store,c,new UIEventBuilder());clearPreview();
                 }
                 if(busy)pending=true;else refresh(ref,store,false,null);
@@ -111,6 +111,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             busy=false;validated=stamp;
             if(failure!=null){fail(ref,store,failure);return;}
             context=data.context;rows=data.rows;activity=data.activity;studentId=data.student;revisions=data.revisions;submission=data.selected;submittedVersion=data.version;discardDrafts=false;
+            if(!context.teacher() || activity==null || activity.archived()){creating=false;editing=false;}
             submissionId=submission==null?null:submission.id();
             var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,resetFields);
             c.set("#Status.TextSpans",status!=null?status:guidance());publish(ref,store,c,e);
@@ -123,41 +124,40 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     }
     /** Render metadata independently of the world/connection; native input fields have no Disabled property. */
     void render(UICommandBuilder c,UIEventBuilder e,boolean reset,AreaSessions.Session selection,boolean hasReview) {
-        boolean teacher=context.teacher(),editing=teacher && !students && activity!=null;
+        boolean teacher=context.teacher(),editor=editingActivity();
         c.set("#Body.Visible",true);c.set("#Details.Visible",true);controls(c,false);
         c.set("#Heading.TextSpans",Message.raw(context.name()));c.set("#New.Visible",teacher && !creating);c.set("#Filter.Visible",teacher && !students && !creating);
         c.set("#ListPanel.Visible",!creating);c.set("#Activities.TextSpans",text(creating?"learning.backToActivities":"learning.activities"));
-        height(c,"#DescriptionField",creating?180:130);
+        height(c,"#DescriptionField",creating?260:220);
         c.set("#Filter.TextSpans",text("learning.filter."+filter.name()));
         c.set("#Empty.Visible",rows.items().isEmpty());c.set("#Empty.TextSpans",text(students?"learning.noStudents":"learning.noActivities"));
         c.set("#Page.TextSpans",text("classroom.page").param("page",page+1));c.set("#Previous.Disabled",page==0);c.set("#Next.Disabled",!rows.hasNext());
         c.clear("#Rows");
         int i=0;for(Object row:rows.items()) {
             c.append("#Rows",ClassroomPage.ROW_LAYOUT);String selector="#Rows["+(i++)+"]";
+            height(c,selector,row instanceof Student?132:112);
             UUID id;String title;Message info;boolean selected;
-            if(row instanceof Activity a){id=a.id();title=a.title().isBlank()?null:shortText(a.title());info=text(a.archived()?"learning.archived":a.draft()!=null?"learning.draft":"learning.published");selected=id.equals(activityId);}
+            if(row instanceof Activity a){id=a.id();String name=teacher?a.title():a.published()==null?"":a.published().title();title=name.isBlank()?null:shortText(name);info=text(a.archived()?"learning.archived":teacher && a.draft()!=null?"learning.draft":"learning.published");selected=id.equals(activityId);}
             else{var s=(Student)row;id=s.id();title=shortText(s.name());info=s.latest()==null?text("learning.notSubmitted"):submissionLabel(s.latest());selected=id.equals(studentId);}
             c.set(selector+" #RowName.TextSpans",title==null?text("learning.untitled"):Message.raw(title));c.set(selector+" #RowInfo.TextSpans",info);
             c.set(selector+" #SelectionMark.Visible",selected);c.set(selector+" #RowStamp.Visible",row instanceof Student);if(row instanceof Student student)c.set(selector+" #RowStamp.TextSpans",Message.raw(shortText(student.enrollment(),20)));
             e.addEventBinding(CustomUIEventBindingType.Activating,selector,EventData.of("Action","Select").append("Target",id.toString()));
         }
-        c.set("#Editor.Visible",editing);c.set("#Read.Visible",activity!=null && !editing);
-        c.set("#ActivityActions.Visible",editing && !activity.archived());c.set("#Restore.Visible",editing && activity.archived());
-        c.set("#Archive.Visible",!creating);c.set("#Students.Visible",teacher && activity!=null && !students && !creating);
+        boolean catalog=teacher && !students && activity!=null && !creating;
+        c.set("#Editor.Visible",editor);c.set("#Read.Visible",activity!=null && !editor);
+        c.set("#ActivityActions.Visible",editor);c.set("#CatalogActions.Visible",catalog);
+        c.set("#Edit.Visible",catalog && !editor && !activity.archived());c.set("#CancelEdit.Visible",editor && !creating);
+        c.set("#Restore.Visible",catalog && activity.archived());c.set("#Archive.Visible",catalog && !activity.archived());
+        c.set("#Students.Visible",catalog && !editor);
         c.set("#Deliver.Visible",!teacher && activity!=null);
         c.set("#SubmitArea.Visible",!teacher && selection!=null && selection.submission==null && selection.activity.equals(activityId));
         c.set("#CancelSelection.Visible",selection!=null);
         c.set("#Discard.Visible",teacher && hasReview);
         if(activity!=null){
-            if(editing && reset){var d=activity.editable();editRevision=activity.revision();c.set("#TitleField.Value",d.title());c.set("#DescriptionField.Value",d.description());LearningDeadline.render(c,d.deadline(),currentYear());c.set("#ValueField.Value",LearningViews.points(d.value()));}
+            if(editor && reset){var d=activity.editable();editRevision=activity.revision();c.set("#TitleField.Value",d.title());c.set("#DescriptionField.Value",d.description());LearningDeadline.render(c,d.deadline(),currentYear());c.set("#ValueField.Value",LearningViews.points(d.value()));}
             c.set("#StudentInfo.Visible",teacher && students && studentId!=null);
             if(teacher && students && studentId!=null) rows.items().stream().filter(r->r instanceof Student student && student.id().equals(studentId)).findFirst().ifPresent(r->{var student=(Student)r;c.set("#StudentInfo.TextSpans",text("learning.studentInfo").param("name",student.name()).param("enrollment",student.enrollment()).param("state",text(student.active()?"learning.activeStudent":"learning.formerStudent")));});
-            if(!editing){
-                var p=activity.published();c.set("#ReadTitle.TextSpans",p==null?text("learning.untitled"):Message.raw(p.title()));
-                c.set("#ReadDescription.TextSpans",Message.raw(p==null?"":p.description()));c.set("#ReadDescription.Visible",p!=null && !p.description().isEmpty());
-                c.set("#DeadlineState.Visible",p!=null && p.deadline()<=System.currentTimeMillis());
-                c.set("#ReadMeta.TextSpans",p==null?text("learning.draft"):text("learning.activityMeta").param("version",p.number()).param("deadline",LearningViews.date(p.deadline())).param("value",LearningViews.points(p.value())));
-            }
+            if(!editor)renderActivity(c,teacher && !students);
         }
         boolean show=submission!=null && (!teacher || students);
         c.set("#ActivityScore.Visible",!teacher && activity!=null && submission==null);
@@ -175,6 +175,20 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             if(reset){gradeRevision=grade==null?0:grade.revision();c.set("#ScoreField.Value",grade==null?"":LearningViews.points(grade.score()));c.set("#FeedbackField.Value",grade==null?"":grade.feedback());}
         } else if(previewId!=null)clearPreview();
     }
+    private void renderActivity(UICommandBuilder c,boolean privateView) {
+        var p=activity.published();var d=privateView?activity.editable():p==null?(context.teacher()?activity.editable():Draft.empty()):p.draft();
+        boolean draft=p==null || privateView && activity.draft()!=null;
+        c.set("#ReadTitle.TextSpans",d.title().isBlank()?text("learning.untitled"):Message.raw(d.title()));
+        c.set("#ReadDescription.TextSpans",Message.raw(d.description()));c.set("#ReadDescription.Visible",!d.description().isEmpty());
+        c.set("#DeadlineState.Visible",d.deadline()!=null && d.deadline()<=System.currentTimeMillis());
+        c.set("#ReadState.TextSpans",text(activity.archived()?"learning.archived":draft?"learning.draft":"learning.published"));
+        c.set("#DraftNotice.Visible",draft && p!=null);
+        if(draft && p!=null)c.set("#DraftNotice.TextSpans",text("learning.privateDraftNotice").param("version",p.number()));
+        var meta=text(draft?"learning.draftMeta":"learning.activityMeta")
+                .param("deadline",d.deadline()==null?text("learning.notSet"):Message.raw(LearningViews.date(d.deadline())))
+                .param("value",d.value()==null?text("learning.notSet"):Message.raw(LearningViews.points(d.value())));
+        if(!draft)meta=meta.param("version",p.number());c.set("#ReadMeta.TextSpans",meta);
+    }
     private Message guidance() {
         var session=areas.current(playerRef,world);
         if(session!=null && session.submission==null){
@@ -182,7 +196,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             catch(LearningException ignored){return text("learning.selectionHelp");}
         }
         if(context.teacher() && students && studentId==null)return text("learning.chooseStudent");
-        return text(activity==null?"learning.chooseActivity":context.teacher() && !students?"learning.editHelp":"learning.viewHelp");
+        if(context.teacher() && !students && activity!=null && activity.archived())return text("learning.archivedViewHelp");
+        return text(activity==null?"learning.chooseActivity":editingActivity()?"learning.editHelp":context.teacher() && !students?"learning.activityViewHelp":"learning.viewHelp");
     }
     private static Message submissionLabel(Submission s){return text(s.late()?"learning.late":"learning.submitted").param("revision",s.revision());}
     private void fetchPreview(Ref<EntityStore> ref,Store<EntityStore> store,ClassroomPageAccess.Stamp stamp) {
@@ -208,12 +223,14 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             switch(event.action==null?"":event.action){
                 case "Reload"->{previewId=null;refresh(ref,store,true,null);}
                 case "Activities"->{backToActivities();clearPreview();refresh(ref,store,true,null);}
-                case "Filter"->{filter=LearningStore.Filter.values()[(filter.ordinal()+1)%LearningStore.Filter.values().length];activityId=null;submissionId=null;page=0;refresh(ref,store,true,null);}
-                case "Previous"->{if(students){studentId=null;submissionId=null;clearPreview();}if(page>0)page--;refresh(ref,store,true,null);}
-                case "Next"->{if(students){studentId=null;submissionId=null;clearPreview();}if(rows.hasNext())page++;refresh(ref,store,true,null);}
+                case "Filter"->{editing=false;filter=LearningStore.Filter.values()[(filter.ordinal()+1)%LearningStore.Filter.values().length];activityId=null;submissionId=null;page=0;refresh(ref,store,true,null);}
+                case "Previous"->{editing=false;if(students){studentId=null;submissionId=null;clearPreview();}if(page>0)page--;refresh(ref,store,true,null);}
+                case "Next"->{editing=false;if(students){studentId=null;submissionId=null;clearPreview();}if(rows.hasNext())page++;refresh(ref,store,true,null);}
+                case "Edit"->{if(!beginEditing()){acknowledge(ref,store);return;}var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,true);c.set("#Status.TextSpans",guidance());publish(ref,store,c,e);}
+                case "CancelEdit"->{if(!viewActivity()){acknowledge(ref,store);return;}var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,false);c.set("#Status.TextSpans",guidance());publish(ref,store,c,e);}
                 case "New"->{if(!context.teacher() || creating){acknowledge(ref,store);return;}mutate(ref,store,runtime.learn(s->s.create(playerRef.getUuid())),a->{created((Activity)a);clearPreview();},true,true);}
                 case "DeadlineChanged"->{
-                    if(!context.teacher() || activity==null || students){acknowledge(ref,store);return;}
+                    if(!editingActivity()){acknowledge(ref,store);return;}
                     var c=new UICommandBuilder();
                     try{if(LearningDeadline.days(c,event.dateParts()))c.set("#Status.TextSpans",text("learning.dayReset"));}
                     catch(IllegalArgumentException invalid){c.set("#Status.TextSpans",error(invalid));}
@@ -222,17 +239,17 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                 case "Select"->{
                     UUID id=UUID.fromString(event.target);
                     if(students){if(rows.items().stream().noneMatch(r->r instanceof Student s && s.id().equals(id))){acknowledge(ref,store);return;}studentId=id;}
-                    else{if(rows.items().stream().noneMatch(r->r instanceof Activity a && a.id().equals(id))){acknowledge(ref,store);return;}activityId=id;studentId=null;}
+                    else{if(!selectActivity(id)){acknowledge(ref,store);return;}}
                     submissionId=null;revisionPage=0;clearPreview();refresh(ref,store,true,null);
                 }
                 case "SaveDraft","Publish"->{
-                    if(activity==null || students){acknowledge(ref,store);return;}
+                    if(!editingActivity()){acknowledge(ref,store);return;}
                     var draft=new Draft(event.title,event.description,LearningDeadline.deadline(event.dateParts()),LearningViews.points(event.value));
                     UUID id=activity.id();long revision=editRevision;boolean publish="Publish".equals(event.action);
                     mutate(ref,store,runtime.learn(s->{var a=s.save(playerRef.getUuid(),id,revision,draft);return publish?s.publish(playerRef.getUuid(),id,a.revision()):a;}),ignored->saved(publish),true,publish);
                 }
-                case "Archive","Restore"->{if(activity!=null){var a=activity;mutate(ref,store,runtime.learn(s->s.archive(playerRef.getUuid(),a.id(),editRevision,"Archive".equals(event.action))),ignored->{},true,true);}}
-                case "Students"->{if(activity!=null){students=true;studentId=null;submissionId=null;page=0;clearPreview();refresh(ref,store,true,null);}}
+                case "Archive","Restore"->{if(context.teacher() && !students && activity!=null && !creating){var a=activity;long revision=editingActivity()?editRevision:a.revision();mutate(ref,store,runtime.learn(s->s.archive(playerRef.getUuid(),a.id(),revision,"Archive".equals(event.action))),ignored->{editing=false;},true,true);}}
+                case "Students"->{if(context.teacher() && activity!=null && !creating){editing=false;students=true;studentId=null;submissionId=null;page=0;clearPreview();refresh(ref,store,true,null);}}
                 case "Deliver"->{if(activity!=null)mode(ref,store,areas.beginSelection(playerRef,world,activity.id()));}
                 case "SubmitArea"->mutate(ref,store,areas.submit(playerRef,world),ignored->submissionId=null,false);
                 case "CancelSelection"->{areas.cancel(playerRef,world);refresh(ref,store,false,null);}
@@ -256,9 +273,13 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         else if(!older && revisionPage>0){revisionPage--;submissionId=null;clearPreview();refresh(ref,store,true,null);}
         else acknowledge(ref,store);
     }
-    void created(Activity value){activityId=value.id();students=false;creating=true;studentId=null;submissionId=null;page=0;revisionPage=0;}
-    void saved(boolean published){if(published){creating=false;filter=LearningStore.Filter.ALL;}}
-    void backToActivities(){if(creating){creating=false;activityId=null;filter=LearningStore.Filter.ALL;}students=false;studentId=null;submissionId=null;page=0;revisionPage=0;}
+    boolean editingActivity(){return context!=null && context.teacher() && !students && activity!=null && !activity.archived() && editing;}
+    boolean beginEditing(){if(context==null || !context.teacher() || students || activity==null || activity.archived() || creating || editing)return false;editing=true;return true;}
+    boolean viewActivity(){if(!editingActivity() || creating)return false;editing=false;return true;}
+    boolean selectActivity(UUID id){if(rows.items().stream().noneMatch(r->r instanceof Activity a && a.id().equals(id)))return false;activityId=id;studentId=null;editing=false;creating=false;return true;}
+    void created(Activity value){activityId=value.id();students=false;creating=true;editing=true;studentId=null;submissionId=null;page=0;revisionPage=0;}
+    void saved(boolean published){if(published){creating=false;editing=false;filter=LearningStore.Filter.ALL;}}
+    void backToActivities(){if(creating){creating=false;activityId=null;filter=LearningStore.Filter.ALL;}editing=false;students=false;studentId=null;submissionId=null;page=0;revisionPage=0;}
     private void mode(Ref<EntityStore> ref,Store<EntityStore> store,CompletableFuture<?> future){
         busy=true;var waiting=new UICommandBuilder();controls(waiting,true);waiting.set("#Status.TextSpans",text("learning.loading"));publish(ref,store,waiting,new UIEventBuilder());var stamp=access.current();future.whenComplete((value,failure)->inWorld(ref,store,()->{
             busy=false;if(!access.current(stamp)){refresh(ref,store,false,null);return;}if(failure!=null)fail(ref,store,failure);else {dispose();close();}
@@ -284,7 +305,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         busy=false;saving=false;var c=operationState(false,error(failure));
         var cause=unwrap(failure);
         if(cause instanceof sisso.logicsim.classroom.domain.ClassroomException ex && ex.reason()==sisso.logicsim.classroom.domain.ClassroomException.Reason.FORBIDDEN){
-            creating=false;c.set("#Body.Visible",false);c.set("#New.Visible",false);c.set("#Filter.Visible",false);for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());clearPreview();context=null;
+            creating=false;editing=false;c.set("#Body.Visible",false);c.set("#New.Visible",false);c.set("#Filter.Visible",false);for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());clearPreview();context=null;
         }
         c.set("#Previous.Disabled",page==0);c.set("#Next.Disabled",!rows.hasNext());
         publish(ref,store,c,new UIEventBuilder());
