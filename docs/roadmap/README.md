@@ -6,7 +6,7 @@ O núcleo de circuitos está implementado. O produto educacional completo ainda 
 
 ## Prioridades propostas
 
-1. Validar o MVP administrativo Classroom da rc.3 no cliente com professor e aluno, nos dois idiomas. Fluxos centrais de rc.1/rc.2 foram confirmados; novos cenários estão no [roteiro](../classroom.md). Atividades/entregas seguem posteriores.
+1. Validar [atividades, áreas e avaliação manual da rc.11](../classroom-rc11-acceptance.md), começando pela prova curta com professor e aluno. O MVP administrativo permanece; cinco cenários breves rc.10 foram confirmados. Aceite de cliente e preparação de 1.4.0 estável continuam explícitos.
 2. Completar verificações manuais específicas ainda abertas: drops nesta entrega, cancelamento/reembolso da fabricação e abertura dos projetos no Blockbench. Multiplayer, circuitos e crafts foram aprovados pelo usuário em 23/10/2026; consultar o [registro](../validation.md).
 3. Usar `benchmarkCircuit`, `benchmarkServer` e `/logicenergy` para acompanhar circuitos maiores. Invalidação por região depende de evidência de custo e continua fora desta correção.
 4. Acrescentar outras línguas seguindo o contrato existente. **en-US e pt-BR já estão implementados**, com validação de chaves, parâmetros e referências atuais. Traduzir futuras telas ao introduzi-las.
@@ -16,6 +16,6 @@ Não há placeholders Java para esses incrementos. Serviços, persistência e UI
 
 ## Entregas e avaliação
 
-A ideia inicial considerava entregar uma área como prefab para o professor colar e avaliar, ou informar coordenadas de uma construção. Essas continuam alternativas, não contratos definidos. Antes de implementar, decidir como fixar uma revisão da entrega, quais construções pertencem ao aluno e se a correção será manual, automática ou ambas.
+O contrato de [entregas de áreas e correção](classroom-learning-contracts.md) foi aprovado e implementado na rc.11 como candidata: conteúdo fixo, revisões, preview, cópia temporária e nota/feedback manuais. As novas interações exigem o roteiro de cliente; a prova nativa não substitui renderização nem autoria da construção. Avaliação automática permanece posterior.
 
 Para avaliação lógica automática, preferir snapshot e casos de tabela verdade sem acionar alavancas no mundo ao vivo. Aceitar circuitos equivalentes quando o objetivo for comportamento; limitações de número/tipo de portas precisam ser critérios separados. Seção indisponível ou revisão alterada é erro de avaliação/contexto, não resposta lógica incorreta do aluno.

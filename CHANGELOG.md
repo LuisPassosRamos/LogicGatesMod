@@ -4,7 +4,17 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.10.
+Nenhuma alteração registrada após 1.4.0-rc.11.
+
+## [1.4.0-rc.11] - 2026-10-26
+
+### Atividades, entregas de áreas e avaliação manual
+- Atividades com rascunho privado, publicação explícita em versões imutáveis, prazo futuro obrigatório em Brasília, valor positivo padrão 10, arquivamento e restauração. Alunos ativos consultam apenas publicações da própria turma.
+- Seleção restrita ao fluxo de entrega, sem conceder OP ou comandos de edição. Confirmação captura conteúdo fixo, preservando orientação e intenção das alavancas; reenvios preservam revisões. Envios iniciais e reenvios atrasados são aceitos e identificados.
+- Preview 3D nativo da revisão selecionada e cópia temporária para correção, com espaço vazio, validação de proteção, reserva exclusiva, edição pelo responsável e descarte do volume completo. Reservas persistentes permitem recuperação após interrupção/reinício sem carregar terreno distante.
+- Notas/feedback associados à revisão exata e ao valor daquela publicação; zero atribuído é distinto de ausência de nota. Alterações na nota preservam histórico; reenvio começa sem avaliação.
+- SQLite v5 acrescenta metadados pedagógicos com backup pré-migração; arquivos privados comprimidos, versionados e verificados por checksum. Cotas e fila limitada de operações pesadas evitam trabalho ilimitado; listas carregam apenas metadados paginados.
+- Prova nativa e regressões de papéis, versões, concorrência, limites, gravação e transporte. Seleção, preview/renderização e edição no cliente permanecem sujeitos ao roteiro de aceite. Circuitos, mundos e aparência dos componentes preservados; logging ampliado e avaliação automática posteriores.
 
 ## [1.4.0-rc.10] - 2026-10-26
 

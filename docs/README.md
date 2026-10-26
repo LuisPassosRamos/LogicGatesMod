@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.10**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.10 otimiza leituras de banco com uma conexão por tela e mantém as otimizações da rc.8. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; cinco cenários da regressão curta rc.10 confirmados, incluindo abas instantâneas e preservação da descrição; cenários complementares de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.11**, Hytale **0.7.4**; circuitos consolidados em **1.3.3**. O MVP administrativo permanece, com os cinco cenários breves da rc.10 confirmados. A candidata acrescenta atividades versionadas, entregas de áreas, preview/cópias temporárias e avaliação manual. [Uso e persistência](classroom-learning.md); [aceite rc.11](classroom-rc11-acceptance.md). A automação e a prova nativa não aprovam seleção/renderização no cliente. Evidências anteriores conservam sua versão e escopo.
 
 ## Uso e manutenção
 
@@ -10,6 +10,7 @@ Estado atual: pré-versão **1.4.0-rc.10**, Hytale **0.7.4**; base de circuitos 
 | [Desenvolvimento e automação](development.md) | Compilar, testar, versionar e localizar artefatos |
 | [Arte e arquivos gerados](assets.md) | Editar modelos, texturas e gerar variantes |
 | [Ensino e comandos](teaching.md) | Usar ajuda, tabelas verdade, inspeção e idiomas |
+| [Atividades e entregas](classroom-learning.md) | Publicação, seleção, revisões, preview, cópias, notas e backup conjunto |
 | [Classroom](classroom.md) | Turmas, ingresso, matrícula, membros, mensagem, backup e validação |
 | [Desempenho](performance.md) | Reproduzir benchmarks e interpretar os tempos |
 | [Validação](validation.md) | Reproduzir testes e conferir aparência, colisão e multiplayer |
@@ -23,14 +24,14 @@ Estado atual: pré-versão **1.4.0-rc.10**, Hytale **0.7.4**; base de circuitos 
 | Documento | Estado |
 | --- | --- |
 | [Objetivo educacional e prioridades](roadmap/README.md) | Direção do TCC; não é lista de funcionalidades implementadas |
-| [Classroom](roadmap/classroom.md) | Plano aprovado; MVP administrativo implementado para validação, atividades posteriores |
+| [Classroom](roadmap/classroom.md) | Plano aprovado; atividades/entregas/avaliação candidatas na rc.11, com aceite de cliente pendente |
 | [Conexões entre alturas](roadmap/vertical-connections.md) | Avaliação de viabilidade; implementação pendente |
 
 A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo ficam em `src/main/resources/`. O código de referência legado foi removido depois de verificar que não era dependência do mod. `build/`, caches e mundos locais não são documentação nem fontes do projeto.
 
 - [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.
 
-A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preserva o esquema v4; [roteiro atual](classroom-rc10-acceptance.md).
+A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preservava o esquema v4; a rc.11 acrescenta v5 e arquivos de conteúdo. [Roteiro atual](classroom-rc11-acceptance.md).
 
 A [revisão de otimização e testes de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) distingue ajustes de runtime, código sem chamadas internas e execução proporcional das verificações. O [relato rc.9](evidence/classroom/2026-10-25-rc9-client-report.md) confirma o encerramento da turma, mantendo pendências sem confirmação individual.
 

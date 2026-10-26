@@ -1,6 +1,6 @@
 # Atividades — contrato aprovado e etapas pedagógicas
 
-Contrato aprovado pelo usuário em 24/10/2026 para o incremento posterior ao MVP administrativo. A rc.7 documenta essas decisões; não implementa atividades, notas, entregas, APIs, tabelas ou telas. A implementação de atividades será uma entrega separada. O aceite parcial do cliente rc.6 e os testes administrativos pendentes não são aprovação das futuras telas.
+Contrato inicial aprovado em 24/10/2026, ampliado pelo plano de áreas e correção em 26/10/2026. **Implementado como candidata rc.11**, com SQLite v5 e arquivos privados. O [uso atual](../classroom-learning.md) e o [roteiro de aceite](../classroom-rc11-acceptance.md) distinguem o que a automação comprova da seleção/renderização que exige cliente. O texto abaixo conserva as decisões de publicação; entregas e avaliação agora têm implementação.
 
 ## Primeiro incremento: publicar e consultar atividades
 
@@ -22,15 +22,15 @@ Rascunhos são privados e podem ficar incompletos. Publicar exige título e enun
 - Cada publicação conserva uma versão imutável de título, enunciado, prazo e valor. Alterar uma publicação prepara um novo rascunho, mantendo a versão atual dos alunos até publicar novamente.
 - Rascunho e publicação atual podem coexistir. O rascunho de edição parte da versão publicada; o padrão 10 vale para atividades novas, sem substituir o valor já publicado.
 - A consulta inicial do aluno usa a última versão publicada de atividades não arquivadas da turma atual. A data de ingresso não elimina publicações atuais da lista.
-- O vencimento indica **Prazo encerrado** e mantém a consulta disponível. Não arquiva automaticamente. Regras de recebimento de entregas após o prazo pertencem à etapa futura de entregas.
+- O vencimento indica **Prazo encerrado** e mantém a consulta disponível. Não arquiva automaticamente. **Envio inicial e reenvios atrasados são aceitos e identificados como atrasados**, conforme a decisão posterior.
 - Arquivar oculta a atividade dos alunos e conserva rascunho e versões para o professor. Restaurar reapresenta a última versão publicada sem criar uma versão; se vencida, continua indicando prazo encerrado. Uma atividade que só possuía rascunho continua privada após restaurar.
 - Futuras entregas e avaliações devem referenciar a versão correspondente. Publicar outra versão não altera silenciosamente enunciado, prazo ou valor usados por uma entrega/avaliação anterior.
 
-Arquivamento/restauração de atividade é distinto do encerramento administrativo de turma implementado na rc.9. Restaurar ou excluir definitivamente uma turma continua fora do MVP. Este contrato foi documentado na rc.7, então com SQLite v3; a base atual usa v4 e a rc.10 não acrescenta migração para atividades.
+Arquivamento/restauração de atividade é distinto do encerramento administrativo de turma implementado na rc.9. Restaurar ou excluir definitivamente uma turma continua fora do MVP. O contrato foi documentado na rc.7 (v3); rc.9/rc.10 usavam v4. A implementação rc.11 acrescenta v5 com backup, sem alterar IDs ou vínculos anteriores.
 
 ## Cenários de aceite da implementação posterior
 
-Estes casos são requisitos futuros, ainda não testes executados de atividades:
+Estes casos orientam regressões automatizadas e aceite no cliente; execução por cenário fica registrada no roteiro da candidata:
 
 | Cenário | Resultado esperado |
 | --- | --- |
@@ -45,17 +45,13 @@ Estes casos são requisitos futuros, ainda não testes executados de atividades:
 | Tentar acesso de outra turma, candidato ou ex-membro | Acesso privado recusado no servidor |
 | Revogar permissão docente | Administração bloqueada sem transferir responsabilidade ou alterar dados |
 
-## Entregas e avaliação posteriores
+## Áreas, revisões e correção — contrato ampliado
 
-| Contrato | Identidade e conteúdo mínimo |
-| --- | --- |
-| Entrega | UUID, atividade e versão, aluno UUID, revisão, instante e referência a conteúdo versionado |
-| Avaliação | Revisão da entrega avaliada, professor UUID, feedback e resultado referente ao valor da versão correspondente |
+- Aluno seleciona dois cantos dentro do fluxo da atividade, sem OP; reabre `/classroom` e confirma dimensões. Sessão temporária pertence à conexão/mundo, expira em 15 minutos e termina ao cancelar, desconectar ou trocar de mundo.
+- Servidor captura conteúdo fixo, apenas de regiões carregadas, com construção e circuitos, orientação e intenção das alavancas. Sem inventários, NPCs ou itens soltos; tipos especiais sem reprodução confiável são recusados.
+- Cada revisão referencia UUID de aluno e vínculo, atividade/publicação, instante do servidor, arquivo versionado e checksum. Metadados só aparecem após publicação do arquivo. Reenvio preserva anteriores, aceita atraso e começa sem nota.
+- Professor consulta atividade → aluno → revisão. Preview 3D é visual; testar/alterar o circuito exige cópia temporária no mundo escolhido. Espaço vazio, proteção por eventos nativos, uma reserva persistente por professor; descarte remove o volume editado, preservando a entrega.
+- Nota entre zero e valor **daquela publicação**, feedback e revisão explícitos. Corrigir uma revisão antiga não avalia a mais recente. Histórico de alterações da avaliação é preservado.
+- Limites padrão: 32 × 16 × 32 incluindo ar, 8 MiB descomprimidos por revisão, 1 GiB por turma, uma operação pesada + oito aguardando. Listas apenas de metadados; conteúdo só da revisão selecionada. Esses valores não certificam capacidade de jogadores.
 
-Lançamento de notas e feedback ficam para a etapa de avaliação; não haverá lançamento manual antecipado neste primeiro incremento de atividades. Correção deve apontar para uma revisão reproduzível, sem acompanhar alterações posteriores do aluno silenciosamente. Vínculos históricos permitem associar participação à turma sem reaproveitar um vínculo encerrado em novo ingresso.
-
-O formato do conteúdo da entrega permanece em aberto. Coordenadas, seleção de área, snapshot e prefab exigem decisão sobre reprodução, disponibilidade de seções e experiência do professor. A implementação futura usará um adaptador de conteúdo versionado, sem acoplar Classroom ao circuito vivo. Não implementar adaptador fictício antes dessa decisão.
-
-Sequência acordada: implementar publicação/consulta versionadas em incremento separado; decidir conteúdo, entrega e revisão com referências próprias para aluno/professor; implementar feedback manual; depois estudar avaliação automática por casos esperados e snapshots. Falha de disponibilidade de seção é falha de contexto, não resposta lógica incorreta.
-
-Transferência docente, múltiplos responsáveis, exclusão definitiva/restauração de turma, proteção de áreas e retenção definitiva precisam de contratos específicos. O MVP atual permite encerrar uma turma preservando dados e histórico; atividades, entregas e avaliação continuam sem código.
+A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva exigem contratos futuros. Logging seletivo e avaliação automática continuam no backlog.

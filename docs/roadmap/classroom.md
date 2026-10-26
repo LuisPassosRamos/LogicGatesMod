@@ -4,9 +4,9 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.10 mantém o MVP administrativo (incrementos 0–3) e otimiza suas leituras.** Turmas, ingresso por solicitação/convite, matrícula, membros, mensagem, permissões automáticas e encerramento estão implementados. A entrega fica em `codex/classroom-ui`, sem merge em `main`. Atividades, entregas e avaliação não têm código, tabelas ou telas.
+**1.4.0-rc.11 mantém o MVP administrativo e implementa os incrementos pedagógicos como candidata.** Atividades versionadas, entregas fixas de áreas, revisões, preview/cópias temporárias e avaliação manual estão implementados; seleção e apresentação no cliente aguardam aceite. Trabalho em `codex/classroom-ui`, sem merge em `main`, tag ou publicação estável.
 
-O núcleo é independente da API Hytale, com SQLite v4, preservando IDs e dados das versões anteriores. A rc.10 agrega vínculo, turma e nomes em um SELECT; cada tela usa uma conexão e transação de leitura diferida, reutilizando o contexto para lista/contagem. Política pura de leitura fica no domínio; permissão nativa continua no serviço. Gravações, regras de vínculo, layout, comandos, mundos e circuitos permanecem. Pool, WAL, cache entre requisições e remoção de wrappers sem chamadas internas ficaram fora desta entrega.
+O SQLite passa a v5 com backup, preservando os registros administrativos e as leituras agregadas da rc.10. Conteúdo privado é separado em arquivos imutáveis; o [contrato atualizado](classroom-learning-contracts.md), a [documentação de uso](../classroom-learning.md) e o [roteiro rc.11](../classroom-rc11-acceptance.md) descrevem limites, recuperação e o que falta comprovar.
 
 ## Polimento e evidências
 
@@ -39,8 +39,8 @@ O professor abre diretamente sua turma, com lista de alunos à esquerda e detalh
 | 1 | Professor cria/edita nome e descrição da turma; painel vazio e SQLite | Reinício preserva dados; segunda turma e acesso indevido são recusados |
 | 2 | Lista pública, solicitações, convites, conferência de matrícula, membros e ficha básica | Dois caminhos convergem para o mesmo vínculo; concorrência e reconexão cobertas |
 | 3 | Mensagem do dia, correção de matrícula, remoção/saída e refinamento visual | Permissões, navegação e persistência verificadas com professor e aluno |
-| 4 | Publicação e detalhes de atividades versionadas | Contrato aprovado e documentado na rc.7; implementação em incremento separado |
-| 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Escolher formato da entrega e fluxo de correção antes de implementar |
+| 4 | Publicação e detalhes de atividades versionadas | Implementado na rc.11; testes de domínio e aceite visual separados |
+| 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Áreas fixas, revisões e avaliação manual implementadas na rc.11; seleção/preview/edição no cliente pendentes |
 
 A página de prova evolui para a entrada real após validação do incremento 0. Cada incremento inclui código, testes relevantes, documentação e commits por assunto. Usar pré-versões de `1.4.0`; tags são marcos explícitos de aprovação. Preservar circuitos, IDs, codecs, mundos e aparência. Novas portas e conexões verticais estão fora deste trabalho.
 
@@ -98,4 +98,4 @@ Solicitado após a rc.8, ainda sem reteste daquela candidata. Administração pe
 
 A meta medida na tela docente de membros é passar de cinco conexões/sete SELECTs para uma conexão e no máximo três SELECTs. O comparativo usa o JAR rc.9 preservado e a candidata no mesmo ambiente, com 25 membros, rajadas 25/100/250 e três rodadas por versão. Os logs completos ficam em disco; evidências resumidas registram builds e checksums. Testes cobrem papéis, busca/paginação, autorização, fechamento/rollback e consistência com aprovação, saída ou encerramento concorrente. Nenhuma estimativa de capacidade real é deduzida desses números.
 
-Após concluir esta entrega, seguir em incrementos próprios: **atividades versionadas → decidir conteúdo e implementar entregas/revisões → avaliação manual → avaliação automática**. O [contrato de atividades](classroom-learning-contracts.md) já está aprovado. As pendências específicas de cliente permanecem necessárias para fechar o polimento e preparar 1.4.0 estável, sem impedir a otimização atual. A limpeza de três wrappers sem consumidores fica fora da rc.10.
+A rc.11 implementa a sequência aprovada **prova técnica → atividades versionadas → entregas/revisões → avaliação manual**. A prova nativa verifica reprodução no servidor; o aceite de seleção, preview e correção continua no cliente. Avaliação automática, logging seletivo e proteção permanente das bancadas permanecem no backlog, assim como a limpeza dos três wrappers sem consumidores. As pendências administrativas anteriores continuam registradas; versão estável só após aceite explícito.
