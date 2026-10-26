@@ -2,7 +2,7 @@
 
 Build entregue: **1.4.0-rc.13+33d7e296575a**, revisão de produção `1f9982578bfb`. JAR SHA-256 `78a3c8ef3224e8200f752f31791da1122582abc111dde4a35e91d9e6c79e34c7`. [Verificações automatizadas](evidence/classroom/2026-10-26-rc13-server.json).
 
-**Cliente desta candidata: pendente.** O [fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado em multiplayer. Isso não aprova a renderização do novo dimensionamento ou dos dropdowns. Esquema SQLite v5, entregas e versões preservados; sem publicação estável, tag ou merge em `main`.
+**Cliente: apresentação docente parcialmente confirmada por [capturas](evidence/classroom/2026-10-26-rc13-client.md).** Interações detalhadas, resoluções e escalas continuam pendentes. O [fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado em multiplayer. Isso não aprova a renderização do novo dimensionamento ou dos dropdowns. Esquema SQLite v5, entregas e versões preservados; sem publicação estável, tag ou merge em `main`.
 
 Com o mundo parado, instale somente `LogicGates-1.4.0-rc.13.jar` em `mods`, substituindo o anterior. Guarde o ZIP fora de `mods`. Faça backup conjunto de `classroom.db`, `submissions`, configuração e mundos; não apague dados para testar a interface. Identifique cada resultado pelo build ID e SHA-256 entregues.
 
