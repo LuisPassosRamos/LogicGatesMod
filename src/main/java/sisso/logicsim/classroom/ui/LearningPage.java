@@ -115,6 +115,10 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         }));
     }
     private void render(UICommandBuilder c,UIEventBuilder e,boolean reset) {
+        render(c,e,reset,areas.current(playerRef,world),context.teacher() && areas.review(playerRef.getUuid())!=null);
+    }
+    /** Render metadata independently of the world/connection; native input fields have no Disabled property. */
+    void render(UICommandBuilder c,UIEventBuilder e,boolean reset,AreaSessions.Session selection,boolean hasReview) {
         boolean teacher=context.teacher(),editing=teacher && !students && activity!=null;
         c.set("#Body.Visible",true);c.set("#Details.Visible",true);controls(c,false);
         c.set("#Heading.TextSpans",Message.raw(context.name()));height(c,"#Heading",ClassroomScreenRenderer.textHeight(context.name(),900,20,26,32));c.set("#New.Visible",teacher);c.set("#Filter.Visible",teacher && !students);
@@ -135,12 +139,9 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         c.set("#ActivityActions.Visible",editing && !activity.archived());c.set("#Restore.Visible",editing && activity.archived());
         c.set("#Students.Visible",teacher && activity!=null && !students);
         c.set("#Deliver.Visible",!teacher && activity!=null);
-        var selection=areas.current(playerRef,world);
         c.set("#SubmitArea.Visible",!teacher && selection!=null && selection.submission==null && selection.activity.equals(activityId));
         c.set("#CancelSelection.Visible",selection!=null);
-        c.set("#Discard.Visible",teacher && areas.review(playerRef.getUuid())!=null);
-        c.set("#ScoreField.Disabled",false);c.set("#FeedbackField.Disabled",false);
-        for(String field:new String[]{"TitleField","DescriptionField","DeadlineField","ValueField"})c.set("#"+field+".Disabled",editing && activity.archived());
+        c.set("#Discard.Visible",teacher && hasReview);
         if(activity!=null){
             if(editing && reset){var d=activity.editable();editRevision=activity.revision();c.set("#TitleField.Value",d.title());c.set("#DescriptionField.Value",d.description());c.set("#DeadlineField.Value",LearningViews.date(d.deadline()));c.set("#ValueField.Value",LearningViews.points(d.value()));}
             c.set("#StudentInfo.Visible",teacher && students && studentId!=null);
@@ -250,14 +251,14 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         mutate(ref,store,future,done,true);
     }
     private void mutate(Ref<EntityStore> ref,Store<EntityStore> store,CompletableFuture<?> future,Consumer<Object> done,boolean notify){
-        busy=true;saving=true;var stamp=access.current();var c=new UICommandBuilder();controls(c,true);for(String f:FIELDS)c.set("#"+f+".Disabled",true);c.set("#Status.TextSpans",text("classroom.saving"));publish(ref,store,c,new UIEventBuilder());
+        busy=true;saving=true;var stamp=access.current();publish(ref,store,operationState(true,text("classroom.saving")),new UIEventBuilder());
         future.whenComplete((value,failure)->inWorld(ref,store,()->{
             busy=false;saving=false;if(!access.current(stamp)){refresh(ref,store,false,null);return;}
             if(failure!=null){fail(ref,store,failure);return;}done.accept(value);if(notify)runtime.learningChanged(context.classroom());refresh(ref,store,true,text("classroom.done"));
         }));
     }
     private void fail(Ref<EntityStore> ref,Store<EntityStore> store,Throwable failure){
-        busy=false;saving=false;var c=new UICommandBuilder();controls(c,false);for(String f:FIELDS)c.set("#"+f+".Disabled",false);c.set("#Status.TextSpans",error(failure));
+        busy=false;saving=false;var c=operationState(false,error(failure));
         var cause=unwrap(failure);
         if(cause instanceof sisso.logicsim.classroom.domain.ClassroomException ex && ex.reason()==sisso.logicsim.classroom.domain.ClassroomException.Reason.FORBIDDEN){
             c.set("#Body.Visible",false);c.set("#New.Visible",false);c.set("#Filter.Visible",false);for(String f:FIELDS)c.set("#"+f+".Value","");clearPreview();context=null;
@@ -270,6 +271,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private void inWorld(Ref<EntityStore> ref,Store<EntityStore> store,Runnable action){try{world.execute(()->{if(active(ref,store))action.run();});}catch(RuntimeException stopped){dispose();}}
     private void schedule(Ref<EntityStore> ref,Store<EntityStore> store,Runnable action){try{refreshGate.schedule(world::execute,()->{if(active(ref,store))action.run();});}catch(RuntimeException stopped){dispose();}}
     private static void controls(UICommandBuilder c,boolean disabled){for(String id:ACTIONS)c.set("#"+id+".Disabled",disabled);}
+    /** Busy events are also rejected by handleDataEvent; only buttons support Disabled in Hytale 0.7.4. */
+    static UICommandBuilder operationState(boolean busy,Message status){var c=new UICommandBuilder();controls(c,busy);c.set("#Status.TextSpans",status);return c;}
     private void publish(Ref<EntityStore> ref,Store<EntityStore> store,UICommandBuilder c,UIEventBuilder e){if(active(ref,store))store.getComponent(ref,Player.getComponentType()).getPageManager().updateLegacyCustomPage(updates.packet(getClass().getName(),getLifetime(),c,e,rows.items()));}
     private void acknowledge(Ref<EntityStore> ref,Store<EntityStore> store){publish(ref,store,new UICommandBuilder(),new UIEventBuilder());}
     private static void height(UICommandBuilder c,String id,int pixels){var a=new Anchor();a.setHeight(Value.of(pixels));a.setBottom(Value.of(8));c.setObject(id+".Anchor",a);}
