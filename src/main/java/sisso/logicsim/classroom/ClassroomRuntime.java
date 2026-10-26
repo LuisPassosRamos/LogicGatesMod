@@ -39,18 +39,32 @@ public final class ClassroomRuntime implements AutoCloseable {
     public boolean teaching(UUID actor) { return canTeach.test(actor); }
     public SubmissionFiles submissionFiles() { return submissionFiles; }
     public <T> CompletableFuture<T> learn(Function<LearningStore,T> operation) { return submit(ignored->operation.apply(learning)); }
-    private record LearningListener(UUID owner,Consumer<UUID> callback) { }
+    private record LearningListener(UUID owner,boolean catalogOnly,Predicate<UUID> interested,Consumer<UUID> callback) { }
     private final java.util.Map<UUID,LearningListener> learningListeners=new ConcurrentHashMap<>();
     public AutoCloseable listenLearning(UUID owner,Consumer<UUID> callback) {
+        return listenLearning(owner,false,id->true,callback);
+    }
+    public AutoCloseable listenActivityCatalog(UUID owner,Predicate<UUID> interested,Consumer<UUID> callback) {
+        return listenLearning(owner,true,interested,callback);
+    }
+    private AutoCloseable listenLearning(UUID owner,boolean catalogOnly,Predicate<UUID> interested,Consumer<UUID> callback) {
         java.util.Objects.requireNonNull(owner);java.util.Objects.requireNonNull(callback);UUID token=UUID.randomUUID();
-        if(!closed)learningListeners.put(token,new LearningListener(owner,callback));
+        java.util.Objects.requireNonNull(interested);
+        if(!closed)learningListeners.put(token,new LearningListener(owner,catalogOnly,interested,callback));
         if(closed)learningListeners.remove(token);
         return ()->learningListeners.remove(token);
     }
     /** Learning metadata does not invalidate administrative screens, MOTD delivery or review authorization. */
     public void learningChanged(UUID classroom) {
+        learningChanged(classroom,false);
+    }
+    /** Committed catalog changes also invalidate role-filtered counts, without touching presence/MOTD. */
+    public void activitiesChanged(UUID classroom) { learningChanged(classroom,true); }
+    private void learningChanged(UUID classroom,boolean catalog) {
         if(closed)return;
-        learningListeners.values().forEach(listener->{try{listener.callback().accept(classroom);}catch(RuntimeException failure){log.accept(failure);}});
+        learningListeners.values().forEach(listener->{try{
+            if((catalog || !listener.catalogOnly()) && listener.interested().test(classroom))listener.callback().accept(classroom);
+        }catch(RuntimeException failure){log.accept(failure);}});
     }
     public record Change(UUID classroom, UUID player, boolean directory) { }
     private record Listener(UUID owner, Predicate<Change> interested, Consumer<Change> callback) { }

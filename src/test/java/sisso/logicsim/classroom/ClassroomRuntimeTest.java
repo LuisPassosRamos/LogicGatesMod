@@ -10,6 +10,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClassroomRuntimeTest {
     @TempDir Path dir;
+    @Test void catalogInvalidationIsScopedAndDoesNotReachMessagesOrAuthorization() throws Exception {
+        UUID actor=UUID.randomUUID(),classroom=UUID.randomUUID(),other=UUID.randomUUID();
+        var catalog=new ArrayList<UUID>();var learning=new ArrayList<UUID>();
+        var admin=new ArrayList<ClassroomRuntime.Change>();var authorization=new ArrayList<Boolean>();
+        var runtime=new ClassroomRuntime(dir,id->true,failure->{throw new AssertionError(failure);});
+        try(runtime;var a=runtime.listen(actor,admin::add);var b=runtime.listenAuthorization(actor,authorization::add);
+            var c=runtime.listenActivityCatalog(actor,classroom::equals,catalog::add);var d=runtime.listenLearning(other,learning::add)) {
+            runtime.learningChanged(classroom);assertTrue(catalog.isEmpty());
+            runtime.activitiesChanged(other);assertTrue(catalog.isEmpty());
+            runtime.activitiesChanged(classroom);assertEquals(List.of(classroom),catalog);
+            assertEquals(List.of(classroom,other,classroom),learning);assertTrue(admin.isEmpty());assertTrue(authorization.isEmpty());
+            runtime.forget(actor);runtime.activitiesChanged(classroom);assertEquals(1,catalog.size());assertEquals(4,learning.size());
+        }
+        runtime.activitiesChanged(classroom);assertEquals(1,catalog.size());assertEquals(4,learning.size());
+    }
     @Test void learningInvalidationsDoNotNotifyAdministrativeOrAuthorizationListenersAndForgetUnsubscribes() throws Exception {
         UUID actor=UUID.randomUUID(),classroom=UUID.randomUUID();var admin=new CopyOnWriteArrayList<ClassroomRuntime.Change>();var learning=new CopyOnWriteArrayList<UUID>();var authorization=new CopyOnWriteArrayList<Boolean>();
         try(var runtime=new ClassroomRuntime(dir,id->true,failure->{throw new AssertionError(failure);});

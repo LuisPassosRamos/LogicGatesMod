@@ -17,7 +17,9 @@ public final class ClassroomViews {
     public record Intake(UUID id, UUID classroomId, String classroomName, UUID studentId, String studentName,
                          Origin origin, State state, String enrollment, long revision, long createdAt) { }
     public record Home(Classroom classroom, Member member, String teacherName, boolean canTeach) { }
-    public record Screen(Home home, Kind kind, Page<?> rows, int studentCount) { }
+    public record Screen(Home home, Kind kind, Page<?> rows, int studentCount, int activityCount) {
+        public Screen(Home home,Kind kind,Page<?> rows,int studentCount) { this(home,kind,rows,studentCount,0); }
+    }
     public record Page<T>(List<T> items, int number, boolean hasNext) {
         public Page { items = List.copyOf(items); }
     }

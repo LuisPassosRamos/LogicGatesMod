@@ -47,8 +47,19 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
                 case PLAYERS -> players(c,actor,ClassroomReadPolicy.query(query),page);
                 case SETTINGS, DETAIL -> new Page<>(List.of(),0,false);
             };
-            return new Screen(home,kind,rows,teacher ? studentCount(c,scope) : 0);
+            var counts=home.classroom()==null ? new Counts(0,0) : counts(c,home.classroom().id(),teacher);
+            return new Screen(home,kind,rows,counts.students(),counts.activities());
         });
+    }
+    private record Counts(int students,int activities) { }
+    private Counts counts(Connection c,UUID classroom,boolean teacher) throws SQLException {
+        // Separate aggregates avoid multiplying activities by memberships; share the screen's read snapshot.
+        return one(c,"""
+            SELECT count(*) AS students,
+              (SELECT count(*) FROM learning_activities a WHERE a.classroom_id=? AND a.archived=0
+                AND (?=1 OR a.current_version IS NOT NULL)) AS activities
+            FROM classroom_memberships WHERE classroom_id=? AND active=1 AND role='STUDENT' AND ?=1
+            """,r->new Counts(r.getInt("students"),r.getInt("activities")),classroom,teacher?1:0,classroom,teacher?1:0).orElseThrow();
     }
     private Home home(Connection c,UUID actor,boolean canTeach) throws SQLException {
         var home=one(c,"""

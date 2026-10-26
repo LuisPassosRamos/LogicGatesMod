@@ -117,6 +117,59 @@ class ClassroomReadTest {
         assertEquals(FORBIDDEN,assertThrows(ClassroomException.class,()->service.screen(teacher,Kind.SETTINGS,"",0)).reason());
         assertEquals(1,probe.selects.get()); assertEquals(1,probe.rollbacks.get()); assertEquals(1,probe.closed.get());
     }
+    @Test void activityCountsRespectPrivacyArchiveExpiryAndTheExistingQueryBudget() {
+        var clock=java.time.Clock.fixed(java.time.Instant.parse("2026-10-26T12:00:00Z"),java.time.ZoneOffset.UTC);
+        var learning=new sisso.logicsim.classroom.learning.LearningStore(dir.resolve("classroom.db"),id->true,
+                sisso.logicsim.classroom.learning.LearningLimits.DEFAULT,clock);
+        var draft=learning.create(teacher);
+        var published=learning.create(teacher);
+        published=learning.save(teacher,published.id(),published.revision(),new sisso.logicsim.classroom.learning.LearningViews.Draft("Published","D",clock.millis()+60_000,1000L));
+        published=learning.publish(teacher,published.id(),published.revision());
+        learning.save(teacher,published.id(),published.revision(),new sisso.logicsim.classroom.learning.LearningViews.Draft("Private edit","D",clock.millis()+120_000,1000L));
+        var archived=learning.create(teacher);archived=learning.archive(teacher,archived.id(),archived.revision(),true);
+        service.create(freeTeacher,"Other classroom","");learning.create(freeTeacher);
+        // Expiry is evaluated by the UI; it never hides a published activity from the catalog count.
+        probe.reset();var screen=service.screen(teacher,Kind.MEMBERS,"",0);
+        assertEquals(2,screen.activityCount());assertEquals(1,screen.studentCount());
+        assertEquals(1,probe.connections.get());assertEquals(3,probe.selects.get());assertEquals(0,probe.active.get());
+        assertEquals(1,service.screen(student,Kind.DETAIL,"",0).activityCount());
+        learning.archive(teacher,draft.id(),draft.revision(),true);
+        assertEquals(1,service.screen(teacher,Kind.MEMBERS,"",0).activityCount());
+        assertEquals(1,service.screen(student,Kind.DETAIL,"",0).activityCount());
+        learning.archive(teacher,archived.id(),archived.revision(),false);
+        assertEquals(2,service.screen(teacher,Kind.MEMBERS,"",0).activityCount());
+        assertEquals(1,service.screen(student,Kind.DETAIL,"",0).activityCount());
+        var current=learning.activity(teacher,published.id());current=learning.archive(teacher,current.id(),current.revision(),true);
+        assertEquals(1,service.screen(teacher,Kind.MEMBERS,"",0).activityCount());
+        assertEquals(0,service.screen(student,Kind.DETAIL,"",0).activityCount());
+        learning.archive(teacher,current.id(),current.revision(),false);
+        assertEquals(2,service.screen(teacher,Kind.MEMBERS,"",0).activityCount());
+        assertEquals(1,service.screen(student,Kind.DETAIL,"",0).activityCount());
+        service.disband(teacher,classroom.id(),classroom.revision());
+        assertEquals(0,service.screen(student,Kind.BROWSE,"",0).activityCount());
+    }
+    @Test void activityCountUsesTheSameSnapshotAsTheClassroomContext() throws Exception {
+        var learning=new sisso.logicsim.classroom.learning.LearningStore(dir.resolve("classroom.db"),id->true,
+                sisso.logicsim.classroom.learning.LearningLimits.DEFAULT);
+        var activity=learning.create(teacher);
+        var readReady=new CountDownLatch(1);var commitReady=new CountDownLatch(1);var paused=new AtomicBoolean();
+        probe.afterSelect=()->{
+            if(Thread.currentThread().getName().equals("catalog-reader") && paused.compareAndSet(false,true)) {
+                readReady.countDown();
+                try {assertTrue(commitReady.await(4,TimeUnit.SECONDS));}
+                catch(InterruptedException e){Thread.currentThread().interrupt();throw new AssertionError(e);}
+            }
+        };
+        probe.before=sql->{if(Thread.currentThread().getName().equals("catalog-writer") && sql.equals("COMMIT"))commitReady.countDown();};
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            var reading=pool.submit(()->{Thread.currentThread().setName("catalog-reader");return service.screen(teacher,Kind.MEMBERS,"",0);});
+            assertTrue(readReady.await(4,TimeUnit.SECONDS));
+            var writing=pool.submit(()->{Thread.currentThread().setName("catalog-writer");return learning.archive(teacher,activity.id(),activity.revision(),true);});
+            assertEquals(1,reading.get(10,TimeUnit.SECONDS).activityCount());writing.get(10,TimeUnit.SECONDS);
+        }
+        probe.before=sql->{};probe.afterSelect=()->{};
+        assertEquals(0,service.screen(teacher,Kind.MEMBERS,"",0).activityCount());assertEquals(0,probe.active.get());
+    }
     @Test void inconsistentClosedClassroomIsUnavailableRatherThanAnUnlinkedHome() throws Exception {
         try(var c=DriverManager.getConnection("jdbc:sqlite:"+dir.resolve("classroom.db"));var s=c.createStatement()) {
             s.execute("UPDATE classrooms SET closed_at=123");
