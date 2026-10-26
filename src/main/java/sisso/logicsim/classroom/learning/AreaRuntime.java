@@ -31,18 +31,25 @@ public final class AreaRuntime implements AutoCloseable {
     private final ThreadLocal<Boolean> cleanup=ThreadLocal.withInitial(()->false);
     private final AutoCloseable changes;
     private final Set<UUID> recovering=ConcurrentHashMap.newKeySet();
+    private final Set<UUID> recoveryWorlds=ConcurrentHashMap.newKeySet(),retryWorlds=ConcurrentHashMap.newKeySet();
     private volatile boolean closed;
     private final CompletableFuture<Void> ready;
     public AreaRuntime(ClassroomRuntime runtime) {
         this.runtime=runtime;
-        ready=runtime.learn(LearningStore::reviews).thenAccept(rows->{queue=new AreaWorkQueue(runtime.learningLimits().queue());if(closed){queue.close();return;}for(var r:rows){reviews.put(r.teacher(),r);recovery.add(r.id());}});
+        ready=runtime.learn(LearningStore::reviews).thenCompose(rows->{
+            queue=new AreaWorkQueue(runtime.learningLimits().queue());
+            if(closed){queue.close();return CompletableFuture.completedFuture(null);}
+            for(var r:rows){reviews.put(r.teacher(),r);recovery.add(r.id());}
+            return queue.submit(UUID.randomUUID(),()->{
+                runtime.submissionFiles().recover(await(runtime.learn(LearningStore::contentIds)));return null;
+            });
+        });
         changes=runtime.listen(null,change->{for(var review:reviews.values())if(review.classroom().equals(change.classroom()) || review.teacher().equals(change.player()))revalidate(review);});
     }
     public CompletableFuture<Void> ready() { return ready; }
     public Session current(PlayerRef player,World world) { return sessions.current(player.getUuid(),world.getWorldConfig().getUuid(),player.getPacketHandler()); }
     public Review review(UUID teacher) { return reviews.get(teacher); }
     public boolean allows(UUID actor,UUID world,int x,int y,int z) {
-        if(!ready.isDone() || ready.isCompletedExceptionally())return false;
         for(var r:reviews.values()) if(r.contains(world,x,y,z))
             return r.teacher().equals(actor) && (cleanup.get() || !invalid.contains(actor) && !recovery.contains(r.id()) && runtime.teaching(actor));
         return true;
@@ -120,7 +127,8 @@ public final class AreaRuntime implements AutoCloseable {
         if(review!=null){recovery.add(review.id());var world=Universe.get().getWorld(review.world());if(world!=null)recoverLoaded(world);}
     }
     public void recoverLoaded(World world) {
-        if(closed || ready.isDone() && recovery.isEmpty())return;
+        UUID worldId=world.getWorldConfig().getUuid();
+        if(closed || retryWorlds.contains(worldId) || ready.isDone() && recovery.isEmpty() || !recoveryWorlds.add(worldId))return;
         ready.thenRun(()->{
             for(var review:reviews.values()) {
                 if(!review.world().equals(world.getWorldConfig().getUuid()) || !recovery.contains(review.id()) || !recovering.add(review.id()))continue;
@@ -135,11 +143,14 @@ public final class AreaRuntime implements AutoCloseable {
                 }).whenComplete((ignored,failure)->{
                     recovering.remove(review.id());
                     var cause=failure;while(cause instanceof CompletionException && cause.getCause()!=null)cause=cause.getCause();
-                    if(!closed && cause instanceof LearningException e && e.code()==BUSY)
-                        CompletableFuture.delayedExecutor(1,TimeUnit.SECONDS).execute(()->recoverLoaded(world));
+                    if(!closed && cause instanceof LearningException e && e.code()==BUSY && retryWorlds.add(worldId))
+                        CompletableFuture.delayedExecutor(1,TimeUnit.SECONDS).execute(()->{
+                            retryWorlds.remove(worldId);
+                            if(!closed){var loaded=Universe.get().getWorld(worldId);if(loaded!=null)recoverLoaded(loaded);}
+                        });
                 });
             }
-        });
+        }).whenComplete((ignored,failure)->recoveryWorlds.remove(worldId));
     }
     public void point(PlayerRef player,World world,ItemStack tool,Point point,boolean second) {
         var session=sessions.require(player.getUuid(),world.getWorldConfig().getUuid(),player.getPacketHandler());

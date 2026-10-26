@@ -77,12 +77,15 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                 if(busy)pending=true;else refresh(ref,store,false,null);
             });
         });
-        dataSubscription=runtime.listen(playerRef.getUuid(),change->context==null || context.classroom().equals(change.classroom()) || playerRef.getUuid().equals(change.player()),change->
+        dataSubscription=runtime.listen(playerRef.getUuid(),this::interested,change->
             schedule(ref,store,()->{if(busy)pending=true;else refresh(ref,store,false,null);}));
         learningSubscription=runtime.listenLearning(playerRef.getUuid(),classroom->{
             var ctx=context;if(ctx==null || ctx.classroom().equals(classroom))schedule(ref,store,()->{if(busy)pending=true;else refresh(ref,store,false,null);});
         });
         refresh(ref,store,true,null);
+    }
+    private boolean interested(ClassroomRuntime.Change change) {
+        var ctx=context;return ctx==null || ctx.classroom().equals(change.classroom()) || playerRef.getUuid().equals(change.player());
     }
     private record Data(Context context,Page<?> rows,Activity activity,UUID student,Page<Submission> revisions,Submission selected,Publication version) { }
     private void refresh(Ref<EntityStore> ref,Store<EntityStore> store,boolean reset,Message status) {

@@ -127,7 +127,6 @@ public final class ClassroomRuntime implements AutoCloseable {
                 learningLimits=LearningLimits.load(dataDirectory.resolve("learning.properties"));
                 learning=new LearningStore(dataDirectory.resolve("classroom.db"),canTeach,learningLimits);
                 submissionFiles=new SubmissionFiles(dataDirectory.resolve("submissions"),learningLimits);
-                submissionFiles.recover(learning.contentIds());
                 service = new ClassroomService(repository, canTeach);
             }
             catch (Exception failure) { log.accept(failure); }

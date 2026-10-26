@@ -44,6 +44,15 @@ class WorkshopToolsTest(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "Item pack missing"):
                     verify_workshop.packaged(archive)
 
+    def test_internal_selection_tool_cannot_acquire_crafting_or_editor_privileges(self):
+        for key, value in (("Recipe", {}), ("Categories", ["LogicGates.Components"]), ("BuilderTool", {"Id": "Selection"})):
+            with self.subTest(key=key):
+                items = verify_workshop.definitions()
+                items["Logic_Classroom_Select"][key] = value
+                with patch.object(verify_workshop, "definitions", return_value=items):
+                    with self.assertRaisesRegex(ValueError, "Invalid internal selection tool"):
+                        verify_workshop.check()
+
 
 if __name__ == "__main__":
     unittest.main()

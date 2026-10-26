@@ -80,6 +80,8 @@ class BuildToolsTest(unittest.TestCase):
             resource_root = verify_project.ROOT / "src/main/resources"
             for source in (resource_root / "Common/UI/Custom").rglob("*.ui"):
                 archive.writestr(source.relative_to(resource_root).as_posix(), source.read_bytes())
+            for source in (resource_root / "Server/Item/Items").rglob("Logic_Classroom_Select.json"):
+                archive.writestr(source.relative_to(resource_root).as_posix(), source.read_bytes())
             from workshop_material import ITEMS
             for item_id, settings in ITEMS.items():
                 icon = f"Icons/LogicGates/{item_id}.png"
