@@ -6,7 +6,7 @@ O núcleo de circuitos está implementado. O produto educacional completo ainda 
 
 ## Prioridades propostas
 
-1. Validar o [polimento rc.13](../classroom-rc13-acceptance.md). O [fluxo principal de atividades, áreas e avaliação rc.12](../evidence/classroom/2026-10-26-rc12-client.md) foi confirmado por capturas e relato com professor e aluno. O MVP administrativo permanece; cinco cenários breves rc.10 foram confirmados. Aceite de cliente e preparação de 1.4.0 estável continuam explícitos.
+1. Validar o [proporções e consulta rc.14](../classroom-rc14-acceptance.md). O [fluxo principal de atividades, áreas e avaliação rc.12](../evidence/classroom/2026-10-26-rc12-client.md) foi confirmado por capturas e relato com professor e aluno. O MVP administrativo permanece; cinco cenários breves rc.10 foram confirmados. Aceite de cliente e preparação de 1.4.0 estável continuam explícitos.
 2. Completar verificações manuais específicas ainda abertas: drops nesta entrega, cancelamento/reembolso da fabricação e abertura dos projetos no Blockbench. Multiplayer, circuitos e crafts foram aprovados pelo usuário em 23/10/2026; consultar o [registro](../validation.md).
 3. Usar `benchmarkCircuit`, `benchmarkServer` e `/logicenergy` para acompanhar circuitos maiores. Invalidação por região depende de evidência de custo e continua fora desta correção.
 4. Acrescentar outras línguas seguindo o contrato existente. **en-US e pt-BR já estão implementados**, com validação de chaves, parâmetros e referências atuais. Traduzir futuras telas ao introduzi-las.

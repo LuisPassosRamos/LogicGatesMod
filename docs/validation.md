@@ -210,3 +210,12 @@ Durante a edição, a suíte direcionada de Classroom passou com regressões de 
 
 
 Candidata final **1.4.0-rc.13+33d7e296575a**, revisão de produção `1f9982578bfb`, compilação limpa. JAR SHA-256 `78a3c8ef3224e8200f752f31791da1122582abc111dde4a35e91d9e6c79e34c7`. A [evidência final](evidence/classroom/2026-10-26-rc13-server.json) registra **884 testes JUnit**, zero falhas/erros/ignorados, **38 testes Python**, **262 chaves por idioma**, quatro documentos UI e **89 verificações nativas** (62 criação, 27 após reinício real). Log final: `build/tmp/rc13-fullCheck-final.log`. A CI Windows/Linux é conferida separadamente; sua compilação não substitui o checksum deste JAR testado. Documentação posterior é empacotada preservando os bytes do JAR. Os arquivos rc.12 conservam seus checksums originais. Nenhum resultado de renderização rc.13 é inferido desses testes.
+
+
+## Proporções e edição explícita — rc.14
+
+As [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) foram incorporadas como referência visual, distinguindo apresentação de resultados de interação. Não permitem confirmar resolução/escala ou concluir a matriz de cliente.
+
+A rc.14 amplia tipografia, campos, botões e preview; usa colunas flexíveis com limites de largura e paginação com quebra de linha. Selecionar atividade mostra consulta; somente Editar atividade abre o formulário docente. Criação continua ampla, rascunhos privados permanecem restritos e a edição de nota/feedback mantém o próprio fluxo. Nenhuma consulta ao banco foi acrescentada para entrar/sair do editor, e esquema/contratos pedagógicos permanecem.
+
+Durante a edição, a suíte direcionada `sisso.logicsim.classroom.ui.*` foi aprovada. Cobriu seleção em consulta, entrada/saída explícita do editor, campos preservados com revisão original, consulta de rascunhos e privacidade do aluno, além dos transportes e estados anteriores. Verificações finais e identidade exata serão registradas ao concluir a candidata. Logs completos em `build/tmp/rc14-ui.log` e `build/tmp/rc14-fullCheck.log`. [Aceite de cliente rc.14](classroom-rc14-acceptance.md) pendente.

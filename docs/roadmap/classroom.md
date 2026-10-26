@@ -106,3 +106,8 @@ A abertura de Atividades na rc.11 foi bloqueada no cliente pelo comando `#ScoreF
 ## Polimento — rc.13
 
 Margem externa de 16 unidades e ações com quebra de linha; criação ampla sem lateral; fichas compactas; prazo em cinco dropdowns nativos de Brasília; contagem privada por papel no snapshot existente; ações próprias de encerramento. SQLite v5, entregas e circuitos preservados. O [roteiro rc.13](../classroom-rc13-acceptance.md) mede ocupação e mantém a matriz de cliente pendente. Aprovação estável permanece explícita.
+
+
+## Proporções e consulta explícita — rc.14
+
+As [capturas rc.13](../evidence/classroom/2026-10-26-rc13-client.md) demonstram o desequilíbrio entre o painel ampliado e os componentes. A rc.14 usa colunas flexíveis, tipografia/campos/preview maiores e seleção em modo de consulta. Editar atividade é uma ação docente explícita; criação continua ampla e a privacidade das publicações/rascunhos é preservada. O [aceite rc.14](../classroom-rc14-acceptance.md) permanece separado dessas capturas.
