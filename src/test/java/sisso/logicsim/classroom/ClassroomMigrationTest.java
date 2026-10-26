@@ -64,15 +64,45 @@ class ClassroomMigrationTest {
         assertArrayEquals(before,Files.readAllBytes(db()));
     }
     @Test void versionTwoAddsMessageWithoutLosingAdmissions() throws Exception {
-        var s=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
-        var c=s.create(teacher,"A",""); UUID student=UUID.randomUUID();
-        s.remember(student,"Known offline"); var invitation=s.invite(teacher,student);
-        try(var conn=DriverManager.getConnection("jdbc:sqlite:"+db());var q=conn.createStatement()) {
-            q.execute("ALTER TABLE classrooms DROP COLUMN message"); q.execute("PRAGMA user_version=2");
+        UUID student=UUID.randomUUID(),intake=UUID.randomUUID();
+        try(var input=getClass().getResourceAsStream("/classroom/released-v3.sql");var conn=DriverManager.getConnection("jdbc:sqlite:"+db());var q=conn.createStatement()) {
+            String schema=new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)
+                .replace(",message TEXT NOT NULL DEFAULT '' CHECK(length(message)<=2048)","").replace("user_version=3","user_version=2");
+            for(String sql:schema.split(";"))if(!sql.isBlank())q.execute(sql);
+            q.execute("INSERT INTO classrooms VALUES('"+classroom+"','"+teacher+"','A','',0,'a')");
+            q.execute("INSERT INTO classroom_memberships VALUES('"+membership+"','"+classroom+"','"+teacher+"','TEACHER',1,NULL,0,NULL,0)");
+            q.execute("INSERT INTO classroom_players VALUES('"+student+"','Known offline','known offline')");
+            q.execute("INSERT INTO classroom_intakes VALUES('"+intake+"','"+classroom+"','"+student+"','INVITE','INVITED',NULL,0,42,NULL)");
         }
         var reopened=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
-        assertEquals(c,reopened.own(teacher).orElseThrow());
-        assertEquals(invitation,reopened.intakes(student,false,0).items().getFirst());
+        assertEquals("",reopened.own(teacher).orElseThrow().message());
+        var invitation=reopened.intakes(student,false,0).items().getFirst();
+        assertEquals(intake,invitation.id());assertEquals(42,invitation.createdAt());assertEquals(ClassroomViews.State.INVITED,invitation.state());
+    }
+    @Test void releasedV4AddsLearningTablesWithoutLosingClosedClassesEnrollmentOrApprovalAndBacksUpV4() throws Exception {
+        UUID student=UUID.randomUUID(),link=UUID.randomUUID(),intake=UUID.randomUUID(),closed=UUID.randomUUID();
+        try(var input=getClass().getResourceAsStream("/classroom/released-v4.sql");var conn=DriverManager.getConnection("jdbc:sqlite:"+db());var q=conn.createStatement()) {
+            for(String sql:new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).split(";"))if(!sql.isBlank())q.execute(sql);
+            q.execute("INSERT INTO classrooms VALUES('"+classroom+"','"+teacher+"','Persisted','Description',7,'persisted','Message',NULL)");
+            q.execute("INSERT INTO classrooms VALUES('"+closed+"','"+teacher+"','Closed','History',3,'closed','',42)");
+            q.execute("INSERT INTO classroom_memberships VALUES('"+membership+"','"+classroom+"','"+teacher+"','TEACHER',1,NULL,10,NULL,0)");
+            q.execute("INSERT INTO classroom_memberships VALUES('"+link+"','"+classroom+"','"+student+"','STUDENT',1,'00123',20,NULL,2)");
+            q.execute("INSERT INTO classroom_intakes VALUES('"+intake+"','"+classroom+"','"+student+"','REQUEST','APPROVED','00123',1,19,'"+link+"')");
+        }
+        var service=new ClassroomService(new SqliteClassroomRepository(db()),id->true);
+        assertEquals(classroom,service.own(teacher).orElseThrow().id());assertEquals("Message",service.own(teacher).orElseThrow().message());assertEquals(7,service.own(teacher).orElseThrow().revision());
+        assertEquals(link,service.home(student).member().id());assertEquals("00123",service.home(student).member().enrollment());assertEquals(intake,service.intakes(student,false,0).items().getFirst().id());
+        var learning=new sisso.logicsim.classroom.learning.LearningStore(db(),id->true,sisso.logicsim.classroom.learning.LearningLimits.DEFAULT);assertNotNull(learning.create(teacher));
+        try(var conn=DriverManager.getConnection("jdbc:sqlite:"+db());var q=conn.createStatement()) {
+            try(var rows=q.executeQuery("SELECT count(*) FROM classrooms WHERE closed_at=42")){assertEquals(1,rows.getInt(1));}
+            try(var rows=q.executeQuery("PRAGMA foreign_key_check")){assertFalse(rows.next());}
+        }
+        Path backup;try(var entries=Files.list(dir.resolve("backups"))){backup=entries.findFirst().orElseThrow();}
+        try(var conn=DriverManager.getConnection("jdbc:sqlite:"+backup);var q=conn.createStatement()) {
+            try(var rows=q.executeQuery("PRAGMA user_version")){assertEquals(4,rows.getInt(1));}
+            try(var rows=q.executeQuery("SELECT count(*) FROM sqlite_master WHERE name='learning_activities'")){assertEquals(0,rows.getInt(1));}
+        }
+        new SqliteClassroomRepository(db());try(var entries=Files.list(dir.resolve("backups"))){assertEquals(1,entries.count());}
     }
     @Test void releasedV3MigrationKeepsForeignKeysAdmissionsAndBackupWhileAllowingTeacherReuse() throws Exception {
         Class.forName("org.sqlite.JDBC"); UUID student=UUID.randomUUID(), link=UUID.randomUUID(), intake=UUID.randomUUID();

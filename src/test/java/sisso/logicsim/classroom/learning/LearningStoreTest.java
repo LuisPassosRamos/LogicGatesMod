@@ -1,0 +1,170 @@
+package sisso.logicsim.classroom.learning;
+
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
+import sisso.logicsim.classroom.domain.*;
+import sisso.logicsim.classroom.persistence.SqliteClassroomRepository;
+import sisso.logicsim.classroom.learning.LearningViews.*;
+import java.nio.file.*;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import static org.junit.jupiter.api.Assertions.*;
+import static sisso.logicsim.classroom.learning.LearningException.Code.*;
+import static sisso.logicsim.classroom.domain.ClassroomException.Reason.*;
+
+class LearningStoreTest {
+    @TempDir Path dir;
+    UUID teacher=UUID.randomUUID(),student=UUID.randomUUID(),other=UUID.randomUUID();
+    AtomicBoolean permission=new AtomicBoolean(true);
+    ClassroomService classes;
+    LearningStore store;
+    SubmissionFiles files;
+    Classroom classroom;
+    UUID membership;
+    Clock clock=Clock.fixed(Instant.parse("2026-10-26T12:00:00Z"),ZoneOffset.UTC);
+    @BeforeEach void setup() {
+        var repo=new SqliteClassroomRepository(dir.resolve("classroom.db"));
+        classes=new ClassroomService(repo,id->id.equals(teacher)&&permission.get());
+        classroom=classes.create(teacher,"Learning",""); classes.remember(student,"Student");
+        var request=classes.request(student,classroom.id(),"00123"); membership=classes.approve(teacher,request.id(),request.revision(),"00123").id();
+        store=new LearningStore(dir.resolve("classroom.db"),id->id.equals(teacher)&&permission.get(),LearningLimits.DEFAULT,clock);
+        files=new SubmissionFiles(dir.resolve("submissions"),LearningLimits.DEFAULT);
+    }
+    Activity published() { var a=store.create(teacher);a=store.save(teacher,a.id(),a.revision(),new Draft("A","Statement",clock.millis()+60000,1000L));return store.publish(teacher,a.id(),a.revision()); }
+    AreaSnapshot snapshot() { return new AreaSnapshot(1,2,1,1,List.of(new AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null))); }
+    Submission submit(Activity a) { return store.submit(student,a.id(),a.published().number(),membership,UUID.randomUUID(),files.write(snapshot())); }
+    @Test void draftsArePrivateAndPublishedVersionsAreImmutable() {
+        var a=store.create(teacher); assertEquals(1000L,a.draft().value()); assertTrue(store.activities(student,LearningStore.Filter.ALL,0).items().isEmpty());
+        assertThrows(ClassroomException.class,()->store.activity(student,a.id()));
+        var first=published(); var edited=store.save(teacher,first.id(),first.revision(),new Draft("Edited","New",clock.millis()+120000,2000L));
+        assertEquals("A",store.activity(student,first.id()).published().title()); assertNull(store.activity(student,first.id()).draft());
+        var second=store.publish(teacher,edited.id(),edited.revision()); assertEquals(2,second.published().number());
+        assertEquals("A",store.publication(teacher,first.id(),1).title()); assertEquals(1000,store.publication(teacher,first.id(),1).value());
+    }
+    @Test void incompleteDraftsCanBeSavedButCannotPublishAndDeadlineMustBeFuture() {
+        var a=store.create(teacher);
+        assertEquals(INVALID_DRAFT,assertThrows(LearningException.class,()->store.publish(teacher,a.id(),0)).code());
+        var b=store.save(teacher,a.id(),0,new Draft("T","D",clock.millis(),1000L));
+        assertEquals(FUTURE_DEADLINE,assertThrows(LearningException.class,()->store.publish(teacher,b.id(),b.revision())).code());
+    }
+    @Test void restoreKeepsTheSamePublicationEvenWhenDeadlineHasPassed() {
+        var a=published(); var archived=store.archive(teacher,a.id(),a.revision(),true);
+        assertTrue(store.activities(student,LearningStore.Filter.ALL,0).items().isEmpty());
+        var restored=store.archive(teacher,a.id(),archived.revision(),false);
+        assertEquals(a.published(),restored.published());
+    }
+    @Test void gradeIsAttachedToExactlyOneRevisionAndZeroIsAnAssignedGrade() {
+        var a=published(); var first=submit(a); assertNull(first.assessment());
+        var zero=store.grade(teacher,first.id(),0,0,"Try again"); assertEquals(0,zero.assessment().score());
+        var next=submit(a); assertNull(next.assessment()); assertEquals(2,next.revision());
+        assertEquals(0,store.submission(student,first.id()).assessment().score());
+        assertEquals(INVALID_SCORE,assertThrows(LearningException.class,()->store.grade(teacher,next.id(),0,1001,"")).code());
+        assertEquals(STALE,assertThrows(ClassroomException.class,()->store.grade(teacher,first.id(),0,100,"")).reason());
+        assertEquals(1000,store.students(teacher,a.id(),0).items().getFirst().latest().value());
+    }
+    @Test void submissionsAfterDeadlineAreAcceptedAndMarkedLate() {
+        var a=published();
+        var late=new LearningStore(dir.resolve("classroom.db"),id->true,LearningLimits.DEFAULT,Clock.offset(clock,Duration.ofMinutes(2)));
+        var one=late.submit(student,a.id(),1,membership,UUID.randomUUID(),files.write(snapshot()));
+        var two=late.submit(student,a.id(),1,membership,UUID.randomUUID(),files.write(snapshot()));
+        assertTrue(one.late()); assertTrue(two.late()); assertEquals(2,two.revision());
+    }
+    @Test void changedPublicationOrMembershipCannotCommitAnOldCapture() {
+        var a=published(); var content=files.write(snapshot());
+        var edited=store.save(teacher,a.id(),a.revision(),new Draft("New","D",clock.millis()+120000,2000L));
+        store.publish(teacher,a.id(),edited.revision());
+        assertEquals(STALE,assertThrows(ClassroomException.class,()->store.submit(student,a.id(),1,membership,UUID.randomUUID(),content)).reason());
+        classes.end(student,membership,0,false);
+        assertEquals(FORBIDDEN,assertThrows(ClassroomException.class,()->store.submit(student,a.id(),2,membership,UUID.randomUUID(),content)).reason());
+    }
+    @Test void revocationAndForeignRolesAreRejected() {
+        var a=published(); var s=submit(a);
+        assertThrows(ClassroomException.class,()->store.create(student)); assertThrows(ClassroomException.class,()->store.submission(other,s.id()));
+        permission.set(false);
+        assertThrows(ClassroomException.class,()->store.grade(teacher,s.id(),0,100,"").assessment());
+        assertThrows(ClassroomException.class,()->store.activities(teacher,LearningStore.Filter.ALL,0));
+        assertNotNull(store.submission(student,s.id()));
+    }
+    @Test void independentWritersAllocateDistinctRevisionsAndOldRecordsSurviveRestart() throws Exception {
+        var a=published(); var one=files.write(snapshot());var two=files.write(snapshot());
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            var x=pool.submit(()->store.submit(student,a.id(),1,membership,UUID.randomUUID(),one));
+            var y=pool.submit(()->store.submit(student,a.id(),1,membership,UUID.randomUUID(),two));
+            assertEquals(Set.of(1,2),Set.of(x.get().revision(),y.get().revision()));
+        }
+        new SqliteClassroomRepository(dir.resolve("classroom.db"));
+        assertEquals(2,store.submissions(student,a.id(),student,0).items().size());
+        assertEquals(snapshot(),files.read(one.id(),one.checksum()));
+    }
+    @Test void activityPaginationAndHistoricalStudentsAreScoped() {
+        for(int i=0;i<25;i++) store.create(teacher);
+        assertEquals(20,store.activities(teacher,LearningStore.Filter.ALL,0).items().size());
+        assertEquals(5,store.activities(teacher,LearningStore.Filter.ALL,1).items().size());
+        var a=published(); var s=submit(a); classes.end(student,membership,0,false);
+        var rows=store.students(teacher,a.id(),0).items();assertEquals(1,rows.size());assertFalse(rows.getFirst().active()); assertEquals(s,rows.getFirst().latest());
+    }
+    @Test void reservationIsDurableExclusiveAndRemovedSeparatelyFromTheSubmission() {
+        var a=published(); var s=submit(a); UUID world=UUID.randomUUID();
+        var r=store.reserve(teacher,s.id(),world,0,64,0); assertEquals(List.of(r),store.reviews());
+        assertThrows(LearningException.class,()->store.reserve(teacher,s.id(),world,20,64,20));
+        store.removedReview(r.id()); assertTrue(store.reviews().isEmpty());assertNotNull(store.submission(student,s.id()));
+    }
+    @Test void contentChecksumExpansionAndBoundsAreEnforced() throws Exception {
+        var content=files.write(snapshot()); Path path=dir.resolve("submissions").resolve(content.id()+".json.gz");
+        Files.writeString(path,"tampered");assertEquals(CORRUPT_CONTENT,assertThrows(LearningException.class,()->files.read(content.id(),content.checksum())).code());
+        assertThrows(LearningException.class,()->files.write(new AreaSnapshot(1,33,1,1,snapshot().blocks())));
+        assertThrows(LearningException.class,()->files.write(new AreaSnapshot(1,2,1,1,List.of(snapshot().blocks().getFirst(),snapshot().blocks().getFirst()))));
+    }
+    @Test void moneyAndBrasiliaDatesAreExact() {
+        assertEquals(1000L,LearningViews.points("10"));assertEquals(123L,LearningViews.points("1,23"));
+        assertThrows(LearningException.class,()->LearningViews.points("1.234"));
+        assertEquals(clock.millis(),LearningViews.deadline("2026-10-26 09:00"));
+        assertThrows(LearningException.class,()->LearningViews.deadline("2026-02-30 10:00"));
+        assertThrows(LearningException.class,()->new Draft("A","D",null,0L));
+        assertThrows(LearningException.class,()->LearningViews.points("10.000"));
+        assertThrows(LearningException.class,()->LearningViews.points("1e2"));
+    }
+    @Test void gradeUsesSubmittedPublicationValueAfterRepublicationAndNeverChangesAnotherRevision() {
+        var a=published();var first=submit(a);
+        var draft=store.save(teacher,a.id(),a.revision(),new Draft("New title","New statement",clock.millis()+120000,2000L));
+        var secondPublication=store.publish(teacher,a.id(),draft.revision());var second=submit(secondPublication);
+        assertEquals(2,second.publication());assertEquals(2000,second.value());
+        assertEquals(INVALID_SCORE,assertThrows(LearningException.class,()->store.grade(teacher,first.id(),0,1500,"")).code());
+        store.grade(teacher,first.id(),0,1000,"Old revision only");assertNull(store.submission(student,second.id()).assessment());
+        assertEquals("Statement",store.publication(student,a.id(),1).description());
+    }
+    @Test void quotaRefusesOnlyTheNewRevisionAndStartupRecoveryPreservesReferencedFiles() throws Exception {
+        var limits=new LearningLimits(32,16,32,1024,1024,8,900000);
+        var limited=new LearningStore(dir.resolve("classroom.db"),id->true,limits,clock);var a=published();
+        var accepted=new ArrayList<Submission>();boolean saturated=false;
+        for(int i=0;i<30;i++) {
+            var content=files.write(snapshot());
+            try{accepted.add(limited.submit(student,a.id(),1,membership,UUID.randomUUID(),content));}
+            catch(LearningException e){assertEquals(STORAGE_LIMIT,e.code());saturated=true;break;}
+        }
+        assertTrue(saturated);assertFalse(accepted.isEmpty());
+        var orphan=files.write(snapshot());var unfinished=dir.resolve("submissions").resolve(UUID.randomUUID()+".tmp");Files.writeString(unfinished,"partial");
+        var unrelated=dir.resolve("submissions/readme.txt");Files.writeString(unrelated,"keep");
+        files.recover(store.contentIds());assertFalse(Files.exists(unfinished));assertTrue(Files.exists(unrelated));
+        assertThrows(LearningException.class,()->files.read(orphan.id(),orphan.checksum()));
+        for(var s:accepted)assertEquals(snapshot(),files.read(s.content(),s.checksum()));
+        assertEquals(accepted.size(),store.submissions(student,a.id(),student,0).items().size());
+    }
+    @Test void failedContentWriteDoesNotCreateMetadataAndClosedClassroomRejectsAStagedCapture() throws Exception {
+        var a=published();var staged=files.write(snapshot());var badRoot=dir.resolve("not-a-directory");Files.writeString(badRoot,"blocked");
+        assertThrows(LearningException.class,()->new SubmissionFiles(badRoot,LearningLimits.DEFAULT).write(snapshot()));
+        assertTrue(store.submissions(student,a.id(),student,0).items().isEmpty());
+        classes.disband(teacher,classroom.id(),classroom.revision());
+        assertEquals(FORBIDDEN,assertThrows(ClassroomException.class,()->store.submit(student,a.id(),1,membership,UUID.randomUUID(),staged)).reason());
+    }
+    @Test void cancelledSelectionCannotCommitAndRepeatedRequestIsIdempotent() {
+        var a=published();var content=files.write(snapshot());var request=UUID.randomUUID();
+        assertEquals(NO_SELECTION,assertThrows(LearningException.class,()->store.submit(student,a.id(),1,membership,request,content,()->false)).code());
+        assertTrue(store.submissions(student,a.id(),student,0).items().isEmpty());
+        var first=store.submit(student,a.id(),1,membership,request,content);
+        assertEquals(first,store.submit(student,a.id(),1,membership,request,content));
+        assertEquals(1,store.submissions(student,a.id(),student,0).items().size());
+    }
+}

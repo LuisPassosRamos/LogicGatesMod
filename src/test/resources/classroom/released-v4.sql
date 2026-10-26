@@ -1,0 +1,13 @@
+CREATE TABLE classrooms(id TEXT PRIMARY KEY NOT NULL,teacher_uuid TEXT NOT NULL,name TEXT NOT NULL CHECK(length(name) BETWEEN 1 AND 64),description TEXT NOT NULL CHECK(length(description)<=2048),revision INTEGER NOT NULL CHECK(revision>=0),search_name TEXT NOT NULL DEFAULT '',message TEXT NOT NULL DEFAULT '' CHECK(length(message)<=2048),closed_at INTEGER CHECK(closed_at IS NULL OR closed_at>=0));
+CREATE TABLE classroom_memberships(id TEXT PRIMARY KEY NOT NULL,classroom_id TEXT NOT NULL REFERENCES classrooms(id),player_uuid TEXT NOT NULL,role TEXT NOT NULL CHECK(role IN('TEACHER','STUDENT')),active INTEGER NOT NULL CHECK(active IN(0,1)),enrollment TEXT COLLATE BINARY,joined_at INTEGER NOT NULL,ended_at INTEGER,revision INTEGER NOT NULL DEFAULT 0 CHECK(revision>=0),CHECK((role='TEACHER' AND enrollment IS NULL) OR (role='STUDENT' AND enrollment IS NOT NULL AND length(enrollment) BETWEEN 1 AND 64)),CHECK((active=1 AND ended_at IS NULL) OR (active=0 AND ended_at IS NOT NULL)));
+CREATE UNIQUE INDEX one_active_classroom_per_player ON classroom_memberships(player_uuid) WHERE active=1;
+CREATE UNIQUE INDEX one_active_teacher_per_classroom ON classroom_memberships(classroom_id) WHERE active=1 AND role='TEACHER';
+CREATE UNIQUE INDEX unique_active_enrollment ON classroom_memberships(classroom_id,enrollment) WHERE active=1 AND role='STUDENT';
+CREATE TABLE classroom_players(uuid TEXT PRIMARY KEY NOT NULL,name TEXT NOT NULL,search_name TEXT NOT NULL);
+CREATE TABLE classroom_intakes(id TEXT PRIMARY KEY NOT NULL,classroom_id TEXT NOT NULL REFERENCES classrooms(id),student_uuid TEXT NOT NULL,origin TEXT NOT NULL CHECK(origin IN('REQUEST','INVITE')),state TEXT NOT NULL CHECK(state IN('INVITED','REQUESTED','APPROVED','REJECTED','DECLINED','CANCELLED','SUPERSEDED')),enrollment TEXT,revision INTEGER NOT NULL DEFAULT 0 CHECK(revision>=0),created_at INTEGER NOT NULL,membership_id TEXT REFERENCES classroom_memberships(id),CHECK(state NOT IN('REQUESTED','APPROVED') OR (enrollment IS NOT NULL AND length(enrollment) BETWEEN 1 AND 64)),CHECK((state='APPROVED' AND membership_id IS NOT NULL) OR (state<>'APPROVED' AND membership_id IS NULL)));
+CREATE UNIQUE INDEX one_open_intake ON classroom_intakes(classroom_id,student_uuid) WHERE state IN('INVITED','REQUESTED');
+CREATE INDEX intake_student ON classroom_intakes(student_uuid,created_at);
+CREATE INDEX membership_classroom ON classroom_memberships(classroom_id,active);
+PRAGMA application_id=1279738700;
+CREATE UNIQUE INDEX one_open_classroom_per_teacher ON classrooms(teacher_uuid) WHERE closed_at IS NULL;
+PRAGMA user_version=4;

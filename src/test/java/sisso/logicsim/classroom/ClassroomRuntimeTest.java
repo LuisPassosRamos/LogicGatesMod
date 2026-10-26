@@ -10,6 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClassroomRuntimeTest {
     @TempDir Path dir;
+    @Test void learningInvalidationsDoNotNotifyAdministrativeOrAuthorizationListenersAndForgetUnsubscribes() throws Exception {
+        UUID actor=UUID.randomUUID(),classroom=UUID.randomUUID();var admin=new CopyOnWriteArrayList<ClassroomRuntime.Change>();var learning=new CopyOnWriteArrayList<UUID>();var authorization=new CopyOnWriteArrayList<Boolean>();
+        try(var runtime=new ClassroomRuntime(dir,id->true,failure->{throw new AssertionError(failure);});
+            var data=runtime.listen(actor,admin::add);var study=runtime.listenLearning(actor,learning::add);var auth=runtime.listenAuthorization(actor,authorization::add)) {
+            runtime.learningChanged(classroom);assertEquals(List.of(classroom),learning);assertTrue(admin.isEmpty());assertTrue(authorization.isEmpty());
+            runtime.forget(actor);runtime.learningChanged(classroom);assertEquals(1,learning.size());
+        }
+    }
     @Test void notificationsFollowCommitFailuresDoNotNotifyAndDisconnectRemovesOnlyOwnedListeners() throws Exception {
         UUID teacher=UUID.randomUUID(), student=UUID.randomUUID();
         var owned=new CopyOnWriteArrayList<ClassroomRuntime.Change>(); var global=new CopyOnWriteArrayList<ClassroomRuntime.Change>();

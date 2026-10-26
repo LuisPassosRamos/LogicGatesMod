@@ -5,6 +5,7 @@ import sisso.logicsim.classroom.domain.ClassroomException;
 import sisso.logicsim.classroom.domain.ClassroomService;
 import sisso.logicsim.classroom.domain.ClassroomViews.*;
 import sisso.logicsim.classroom.persistence.SqliteClassroomRepository;
+import sisso.logicsim.classroom.learning.*;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +32,26 @@ public final class ClassroomRuntime implements AutoCloseable {
     private final Set<CompletableFuture<?>> pending = ConcurrentHashMap.newKeySet();
     // Accessed only on the executor. Initialization is enqueued before all operations.
     private ClassroomService service;
+    private LearningStore learning;
+    private volatile LearningLimits learningLimits=LearningLimits.DEFAULT;
+    private SubmissionFiles submissionFiles;
+    public LearningLimits learningLimits() { return learningLimits; }
+    public boolean teaching(UUID actor) { return canTeach.test(actor); }
+    public SubmissionFiles submissionFiles() { return submissionFiles; }
+    public <T> CompletableFuture<T> learn(Function<LearningStore,T> operation) { return submit(ignored->operation.apply(learning)); }
+    private record LearningListener(UUID owner,Consumer<UUID> callback) { }
+    private final java.util.Map<UUID,LearningListener> learningListeners=new ConcurrentHashMap<>();
+    public AutoCloseable listenLearning(UUID owner,Consumer<UUID> callback) {
+        java.util.Objects.requireNonNull(owner);java.util.Objects.requireNonNull(callback);UUID token=UUID.randomUUID();
+        if(!closed)learningListeners.put(token,new LearningListener(owner,callback));
+        if(closed)learningListeners.remove(token);
+        return ()->learningListeners.remove(token);
+    }
+    /** Learning metadata does not invalidate administrative screens, MOTD delivery or review authorization. */
+    public void learningChanged(UUID classroom) {
+        if(closed)return;
+        learningListeners.values().forEach(listener->{try{listener.callback().accept(classroom);}catch(RuntimeException failure){log.accept(failure);}});
+    }
     public record Change(UUID classroom, UUID player, boolean directory) { }
     private record Listener(UUID owner, Predicate<Change> interested, Consumer<Change> callback) { }
     private final java.util.Map<UUID, Listener> listeners = new ConcurrentHashMap<>();
@@ -88,6 +109,7 @@ public final class ClassroomRuntime implements AutoCloseable {
     }
     public void forget(UUID player) {
         listeners.values().removeIf(listener -> player.equals(listener.owner()));
+        learningListeners.values().removeIf(listener->player.equals(listener.owner()));
         authorizationListeners.remove(player);
     }
     private void changed(Change change) {
@@ -100,7 +122,14 @@ public final class ClassroomRuntime implements AutoCloseable {
     public ClassroomRuntime(Path dataDirectory, Predicate<UUID> canTeach, Consumer<Throwable> log) {
         this.log = log; this.canTeach = canTeach;
         executor.execute(() -> {
-            try { service = new ClassroomService(new SqliteClassroomRepository(dataDirectory.resolve("classroom.db")), canTeach); }
+            try {
+                var repository=new SqliteClassroomRepository(dataDirectory.resolve("classroom.db"));
+                learningLimits=LearningLimits.load(dataDirectory.resolve("learning.properties"));
+                learning=new LearningStore(dataDirectory.resolve("classroom.db"),canTeach,learningLimits);
+                submissionFiles=new SubmissionFiles(dataDirectory.resolve("submissions"),learningLimits);
+                submissionFiles.recover(learning.contentIds());
+                service = new ClassroomService(repository, canTeach);
+            }
             catch (Exception failure) { log.accept(failure); }
         });
     }
@@ -176,7 +205,7 @@ public final class ClassroomRuntime implements AutoCloseable {
     }
 
     @Override public void close() {
-        closed = true; listeners.clear(); authorizationListeners.clear();
+        closed = true; listeners.clear(); learningListeners.clear(); authorizationListeners.clear();
         synchronized (this) { executor.shutdown(); }
         try {
             if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
