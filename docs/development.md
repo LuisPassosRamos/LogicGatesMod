@@ -10,7 +10,7 @@ Use **JDK 25**, **Python 3.10+**, Gradle Wrapper 9.2.0 e ScaffoldIt 0.2.16. Os s
 | `.\gradlew.bat check` | Testes e conferências, sem montar o ZIP de entrega |
 | `.\gradlew.bat verifyGeneratedAssets` | Confere os sete geradores sem reescrever fontes |
 | `.\gradlew.bat serverTestJar` | Empacota somente o plugin isolado de integração |
-| `.\gradlew.bat prepareClassroomUiFixture -PclassroomFixtureTeacher=<UUID> -PclassroomFixtureStudent=<UUID>` | Gera banco sintético novo para UI em ambiente separado; instruções no roteiro rc.9 |
+| `.\gradlew.bat prepareClassroomUiFixture -PclassroomFixtureTeacher=<UUID> -PclassroomFixtureStudent=<UUID>` | Gera banco sintético novo para UI em ambiente separado; instruções no roteiro rc.11 |
 | `.\gradlew.bat benchmarkClassroom` | Mede consultas, rajadas, assinaturas sintéticas e pacotes UI em banco isolado; não usa clientes ou mundos reais |
 | `.\gradlew.bat benchmarkCircuit` | Mede avaliador em 12 cenários; grava JSON sem limiar artificial de aprovação |
 | `.\gradlew.bat benchmarkServer` | Mede monitoramento e publicação em seções reais; requer os assets locais |

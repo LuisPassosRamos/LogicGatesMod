@@ -1,16 +1,20 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.12**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc12-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. As evidências administrativas da rc.10 continuam históricas; não aprovam estas telas novas.
+Implementação candidata em **1.4.0-rc.13**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc13-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; o layout e os seletores da rc.13 ainda exigem reteste no cliente.
 
 ## Atividades
 
 Depois de abrir `/classroom`, use **Atividades**. O professor cria um rascunho privado, preenche título (até 128 caracteres), enunciado (até 8192), prazo e valor e salva. Rascunhos podem ficar incompletos. **Publicar** salva os campos exibidos e cria explicitamente uma versão imutável; os alunos só veem a última publicação não arquivada da própria turma.
 
-O prazo usa `AAAA-MM-DD HH:MM`, no fuso **America/Sao_Paulo (Brasília)**. Publicar exige um instante futuro; o armazenamento usa UTC. Vencimento mantém a consulta e informa **Prazo encerrado**. **Envios iniciais e reenvios são aceitos depois do prazo, marcados como atrasados.** Esta decisão substitui a hipótese antiga de bloquear recebimento após o prazo.
+O prazo usa seletores de **dia, mês, ano, hora e minuto**, no fuso **America/Sao_Paulo (Brasília)**. A data começa vazia e o horário em 23:59. Data totalmente vazia salva como ausente no rascunho; parcial exige completar ou limpar os três campos da data. Dias acompanham mês e ano: se a troca invalidar o dia, somente ele é limpo, com aviso. Anos vão do atual aos dez seguintes, incluindo o ano salvo fora dessa janela; horários cobrem 00:00–23:59 sem arredondamento. Publicar exige um instante futuro; o armazenamento usa UTC. Vencimento mantém a consulta e informa **Prazo encerrado**. **Envios iniciais e reenvios são aceitos depois do prazo, marcados como atrasados.** Esta decisão substitui a hipótese antiga de bloquear recebimento após o prazo.
 
 O valor começa em **10**, deve ser positivo e admite até duas casas decimais, usando ponto ou vírgula. Não há arredondamento silencioso. Editar uma publicação prepara um rascunho; os alunos continuam vendo a publicação anterior até republicar. O filtro percorre todas, publicadas, rascunhos e arquivadas. Uma atividade publicada com alterações privadas também aparece entre rascunhos.
 
 **Arquivar** oculta a atividade para alunos, preservando versões, entregas e rascunho para o professor. **Restaurar** reapresenta a última publicação, sem criar versão ou alterar prazo. Uma atividade sem publicação continua privada. Somente o responsável autorizado administra; ingresso pendente, outra turma e vínculo encerrado não concedem acesso de aluno.
+
+**Nova atividade** abre o formulário em largura total. O banco já cria um rascunho privado ao clicar. **Salvar rascunho** mantém o formulário amplo; **Publicar** retorna à apresentação normal com lista. **Voltar às atividades** retorna à lista e conserva o rascunho já salvo, sem salvar automaticamente os campos em edição. A edição comum e a consulta de alunos/entregas mantêm a lateral.
+
+O resumo da turma informa **Atividades: N** para o professor (não arquivadas, incluindo rascunhos) e **Atividades disponíveis: N** para o aluno (somente publicadas e não arquivadas). Publicada com edição privada conta uma vez; vencidas continuam contando. A contagem atualiza após criar, publicar, arquivar e restaurar. Notas, entregas e preview não invalidam esse resumo.
 
 ## Entregar uma área
 

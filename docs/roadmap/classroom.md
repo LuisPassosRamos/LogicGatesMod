@@ -40,7 +40,7 @@ O professor abre diretamente sua turma, com lista de alunos à esquerda e detalh
 | 2 | Lista pública, solicitações, convites, conferência de matrícula, membros e ficha básica | Dois caminhos convergem para o mesmo vínculo; concorrência e reconexão cobertas |
 | 3 | Mensagem do dia, correção de matrícula, remoção/saída e refinamento visual | Permissões, navegação e persistência verificadas com professor e aluno |
 | 4 | Publicação e detalhes de atividades versionadas | Implementado na rc.11; testes de domínio e aceite visual separados |
-| 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Áreas fixas, revisões e avaliação manual implementadas na rc.11; seleção/preview/edição no cliente pendentes |
+| 5 | Entrega com revisão e feedback manual; automática em etapa posterior | Áreas fixas, revisões e avaliação manual implementadas na rc.11; fluxo principal confirmado na rc.12, complementos pendentes |
 
 A página de prova evolui para a entrada real após validação do incremento 0. Cada incremento inclui código, testes relevantes, documentação e commits por assunto. Usar pré-versões de `1.4.0`; tags são marcos explícitos de aprovação. Preservar circuitos, IDs, codecs, mundos e aparência. Novas portas e conexões verticais estão fora deste trabalho.
 
@@ -55,7 +55,7 @@ Persistência iniciada no incremento 1 e ampliada na rc.3:
 - `classroom.db` em `getDataDirectory()`, um banco por servidor. Driver Xerial SQLite JDBC **3.53.4.0**, fixado e empacotado com recursos nativos/licenças; teste do JAR isolado na matriz Java 25/Windows/Linux, com resultado local distinguido da CI remota.
 - Criação de turma/vínculo em transação única e edição por revisão; índices garantem vínculo ativo único entre papéis. Aprovação, matrícula e encerramento das demais pendências também são transacionais.
 - Acesso ao banco em executor dedicado. Respostas de UI retornam ao contexto do mundo e revalidam sessão/referência antes de publicar.
-- Esquemas v1–v4 com identificação própria, migração transacional, backup prévio consistente e testes de restauração/rollback/rejeição. Procedimento operacional no guia Classroom. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
+- Esquemas v1–v5 com identificação própria, migração transacional, backup prévio consistente e testes de restauração/rollback/rejeição. Procedimento operacional no guia Classroom. Falhas tornam Classroom indisponível, preservando arquivos e circuitos.
 
 ## Padrões aceitos com o plano
 
@@ -74,9 +74,9 @@ Persistência iniciada no incremento 1 e ampliada na rc.3:
 | Entrega | ID, atividade/versão, aluno, revisão, instante e referência a conteúdo versionado |
 | Avaliação | Revisão avaliada, professor, feedback e resultado |
 
-O [contrato de atividades](classroom-learning-contracts.md) define rascunho/publicação, prazo obrigatório futuro em Brasília, valor positivo padrão 10 com até duas casas, nota ainda não atribuída como —/valor, arquivamento/restauração e acesso por vínculo. Sua implementação será um incremento separado; os testes de cliente pendentes não impedem esta especificação, mas mantêm o aceite do polimento e a versão estável em aberto.
+O [contrato de atividades](classroom-learning-contracts.md) define rascunho/publicação, prazo obrigatório futuro em Brasília, valor positivo padrão 10 com até duas casas, nota ainda não atribuída como —/valor, arquivamento/restauração e acesso por vínculo. Implementado na rc.11 e confirmado no fluxo principal rc.12; os testes de cliente pendentes não impedem esta especificação, mas mantêm o aceite do polimento e a versão estável em aberto.
 
-O conteúdo das entregas não define ainda coordenadas, seleção de área ou snapshot/prefab. A escolha precisa garantir uma revisão reproduzível e a experiência do professor. A implementação futura usará um adaptador para conteúdo versionado, sem acoplar Classroom ao circuito vivo. Não criar tabelas, botões ou telas de entrega antes dessa decisão. A rc.7 não cria estruturas ou telas de atividades antecipadamente.
+O [contrato de áreas](classroom-learning-contracts.md) definiu seleção de dois cantos e snapshot fixo, revisões e cópias temporárias para correção. Implementado na rc.11 e confirmado em multiplayer na rc.12, sem comprovar autoria da construção. Logging e proteção permanente das bancadas continuam posteriores.
 
 Avaliação automática virá depois do feedback manual. Deve usar snapshots/casos esperados sem acionar o circuito vivo do aluno; indisponibilidade de seção é falha de contexto, não resposta lógica incorreta. Proteção de bancadas, instâncias, arquivamento e retenção definitiva exigem seus próprios contratos futuros.
 
@@ -88,7 +88,7 @@ Avaliação automática virá depois do feedback manual. Deve usar snapshots/cas
 
 ## Referência e continuação aprovada
 
-A [análise PartyPro](../reference/partypro.md) orienta listas, ficha e navegação. O MVP é administrativo: incremento 2A (solicitação completa), 2B (convites/membros) e 3 (mensagem/administração), com builds e evidências separados. O painel pedagógico completo e entregas ficam para depois.
+A [análise PartyPro](../reference/partypro.md) orienta listas, ficha e navegação. O MVP é administrativo: incremento 2A (solicitação completa), 2B (convites/membros) e 3 (mensagem/administração), com builds e evidências separados. A sequência pedagógica foi implementada na rc.11; avaliação automática continua posterior.
 
 ## Encerramento administrativo — rc.9
 
@@ -100,4 +100,9 @@ A meta medida na tela docente de membros é passar de cinco conexões/sete SELEC
 
 A rc.11 implementa a sequência aprovada **prova técnica → atividades versionadas → entregas/revisões → avaliação manual**. A prova nativa verifica reprodução no servidor; o aceite de seleção, preview e correção continua no cliente. Avaliação automática, logging seletivo e proteção permanente das bancadas permanecem no backlog, assim como a limpeza dos três wrappers sem consumidores. As pendências administrativas anteriores continuam registradas; versão estável só após aceite explícito.
 
-A abertura de Atividades na rc.11 foi bloqueada no cliente pelo comando `#ScoreField.Disabled`. A rc.12 remove os comandos incompatíveis dos campos e acrescenta regressões de atualizações de tela, gravação e erros. O [roteiro de reteste](../classroom-rc12-acceptance.md) começa pela abertura e pelo salvamento; os cenários de áreas e avaliação continuam pendentes.
+A abertura de Atividades na rc.11 foi bloqueada no cliente pelo comando `#ScoreField.Disabled`. A rc.12 remove os comandos incompatíveis dos campos e acrescenta regressões de atualizações de tela, gravação e erros. O [roteiro de reteste](../classroom-rc12-acceptance.md) começa pela abertura e pelo salvamento; o [relato e as capturas rc.12](../evidence/classroom/2026-10-26-rc12-client.md) confirmam o fluxo principal de áreas e avaliação, com complementos pendentes.
+
+
+## Polimento — rc.13
+
+Margem externa de 16 unidades e ações com quebra de linha; criação ampla sem lateral; fichas compactas; prazo em cinco dropdowns nativos de Brasília; contagem privada por papel no snapshot existente; ações próprias de encerramento. SQLite v5, entregas e circuitos preservados. O [roteiro rc.13](../classroom-rc13-acceptance.md) mede ocupação e mantém a matriz de cliente pendente. Aprovação estável permanece explícita.

@@ -198,3 +198,12 @@ Foram aprovados **41 testes direcionados de UI**, seguidos de uma rodada complet
 [Evidência automatizada](evidence/classroom/2026-10-26-rc12-server.json). Logs integrais locais: `build/tmp/rc12-ui-tests.log`, `build/tmp/rc12-fullCheck.log`; relatório nativo `build/reports/server-integration/20261026-143531-db8eb5/`. O pacote final conserva exatamente o JAR dessa rodada, e os artefatos rc.11 permanecem intactos.
 
 **Cliente rc.12: reteste pendente.** Começar por [abrir Atividades, criar/salvar/publicar rascunho e provocar erro de validação](classroom-rc12-acceptance.md); depois retomar os casos de entrega, preview, cópia e avaliação. Nenhuma confirmação de renderização ou de estabilidade é deduzida da execução do servidor isolado. Não houve merge, tag ou publicação estável.
+
+
+## Evidências do cliente rc.12 e polimento rc.13
+
+O [registro de cliente rc.12](evidence/classroom/2026-10-26-rc12-client.md) incorpora as capturas representativas e separa o que foi demonstrado visualmente do que foi confirmado pelo relato. O fluxo principal pedagógico em multiplayer está confirmado: atividade, entrega sem OP, preview/cópia fiéis inclusive ligada, edição restrita, revisões, avaliação e limpeza ao retornar ao mundo. Não é aceite da matriz de resoluções/escalas, de todas as situações concorrentes ou da versão estável.
+
+A rc.13 muda apresentação e transporte interno: painéis com margem 16, criação ampla, fichas compactas, cinco seletores nativos de prazo, ações próprias da administração e contagem por papel. Não altera o esquema v5 nem o conteúdo das entregas. A contagem usa a transação de leitura existente e mantém uma conexão/até três SELECTs na tela docente de membros. Eventos de catálogo não passam pelo canal administrativo/MOTD; notas e entregas não invalidam a contagem.
+
+Durante a edição, a suíte direcionada de Classroom passou com regressões de datas, transporte, criação, privacidade, snapshot e orçamento SQL. A verificação final e a identidade exata da candidata serão registradas ao concluir a rodada de `fullCheck`. Os logs integrais ficam em `build/tmp/rc13-classroom.log` e `build/tmp/rc13-fullCheck.log`. **Renderização, escala, quebra de linha e seleção nativa no cliente rc.13 permanecem pendentes**, conforme o [roteiro](classroom-rc13-acceptance.md).
