@@ -26,7 +26,7 @@ Rascunhos são privados e podem ficar incompletos. Publicar exige título e enun
 - Arquivar oculta a atividade dos alunos e conserva rascunho e versões para o professor. Restaurar reapresenta a última versão publicada sem criar uma versão; se vencida, continua indicando prazo encerrado. Uma atividade que só possuía rascunho continua privada após restaurar.
 - Futuras entregas e avaliações devem referenciar a versão correspondente. Publicar outra versão não altera silenciosamente enunciado, prazo ou valor usados por uma entrega/avaliação anterior.
 
-Arquivamento de atividade é distinto de arquivamento de turma. O primeiro faz parte deste contrato futuro; o segundo permanece fora do MVP. A rc.7 mantém o esquema SQLite v3 existente e não antecipa migração para atividades.
+Arquivamento/restauração de atividade é distinto do encerramento administrativo de turma implementado na rc.9. Restaurar ou excluir definitivamente uma turma continua fora do MVP. Este contrato foi documentado na rc.7, então com SQLite v3; a base atual usa v4 e a rc.10 não acrescenta migração para atividades.
 
 ## Cenários de aceite da implementação posterior
 
@@ -58,4 +58,4 @@ O formato do conteúdo da entrega permanece em aberto. Coordenadas, seleção de
 
 Sequência acordada: implementar publicação/consulta versionadas em incremento separado; decidir conteúdo, entrega e revisão com referências próprias para aluno/professor; implementar feedback manual; depois estudar avaliação automática por casos esperados e snapshots. Falha de disponibilidade de seção é falha de contexto, não resposta lógica incorreta.
 
-Transferência docente, múltiplos responsáveis, exclusão/arquivamento de turma, proteção de áreas e retenção definitiva precisam de contratos específicos. O MVP atual conserva dados e histórico, sem implementar essas operações.
+Transferência docente, múltiplos responsáveis, exclusão definitiva/restauração de turma, proteção de áreas e retenção definitiva precisam de contratos específicos. O MVP atual permite encerrar uma turma preservando dados e histórico; atividades, entregas e avaliação continuam sem código.

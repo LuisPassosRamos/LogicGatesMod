@@ -4,7 +4,15 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.9.
+Nenhuma alteração registrada após 1.4.0-rc.10.
+
+## [1.4.0-rc.10] - 2026-10-26
+
+### Leituras agregadas do Classroom
+- Home e telas usam uma conexão por consulta. Vínculo, turma e nomes são lidos juntos; listas e contagens reutilizam o contexto validado, eliminando verificações SQL repetidas da mesma responsabilidade.
+- Uma transação de leitura diferida conserva o mesmo snapshot entre cabeçalho, lista e contagem. Conexões são fechadas após sucesso ou falha. Política pura de leitura centraliza autorização de contexto, normalização de abas e validação de busca/paginação; a permissão nativa permanece consultada no serviço.
+- Regressões e contadores somente no classpath de teste verificam equivalência por papel, paginação, uma conexão por tela, limite de consultas, rollback e concorrência com aprovação/saída/encerramento.
+- Esquema SQLite v4, operações de gravação, layout, comandos e circuitos preservados. Não há pool, cache entre requisições, WAL ou paralelismo novo. Atividades seguem para um incremento posterior.
 
 ## [1.4.0-rc.9] - 2026-10-24
 

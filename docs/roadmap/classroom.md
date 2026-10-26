@@ -4,23 +4,21 @@ Plano confirmado pelo usuário em **24/10/2026**, a partir da base `v1.3.3` (`d3
 
 ## Estado real
 
-**1.4.0-rc.8 contém o MVP administrativo (incrementos 0–3) refinado; seus fluxos centrais foram confirmados em pt-BR na rc.4:** prova, turma, ingresso por solicitação/convite, matrícula, membros, mensagem e bloqueio docente após revogação. A rc.3 falhou ao abrir a página; rc.4 corrigiu esse transporte. As [evidências e limites](../evidence/classroom/2026-10-24-rc4-client.md) distinguem capturas, relatos e cenários pendentes. O polimento e a atualização automática de permissões foram implementados na rc.5, que falhou na leitura do markup ao entrar no mundo. A rc.6 corrige a ordem de parâmetros em Buscar e Próxima; a [visão geral docente em pt-BR já foi capturada](../evidence/classroom/2026-10-24-rc6-client.md), com aceite de interação ainda pendente.
+**1.4.0-rc.10 mantém o MVP administrativo (incrementos 0–3) e otimiza suas leituras.** Turmas, ingresso por solicitação/convite, matrícula, membros, mensagem, permissões automáticas e encerramento estão implementados. A entrega fica em `codex/classroom-ui`, sem merge em `main`. Atividades, entregas e avaliação não têm código, tabelas ou telas.
 
-O núcleo é independente da API Hytale, com esquema v4 e migração preservando a turma da v1. A rc.7 ajustou orientações de listas vazias e documentou o [contrato aprovado de atividades](classroom-learning-contracts.md), ainda sem código, tabelas ou telas de atividades, entregas ou avaliação.
+O núcleo é independente da API Hytale, com SQLite v4, preservando IDs e dados das versões anteriores. A rc.10 agrega vínculo, turma e nomes em um SELECT; cada tela usa uma conexão e transação de leitura diferida, reutilizando o contexto para lista/contagem. Política pura de leitura fica no domínio; permissão nativa continua no serviço. Gravações, regras de vínculo, layout, comandos, mundos e circuitos permanecem. Pool, WAL, cache entre requisições e remoção de wrappers sem chamadas internas ficaram fora desta entrega.
 
-## Polimento aprovado — rc.5, correções rc.6/rc.7 e otimização rc.8
-
-Decisões confirmadas: refinar a estrutura atual e atualizar permissões automaticamente por eventos nativos. Não redesenhar a navegação conforme os esboços nem ampliar o domínio neste incremento.
+## Polimento e evidências
 
 | Tarefa | Estado e conclusão |
 | --- | --- |
-| CL-01 Evidências rc.4 | Consolidado: capturas representativas, relatos, limites e pendências separados. |
-| CL-02 Legibilidade | Implementado: ações fixas, paginação legível, seleção, metadados compactos e histórico identificado. Captura rc.6 confirma visão geral e rótulos de paginação; rc.7 corrige a orientação do rodapé vazio, incluindo páginas posteriores esvaziadas e prioridade de mensagens. Demais telas/interações aguardam cliente. |
-| CL-03 Autorização automática | Implementado e com revogação automática relatada após rc.7. rc.8 indexa assinaturas por UUID e ignora eventos sem mudança efetiva. Restauração e transporte otimizado aguardam cliente. |
-| CL-04 Verificar e entregar | rc.8 aprovada localmente: 824 JUnit, 37 Python, 78 verificações nativas e benchmark comparativo. Evidências e identidade em [validação](../validation.md); CI remota separada. |
-| CL-05 Aceite | Parcial: abertura e visão geral docente rc.6 capturadas em pt-BR; quatro arquivos idênticos consolidados. Multiplayer e revogação automática relatados após rc.7. O [roteiro rc.8](../classroom-rc8-acceptance.md) retesta carregamento inicial, bindings, campos e demais casos pendentes. |
+| CL-01 Evidências | Fluxos centrais rc.4 confirmados em pt-BR por [capturas e relatos](../evidence/classroom/2026-10-24-rc4-client.md). As falhas de transporte rc.3 e sintaxe rc.5 foram corrigidas; a [visão geral rc.6](../evidence/classroom/2026-10-24-rc6-client.md) foi capturada. Não generalizar essa evidência para todas as telas. |
+| CL-02 Legibilidade | Ações fixas, paginação legível, seleção e histórico identificados; rc.7 corrigiu orientação vazia e prioridade de mensagens. Textos longos, idiomas e demais contextos ainda têm pendências de cliente. |
+| CL-03 Autorização automática | Implementada por eventos nativos; multiplayer e revogação automática relatados após rc.7. rc.8 indexa assinaturas e ignora eventos sem mudança efetiva. Restauração e edição durante atualização ainda exigem confirmação individual. |
+| CL-04 Verificar e entregar | Regressões existentes preservadas. A rc.10 acrescenta contagem JDBC e snapshot concorrente, `fullCheck` final e três rodadas por versão contra o JAR rc.9 preservado. Resultados e identidade exata em [validação](../validation.md); CI Windows/Linux registrada separadamente. |
+| CL-05 Aceite | Parcial. O [relato rc.9](../evidence/classroom/2026-10-25-rc9-client-report.md) confirma encerramento, sem discriminar todos os cenários. A rc.10 exige uma [regressão curta](../classroom-rc10-acceptance.md), conservando as pendências anteriores. |
 
-Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. A rc.9 acrescenta encerramento de turma, por solicitação do usuário, com migração v4; a regra de vínculo ativo único permanece. A candidata é entregue para teste; versão estável, tags e publicação exigem aceite posterior.
+Os eventos de permissão não substituem a autorização de cada operação nem reenviam a mensagem do dia. A rc.9 acrescentou encerramento e migração v4. A rc.10 não altera esquema. A demora da primeira troca de aba ainda não foi reavaliada explicitamente no cliente após a rc.8; o benchmark de banco não comprova sua solução nem capacidade de jogadores. Versão estável, tags e publicação exigem aceite posterior.
 
 ## Regras confirmadas
 
@@ -95,3 +93,9 @@ A [análise PartyPro](../reference/partypro.md) orienta listas, ficha e navegaç
 ## Encerramento administrativo — rc.9
 
 Solicitado após a rc.8, ainda sem reteste daquela candidata. Administração permite encerrar a própria turma com confirmação/cancelamento; a transação libera todos os vínculos, cancela ingressos pendentes e conserva histórico. Migração v4 com backup substitui a unicidade permanente do professor pela de turma aberta. Regras de autorização e transporte incremental permanecem. O [roteiro rc.9](../classroom-rc9-acceptance.md) mantém as pendências anteriores e acrescenta encerramento/recriação; atividades continuam sem implementação.
+
+## Otimização de leituras — rc.10 e sequência
+
+A meta medida na tela docente de membros é passar de cinco conexões/sete SELECTs para uma conexão e no máximo três SELECTs. O comparativo usa o JAR rc.9 preservado e a candidata no mesmo ambiente, com 25 membros, rajadas 25/100/250 e três rodadas por versão. Os logs completos ficam em disco; evidências resumidas registram builds e checksums. Testes cobrem papéis, busca/paginação, autorização, fechamento/rollback e consistência com aprovação, saída ou encerramento concorrente. Nenhuma estimativa de capacidade real é deduzida desses números.
+
+Após concluir esta entrega, seguir em incrementos próprios: **atividades versionadas → decidir conteúdo e implementar entregas/revisões → avaliação manual → avaliação automática**. O [contrato de atividades](classroom-learning-contracts.md) já está aprovado. As pendências específicas de cliente permanecem necessárias para fechar o polimento e preparar 1.4.0 estável, sem impedir a otimização atual. A limpeza de três wrappers sem consumidores fica fora da rc.10.
