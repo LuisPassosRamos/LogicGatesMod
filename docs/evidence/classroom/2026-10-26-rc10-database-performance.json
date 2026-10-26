@@ -1,0 +1,1832 @@
+{
+  "date": "2026-10-26",
+  "method": {
+    "environment": "Windows 11; Temurin JDK 25.0.3+9; same local machine, JDK, JVM options and unchanged harness for both versions",
+    "order": "three fresh JVM rounds of the preserved rc.9 JAR, then three fresh JVM rounds of the final rc.10 JAR; no build running during benchmark",
+    "command": [
+      "java",
+      "--enable-native-access=ALL-UNNAMED",
+      "-Djava.util.logging.manager=com.hypixel.hytale.logger.backend.HytaleLogManager",
+      "-cp",
+      "<selected production JAR first; test output and SDK dependencies; no production directories or external SQLite driver>",
+      "sisso.logicsim.classroom.ui.ClassroomBenchmark",
+      "<output JSON>"
+    ],
+    "fixture": "new isolated SQLite database per round using existing services; 25 active students; no real user database",
+    "repeatedQueries": {
+      "warmup": 10,
+      "samplesPerRound": 25,
+      "roundsPerVersion": 3
+    },
+    "bursts": [
+      25,
+      100,
+      250
+    ],
+    "summary": "median of three per-round query medians / burst p95 values; ranges describe those three values, not confidence intervals",
+    "harnessSha256": "26db039eb78413de09ddc7208f75ec562d459f26bdf6a47429659fa5a8645d0a",
+    "fixtureSha256": "63fe537ddd624174ff139c25a1ccc8524fabbea676226b606f508a4968877c9b",
+    "harnessAndFixtureUnchangedSince": "b60f71e8522c",
+    "fullLogs": "build/reports/benchmarks/rc10-comparison/*.log",
+    "scope": "database/runtime queue, synthetic subscriptions and UI packet builders only; excludes client rendering, network, world ticks and real server capacity",
+    "limitations": "sequential local samples are subject to JIT, filesystem and machine load; no long-duration or large historical database test; DELETE journal may delay concurrent commits until the read snapshot ends"
+  },
+  "versions": {
+    "rc9": {
+      "jar": "build/libs/LogicGates-1.4.0-rc.9.jar",
+      "sha256": "395c4b5bec09337c1428c20e9b14d9053f13970aba58c750d86c81dce6c4d8b9",
+      "build": {
+        "buildId": "1.4.0-rc.9+e16132240905",
+        "dirty": "false",
+        "hytaleVersion": "0.7.4",
+        "revision": "b4d683628020",
+        "sourceFingerprint": "e161322409057a2deb9cdf4854cffdb70917711921ebded384885aaafbe8e375",
+        "version": "1.4.0-rc.9"
+      },
+      "rounds": [
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc9-1.json",
+          "jsonSha256": "636aecfa9e4a93a460eda3618bb01b5db204d50f8df536c45a98a865e9acffba",
+          "logSha256": "2b533f3b019ea7339e74b17b3000166198bb46094077365d7330b214fde1f929",
+          "report": {
+            "buildId": "1.4.0-rc.9+e16132240905",
+            "at": "2026-10-26T02:53:55.576483600Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 11.2013,
+                "INTAKESMs": 7.1991,
+                "PLAYERSMs": 7.008,
+                "SETTINGSMs": 3.5725,
+                "runtimeInitializationAndHomeMs": 11.3188
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 5.0856,
+                "p95Ms": 5.716
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 4.7204,
+                "p95Ms": 5.1506
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 4.5061,
+                "p95Ms": 5.1227
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 3.3809,
+                "p95Ms": 3.7765
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 120.318,
+                "p95Ms": 112.1377,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 469.1837,
+                "p95Ms": 446.5902,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 1045.9745,
+                "p95Ms": 993.7482,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.8637,
+                "p95Ms": 4.4064,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.1567,
+                "p95Ms": 1.7374,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0012,
+                "p95Ms": 0.002,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0021,
+                "p95Ms": 0.0053,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0105,
+                "p95Ms": 0.0309,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0014,
+                "p95Ms": 0.0016,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0105,
+                "p95Ms": 0.0221,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0394,
+                "p95Ms": 0.0651,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0004,
+                "p95Ms": 0.0007,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0181,
+                "p95Ms": 0.0345,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.1707,
+                "p95Ms": 0.2115,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0005,
+                "p95Ms": 0.0008,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0401,
+                "p95Ms": 0.045,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.2353,
+                "p95Ms": 0.3041,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.7648,
+                "p95Ms": 1.1089,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.71,
+                "p95Ms": 0.9444,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.777,
+                "p95Ms": 0.8341,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.7279,
+                "p95Ms": 0.8325,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        },
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc9-2.json",
+          "jsonSha256": "3ad8bb1b5d2121116677e5c4eca6d6c7949078fa7a49a921a5e757e3d57c628f",
+          "logSha256": "40ec34d8b90eb75d9f4ba270cb599cf724efa370cfa738192e2beebe95d43210",
+          "report": {
+            "buildId": "1.4.0-rc.9+e16132240905",
+            "at": "2026-10-26T02:54:02.089043400Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 13.2625,
+                "INTAKESMs": 9.8801,
+                "PLAYERSMs": 21.7401,
+                "SETTINGSMs": 4.2743,
+                "runtimeInitializationAndHomeMs": 13.9401
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 5.6188,
+                "p95Ms": 6.8728
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 7.9279,
+                "p95Ms": 10.4729
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 4.7679,
+                "p95Ms": 6.8667
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 3.959,
+                "p95Ms": 4.6836
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 130.8363,
+                "p95Ms": 123.6744,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 458.2601,
+                "p95Ms": 435.7619,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 1062.0474,
+                "p95Ms": 1008.0818,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.4193,
+                "p95Ms": 2.6498,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 0.9876,
+                "p95Ms": 1.9797,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0012,
+                "p95Ms": 0.0019,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0022,
+                "p95Ms": 0.0034,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0104,
+                "p95Ms": 0.0158,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0008,
+                "p95Ms": 0.001,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0079,
+                "p95Ms": 0.0109,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0284,
+                "p95Ms": 0.0468,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0004,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0146,
+                "p95Ms": 0.0177,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.1227,
+                "p95Ms": 0.1387,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0009,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0314,
+                "p95Ms": 0.0322,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.2207,
+                "p95Ms": 0.272,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.7852,
+                "p95Ms": 0.9762,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.7171,
+                "p95Ms": 0.8891,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.7092,
+                "p95Ms": 0.8468,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.7421,
+                "p95Ms": 0.9321,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        },
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc9-3.json",
+          "jsonSha256": "32572c6ca8da2c2b36e3939dd2c13c589ef810a3485f1db3bcb9e44ed73ce468",
+          "logSha256": "6336547fa1541c357095774646253a565eac062c8aa7197b6c842287c72a1fbe",
+          "report": {
+            "buildId": "1.4.0-rc.9+e16132240905",
+            "at": "2026-10-26T02:54:09.275789Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 9.5726,
+                "INTAKESMs": 7.4131,
+                "PLAYERSMs": 7.1005,
+                "SETTINGSMs": 3.6058,
+                "runtimeInitializationAndHomeMs": 10.4587
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 5.0175,
+                "p95Ms": 5.3886
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 4.7763,
+                "p95Ms": 5.1329
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 4.3983,
+                "p95Ms": 4.7626
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 3.2162,
+                "p95Ms": 3.5687
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 115.0105,
+                "p95Ms": 108.6321,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 420.9876,
+                "p95Ms": 401.0495,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 1030.9345,
+                "p95Ms": 983.1491,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.4831,
+                "p95Ms": 3.3631,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 0.9523,
+                "p95Ms": 1.3392,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0012,
+                "p95Ms": 0.0019,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0022,
+                "p95Ms": 0.0033,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0102,
+                "p95Ms": 0.0112,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0009,
+                "p95Ms": 0.001,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0095,
+                "p95Ms": 0.0098,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0323,
+                "p95Ms": 0.0394,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0004,
+                "p95Ms": 0.0006,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0181,
+                "p95Ms": 0.0189,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.1113,
+                "p95Ms": 0.1385,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0004,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0424,
+                "p95Ms": 0.0703,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.1685,
+                "p95Ms": 0.2483,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.7313,
+                "p95Ms": 0.9295,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.7498,
+                "p95Ms": 0.9357,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.737,
+                "p95Ms": 0.9299,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.743,
+                "p95Ms": 0.8778,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        }
+      ],
+      "jdbc": {
+        "scope": "test-only JDBC counts; fixture with 25 members; no client or real player data",
+        "buildId": "1.4.0-rc.9+e16132240905",
+        "cases": {
+          "home-teacher": {
+            "rollbacks": 0,
+            "closed": 3,
+            "selects": 3,
+            "active": 0,
+            "connections": 3,
+            "begins": 0,
+            "commits": 0
+          },
+          "home-student": {
+            "rollbacks": 0,
+            "closed": 3,
+            "selects": 3,
+            "active": 0,
+            "connections": 3,
+            "begins": 0,
+            "commits": 0
+          },
+          "teacher-MEMBERS": {
+            "rollbacks": 0,
+            "closed": 5,
+            "selects": 7,
+            "active": 0,
+            "connections": 5,
+            "begins": 0,
+            "commits": 0
+          },
+          "teacher-INTAKES": {
+            "rollbacks": 0,
+            "closed": 5,
+            "selects": 7,
+            "active": 0,
+            "connections": 5,
+            "begins": 0,
+            "commits": 0
+          },
+          "teacher-PLAYERS": {
+            "rollbacks": 0,
+            "closed": 5,
+            "selects": 7,
+            "active": 0,
+            "connections": 5,
+            "begins": 0,
+            "commits": 0
+          },
+          "teacher-SETTINGS": {
+            "rollbacks": 0,
+            "closed": 4,
+            "selects": 5,
+            "active": 0,
+            "connections": 4,
+            "begins": 0,
+            "commits": 0
+          },
+          "student-DETAIL": {
+            "rollbacks": 0,
+            "closed": 3,
+            "selects": 3,
+            "active": 0,
+            "connections": 3,
+            "begins": 0,
+            "commits": 0
+          },
+          "unlinked-BROWSE": {
+            "rollbacks": 0,
+            "closed": 2,
+            "selects": 2,
+            "active": 0,
+            "connections": 2,
+            "begins": 0,
+            "commits": 0
+          },
+          "unlinked-INTAKES": {
+            "rollbacks": 0,
+            "closed": 2,
+            "selects": 2,
+            "active": 0,
+            "connections": 2,
+            "begins": 0,
+            "commits": 0
+          },
+          "unlinked-SETTINGS": {
+            "rollbacks": 0,
+            "closed": 1,
+            "selects": 1,
+            "active": 0,
+            "connections": 1,
+            "begins": 0,
+            "commits": 0
+          }
+        }
+      }
+    },
+    "rc10": {
+      "jar": "build/libs/LogicGates-1.4.0-rc.10.jar",
+      "sha256": "471c5b66fcde9146b4b18006a9ec2f7f304902f9b9033c3c3b8b2987ca0ad657",
+      "build": {
+        "buildId": "1.4.0-rc.10+86bb2076e27f",
+        "dirty": "false",
+        "hytaleVersion": "0.7.4",
+        "revision": "e0acb9ba79e9",
+        "sourceFingerprint": "86bb2076e27f3c33e071528ba4651d2184dce660c677390bc0fb781f8334ff97",
+        "version": "1.4.0-rc.10"
+      },
+      "rounds": [
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc10-1.json",
+          "jsonSha256": "f7d64588b8b3afcd1f1fceda3445702018a16e148aa9be31b10a0f4922db529c",
+          "logSha256": "00ded41b8ed0bbad55ce77c34460312d4b0bf2200d5c8bc035894755e729b044",
+          "report": {
+            "buildId": "1.4.0-rc.10+86bb2076e27f",
+            "at": "2026-10-26T03:14:13.202124600Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 5.9451,
+                "INTAKESMs": 1.7411,
+                "PLAYERSMs": 2.0424,
+                "SETTINGSMs": 1.1202,
+                "runtimeInitializationAndHomeMs": 9.5251
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.3355,
+                "p95Ms": 1.4779
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.3392,
+                "p95Ms": 1.5319
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.1655,
+                "p95Ms": 1.3591
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.0063,
+                "p95Ms": 1.2975
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 32.6078,
+                "p95Ms": 29.187,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 116.1699,
+                "p95Ms": 110.498,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 274.9068,
+                "p95Ms": 261.4197,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.3227,
+                "p95Ms": 2.3796,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 0.9416,
+                "p95Ms": 1.1466,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0013,
+                "p95Ms": 0.0023,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0022,
+                "p95Ms": 0.0111,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0096,
+                "p95Ms": 0.0166,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0008,
+                "p95Ms": 0.001,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.008,
+                "p95Ms": 0.0087,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.024,
+                "p95Ms": 0.0365,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0008,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.017,
+                "p95Ms": 0.0185,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.1182,
+                "p95Ms": 0.1287,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0004,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0353,
+                "p95Ms": 0.052,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.221,
+                "p95Ms": 0.2508,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.7543,
+                "p95Ms": 0.8715,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.7214,
+                "p95Ms": 0.86,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.7679,
+                "p95Ms": 1.0134,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.7491,
+                "p95Ms": 1.0525,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        },
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc10-2.json",
+          "jsonSha256": "4984a8edab810e9fb4d1b63ab0c3c7cb49429606a5a8817b20ca5abc9838c69f",
+          "logSha256": "dec4b54ff9f5985bd561940da02091717d7b2a6c5b7e0450b95a2273b980ba4a",
+          "report": {
+            "buildId": "1.4.0-rc.10+86bb2076e27f",
+            "at": "2026-10-26T03:14:17.364766100Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 5.5545,
+                "INTAKESMs": 1.6891,
+                "PLAYERSMs": 2.0607,
+                "SETTINGSMs": 1.2363,
+                "runtimeInitializationAndHomeMs": 9.588
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.3325,
+                "p95Ms": 1.583
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.3862,
+                "p95Ms": 1.5088
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.243,
+                "p95Ms": 1.3891
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.0013,
+                "p95Ms": 1.2083
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 32.2767,
+                "p95Ms": 29.1519,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 115.2629,
+                "p95Ms": 109.2554,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 279.508,
+                "p95Ms": 265.5375,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.3869,
+                "p95Ms": 2.1271,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.1675,
+                "p95Ms": 2.1687,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0012,
+                "p95Ms": 0.0021,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0021,
+                "p95Ms": 0.0055,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0098,
+                "p95Ms": 0.0165,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0008,
+                "p95Ms": 0.0009,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0089,
+                "p95Ms": 0.0095,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0217,
+                "p95Ms": 0.0263,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0004,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0143,
+                "p95Ms": 0.0149,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.1119,
+                "p95Ms": 0.1294,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0003,
+                "p95Ms": 0.0004,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0353,
+                "p95Ms": 0.0427,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.2225,
+                "p95Ms": 0.2653,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.7536,
+                "p95Ms": 0.9219,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.7031,
+                "p95Ms": 0.8531,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.785,
+                "p95Ms": 1.0197,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.7789,
+                "p95Ms": 1.0609,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        },
+        {
+          "file": "build/reports/benchmarks/rc10-comparison/rc10-3.json",
+          "jsonSha256": "90c48fb2d8ba2070200008370e52aab434419d00cada2b0b582b7e22b77fe8af",
+          "logSha256": "e746ab4ef4213f4cfdb7519df3ff41dfee228cbe9e50d36384a3ef1a87da0775",
+          "report": {
+            "buildId": "1.4.0-rc.10+86bb2076e27f",
+            "at": "2026-10-26T03:14:23.939962700Z",
+            "java": "25.0.3",
+            "os": "Windows 11",
+            "transport": "incremental",
+            "scope": "synthetic subscriptions, isolated SQLite with 25 members, server builders and packet size; excludes client, network and world ticks",
+            "cases": [
+              {
+                "scenario": "first-query-after-ready",
+                "MEMBERSMs": 7.5702,
+                "INTAKESMs": 2.0294,
+                "PLAYERSMs": 2.1475,
+                "SETTINGSMs": 1.2281,
+                "runtimeInitializationAndHomeMs": 11.3579
+              },
+              {
+                "scenario": "query-MEMBERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.6466,
+                "p95Ms": 1.963
+              },
+              {
+                "scenario": "query-INTAKES",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.513,
+                "p95Ms": 2.0345
+              },
+              {
+                "scenario": "query-PLAYERS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.2978,
+                "p95Ms": 1.6427
+              },
+              {
+                "scenario": "query-SETTINGS",
+                "size": 25,
+                "samples": 25,
+                "medianMs": 1.0463,
+                "p95Ms": 1.1496
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 25,
+                "totalMs": 36.7434,
+                "p95Ms": 32.8201,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 100,
+                "totalMs": 127.0355,
+                "p95Ms": 120.5156,
+                "failures": 0
+              },
+              {
+                "scenario": "simultaneous-screen-requests",
+                "size": 250,
+                "totalMs": 309.3013,
+                "p95Ms": 293.1232,
+                "failures": 0
+              },
+              {
+                "scenario": "unchanged-member-refresh",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.7262,
+                "p95Ms": 3.8394,
+                "commands": 0,
+                "bindings": 0,
+                "packetBytes": 59
+              },
+              {
+                "scenario": "member-selection",
+                "size": 20,
+                "samples": 25,
+                "medianMs": 1.5683,
+                "p95Ms": 1.7708,
+                "commands": 5,
+                "bindings": 0,
+                "packetBytes": 574
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.002,
+                "p95Ms": 0.0032,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0034,
+                "p95Ms": 0.006,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.0097,
+                "p95Ms": 0.0234,
+                "permissionChecksPerEvent": 10,
+                "callbacksPerEvent": 10
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0017,
+                "p95Ms": 0.0023,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0131,
+                "p95Ms": 0.0215,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.0448,
+                "p95Ms": 0.0543,
+                "permissionChecksPerEvent": 100,
+                "callbacksPerEvent": 100
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0005,
+                "p95Ms": 0.0007,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.0327,
+                "p95Ms": 0.0376,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.2432,
+                "p95Ms": 0.2728,
+                "permissionChecksPerEvent": 500,
+                "callbacksPerEvent": 500
+              },
+              {
+                "scenario": "individual-permission-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0005,
+                "p95Ms": 0.0006,
+                "permissionChecksPerEvent": 1,
+                "callbacksPerEvent": 1
+              },
+              {
+                "scenario": "unchanged-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0722,
+                "p95Ms": 0.073,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 0
+              },
+              {
+                "scenario": "changed-group-permission",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.0881,
+                "p95Ms": 0.1031,
+                "permissionChecksPerEvent": 1000,
+                "callbacksPerEvent": 1000
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 10,
+                "samples": 25,
+                "medianMs": 0.8151,
+                "p95Ms": 1.0039,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 100,
+                "samples": 25,
+                "medianMs": 0.7285,
+                "p95Ms": 0.9099,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 500,
+                "samples": 25,
+                "medianMs": 0.825,
+                "p95Ms": 1.1035,
+                "callbacksPerChange": 1
+              },
+              {
+                "scenario": "unrelated-page-data-change",
+                "size": 1000,
+                "samples": 25,
+                "medianMs": 0.9758,
+                "p95Ms": 1.1117,
+                "callbacksPerChange": 1
+              }
+            ]
+          }
+        }
+      ],
+      "jdbc": {
+        "cases": {
+          "home-teacher": {
+            "commits": 0,
+            "begins": 0,
+            "connections": 1,
+            "active": 0,
+            "selects": 1,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "home-student": {
+            "commits": 0,
+            "begins": 0,
+            "connections": 1,
+            "active": 0,
+            "selects": 1,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "teacher-MEMBERS": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 3,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "teacher-INTAKES": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 3,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "teacher-PLAYERS": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 3,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "teacher-SETTINGS": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 2,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "student-DETAIL": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 1,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "unlinked-BROWSE": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 2,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "unlinked-INTAKES": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 2,
+            "closed": 1,
+            "rollbacks": 0
+          },
+          "unlinked-SETTINGS": {
+            "commits": 1,
+            "begins": 1,
+            "connections": 1,
+            "active": 0,
+            "selects": 1,
+            "closed": 1,
+            "rollbacks": 0
+          }
+        },
+        "buildId": "1.4.0-rc.10+86bb2076e27f",
+        "scope": "test-only JDBC counts; fixture with 25 members; no client or real player data"
+      }
+    }
+  },
+  "summary": [
+    {
+      "scenario": "query-MEMBERS",
+      "size": 25,
+      "metric": "medianMs",
+      "rc9": {
+        "median": 5.0856,
+        "min": 5.0175,
+        "max": 5.6188,
+        "roundValues": [
+          5.0856,
+          5.6188,
+          5.0175
+        ]
+      },
+      "rc10": {
+        "median": 1.3355,
+        "min": 1.3325,
+        "max": 1.6466,
+        "roundValues": [
+          1.3355,
+          1.3325,
+          1.6466
+        ]
+      },
+      "reductionPercent": 73.74
+    },
+    {
+      "scenario": "query-INTAKES",
+      "size": 25,
+      "metric": "medianMs",
+      "rc9": {
+        "median": 4.7763,
+        "min": 4.7204,
+        "max": 7.9279,
+        "roundValues": [
+          4.7204,
+          7.9279,
+          4.7763
+        ]
+      },
+      "rc10": {
+        "median": 1.3862,
+        "min": 1.3392,
+        "max": 1.513,
+        "roundValues": [
+          1.3392,
+          1.3862,
+          1.513
+        ]
+      },
+      "reductionPercent": 70.98
+    },
+    {
+      "scenario": "query-PLAYERS",
+      "size": 25,
+      "metric": "medianMs",
+      "rc9": {
+        "median": 4.5061,
+        "min": 4.3983,
+        "max": 4.7679,
+        "roundValues": [
+          4.5061,
+          4.7679,
+          4.3983
+        ]
+      },
+      "rc10": {
+        "median": 1.243,
+        "min": 1.1655,
+        "max": 1.2978,
+        "roundValues": [
+          1.1655,
+          1.243,
+          1.2978
+        ]
+      },
+      "reductionPercent": 72.42
+    },
+    {
+      "scenario": "query-SETTINGS",
+      "size": 25,
+      "metric": "medianMs",
+      "rc9": {
+        "median": 3.3809,
+        "min": 3.2162,
+        "max": 3.959,
+        "roundValues": [
+          3.3809,
+          3.959,
+          3.2162
+        ]
+      },
+      "rc10": {
+        "median": 1.0063,
+        "min": 1.0013,
+        "max": 1.0463,
+        "roundValues": [
+          1.0063,
+          1.0013,
+          1.0463
+        ]
+      },
+      "reductionPercent": 70.24
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 25,
+      "metric": "p95Ms",
+      "rc9": {
+        "median": 112.1377,
+        "min": 108.6321,
+        "max": 123.6744,
+        "roundValues": [
+          112.1377,
+          123.6744,
+          108.6321
+        ]
+      },
+      "rc10": {
+        "median": 29.187,
+        "min": 29.1519,
+        "max": 32.8201,
+        "roundValues": [
+          29.187,
+          29.1519,
+          32.8201
+        ]
+      },
+      "reductionPercent": 73.97
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 100,
+      "metric": "p95Ms",
+      "rc9": {
+        "median": 435.7619,
+        "min": 401.0495,
+        "max": 446.5902,
+        "roundValues": [
+          446.5902,
+          435.7619,
+          401.0495
+        ]
+      },
+      "rc10": {
+        "median": 110.498,
+        "min": 109.2554,
+        "max": 120.5156,
+        "roundValues": [
+          110.498,
+          109.2554,
+          120.5156
+        ]
+      },
+      "reductionPercent": 74.64
+    },
+    {
+      "scenario": "simultaneous-screen-requests",
+      "size": 250,
+      "metric": "p95Ms",
+      "rc9": {
+        "median": 993.7482,
+        "min": 983.1491,
+        "max": 1008.0818,
+        "roundValues": [
+          993.7482,
+          1008.0818,
+          983.1491
+        ]
+      },
+      "rc10": {
+        "median": 265.5375,
+        "min": 261.4197,
+        "max": 293.1232,
+        "roundValues": [
+          261.4197,
+          265.5375,
+          293.1232
+        ]
+      },
+      "reductionPercent": 73.28
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 **Cliente pendente.** A rc.10 agrega consultas SQLite sem mudar layout, comandos, regras de vínculo ou esquema v4. Os resultados automatizados, build ID e SHA-256 ficam no [registro de validação](validation.md#leituras-agregadas--rc10). A linha de base rc.9 permanece preservada. Instalar somente `LogicGates-1.4.0-rc.10.jar` em `mods`, substituindo o anterior com o servidor parado; guardar o ZIP fora de `mods`.
 
+Candidata exata: **`1.4.0-rc.10+86bb2076e27f`**, SHA-256 `471c5b66fcde9146b4b18006a9ec2f7f304902f9b9033c3c3b8b2987ca0ad657`. O JAR embutido no ZIP conserva essa identidade.
+
 O encerramento rc.9 foi confirmado por relato; os fluxos rc.4 e as capturas rc.6 são históricos. Nenhuma medição de consultas aprova renderização ou elimina as [pendências anteriores](classroom-rc9-acceptance.md#pendências-de-interação-anteriores). Não é necessário repetir toda a campanha para conferir esta alteração.
 
 ## Quando houver disponibilidade

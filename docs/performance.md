@@ -99,3 +99,33 @@ A fila de I/O continua demonstrando espera sob rajada. Seu algoritmo e as consul
 - A atualização automática de permissões é por evento e só interessa às páginas abertas. Retirá-la não elimina a consulta e a renderização de uma troca de aba. As otimizações mantêm o fluxo automático já confirmado, com autorização real revalidada em cada operação.
 
 O aceite final exige o [reteste rc.8](classroom-rc8-acceptance.md), incluindo primeira troca de aba e seleção após atualizar listas. Para estimar capacidade de produção, repetir com a base, hardware, proporção de interfaces abertas, rede e carga de circuitos reais; os números isolados servem para comparar os caminhos medidos.
+
+## Classroom — leituras agregadas rc.10
+
+Comparação local em Windows 11/Temurin Java 25.0.3, em 26/10/2026, com o mesmo harness e fixture existentes, sem alterações desde a rc.9. Cada versão foi executada em três JVMs novas, com 25 membros, dez aquecimentos e 25 amostras por consulta repetida; cada rodada também mede rajadas de 25/100/250 pedidos. O JAR selecionado vem primeiro no classpath, sem diretórios de produção ou outro driver SQLite. As três rodadas da linha de base precedem as três da candidata, sem build em paralelo durante as medições.
+
+O [registro completo das seis rodadas e contagens JDBC](evidence/classroom/2026-10-26-rc10-database-performance.json) identifica arquivos, checksums, instantes UTC, protocolo e limites. A linha de base é o JAR rc.9 já entregue, build `1.4.0-rc.9+e16132240905`, SHA-256 `395c4b5bec09337c1428c20e9b14d9053f13970aba58c750d86c81dce6c4d8b9`, preservado sem recompilação. A candidata é `1.4.0-rc.10+86bb2076e27f`, SHA-256 `471c5b66fcde9146b4b18006a9ec2f7f304902f9b9033c3c3b8b2987ca0ad657`, o mesmo arquivo do `fullCheck` e da integração nativa.
+
+| Leitura | Conexões rc.9 → rc.10 | SELECTs rc.9 → rc.10 |
+| --- | --- | --- |
+| Home de professor/aluno | 3 → 1 | 3 → 1 |
+| Membros, ingressos e jogadores do professor | 5 → 1 | 7 → 3 |
+| Administração do professor | 4 → 1 | 5 → 2 |
+| Ficha do aluno | 3 → 1 | 3 → 1 |
+| Descoberta/histórico sem vínculo | 2 → 1 | 2 → 2 |
+
+Contadores ficam apenas nos testes e medem conexões JDBC e comandos SELECT externos, sem contar PRAGMAs ou subconsultas como comandos separados. Todas as conexões observadas fecharam, sem conexões ativas ao terminar. Cada `Screen` da candidata também registra um `BEGIN DEFERRED` e um commit; as falhas têm regressão de rollback/fechamento. `Home` usa um único SELECT sem transação explícita adicional. A meta de uma conexão/três SELECTs para membros foi atingida.
+
+| Cenário (ms) | rc.9 | rc.10 | Redução observada |
+| --- | --- | --- | --- |
+| Membros, mediana | 5,086 | 1,336 | 73,7% |
+| Ingressos, mediana | 4,776 | 1,386 | 71,0% |
+| Jogadores, mediana | 4,506 | 1,243 | 72,4% |
+| Administração, mediana | 3,381 | 1,006 | 70,2% |
+| Rajada 25, p95 | 112,138 | 29,187 | 74,0% |
+| Rajada 100, p95 | 435,762 | 110,498 | 74,6% |
+| Rajada 250, p95 | 993,748 | 265,538 | 73,3% |
+
+A tabela usa a mediana das três medianas por consulta ou dos três p95 por rajada; não mistura amostras nem representa um intervalo de confiança. As medianas de membros variaram entre 5,018–5,619 ms na rc.9 e 1,333–1,647 ms na rc.10. O p95 da rajada 250 variou entre 983,149–1.008,082 ms e 261,420–293,123 ms. Houve zero falhas nas três rajadas de cada uma das seis rodadas. JSONs e logs completos ficam em `build/reports/benchmarks/rc10-comparison/`; o log do `fullCheck` fica em `build/tmp/rc10-fullcheck.log`.
+
+O ganho corresponde à redução de abertura/configuração de conexões e de SELECTs repetidos. A fila continua única e limitada; tempo de rajada inclui sua espera, não o tick do mundo. O journal DELETE pode fazer um escritor aguardar o término de um snapshot de leitura; os testes exercitam aprovação, saída e encerramento concorrentes, sem WAL, pool, cache ou paralelismo novo. Histórico volumoso e duração prolongada não foram simulados. A variação de máquina/JIT/filesystem continua relevante, e os resultados não certificam capacidade de jogadores nem resolvem por evidência a demora visual da primeira troca de aba. A [regressão de cliente rc.10](classroom-rc10-acceptance.md) permanece pendente; as pendências anteriores também são preservadas.
