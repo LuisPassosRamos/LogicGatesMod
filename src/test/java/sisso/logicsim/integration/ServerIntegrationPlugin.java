@@ -90,6 +90,8 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                 for (int z : new int[]{-1, 0}) {
                     tasks.add(world.getChunkStore().getChunkSectionReferenceAtBlockAsync(x, 64, z));
                     tasks.add(world.getChunkStore().getChunkSectionReferenceAtBlockAsync(x, 63, z));
+                    tasks.add(world.getChunkStore().getChunkSectionReferenceAtBlockAsync(x, 96, z));
+                    tasks.add(world.getChunkStore().getChunkSectionReferenceAtBlockAsync(x, 128, z));
                 }
             }
             return CompletableFuture.allOf(tasks.toArray(CompletableFuture[]::new)).thenApply(ignored -> world);
@@ -117,6 +119,8 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                                 .thenCompose(ignored -> parity.automaticUpdates(world))
                                 .thenCompose(ignored -> automaticUpdates(world))
                                 .thenCompose(ignored -> teachingChecks(world, true))
+                                .thenCompose(ignored -> areaChecks(world))
+                                .thenCompose(ignored -> new AreaRecoveryServerChecks(getDataDirectory(),passed).run(world,true))
                                 .whenComplete((ignored, error) -> finish(phase, error));
                     } else {
                         reload(world);
@@ -124,10 +128,17 @@ public final class ServerIntegrationPlugin extends JavaPlugin {
                         new InvertingServerChecks(new GateServerChecks(passed), passed).reload(world);
                         new ParityServerChecks(new GateServerChecks(passed), passed).reload(world);
                         new WorkshopServerChecks(passed).reload(world);
-                        teachingChecks(world, false).whenComplete((ignored,error)->finish(phase,error));
+                        teachingChecks(world, false).thenCompose(ignored->new AreaRecoveryServerChecks(getDataDirectory(),passed).run(world,false)).whenComplete((ignored,error)->finish(phase,error));
                     }
                 } catch (Throwable error) { finish(phase, error); }
             });
+        });
+    }
+
+    private CompletableFuture<Void> areaChecks(World world) {
+        var areas=new AreaServerChecks(passed,getDataDirectory());
+        return new GateServerChecks(passed).inWorld(world,()->areas.run(world)).thenCompose(f->f).thenRun(()->{
+            var all=new java.util.LinkedHashMap<String,Object>(measurements);all.put("areas",areas.measurements());measurements=Map.copyOf(all);
         });
     }
 

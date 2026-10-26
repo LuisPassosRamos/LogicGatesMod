@@ -30,6 +30,8 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 
 public final class LogicSimPlugin extends JavaPlugin {
+    private static sisso.logicsim.classroom.learning.AreaRuntime areas;
+    public static sisso.logicsim.classroom.learning.AreaRuntime getAreas() { return areas; }
     private static ComponentType<ChunkStore, LeverComponent> leverComponentType;
     private static ComponentType<ChunkStore, LampComponent> lampComponentType;
     private static ComponentType<ChunkStore, CableComponent> cableComponentType;
@@ -61,6 +63,8 @@ public final class LogicSimPlugin extends JavaPlugin {
         registry.registerSystem(new EnergyPropagationSystem());
         getCodecRegistry(Interaction.CODEC).register("LogicGates_ToggleLogicLever",
                 ToggleLogicLeverInteraction.class, ToggleLogicLeverInteraction.CODEC);
+        getCodecRegistry(Interaction.CODEC).register("LogicGates_ClassroomSelection",
+                sisso.logicsim.interactions.ClassroomSelectionInteraction.class,sisso.logicsim.interactions.ClassroomSelectionInteraction.CODEC);
         getCommandRegistry().registerCommand(new DebugEnergyCommand());
         getCommandRegistry().registerCommand(new InspectGateCommand());
         getCommandRegistry().registerCommand(new LogicHelpCommand());
@@ -69,10 +73,29 @@ public final class LogicSimPlugin extends JavaPlugin {
         classroom = new ClassroomRuntime(getDataDirectory(),
                 actor -> PermissionsModule.get().hasPermission(actor, ClassroomRuntime.TEACH_PERMISSION, false),
                 failure -> getLogger().atSevere().withCause(failure).log("Classroom storage unavailable; circuit systems remain active"));
+        areas=new sisso.logicsim.classroom.learning.AreaRuntime(classroom);
+        registry.registerSystem(new sisso.logicsim.classroom.learning.AreaRecoverySystem(areas));
+        var entities=getEntityStoreRegistry();
+        entities.registerSystem(new sisso.logicsim.classroom.learning.AreaEditGuard.Place(areas));
+        entities.registerSystem(new sisso.logicsim.classroom.learning.AreaEditGuard.Break(areas));
+        entities.registerSystem(new sisso.logicsim.classroom.learning.AreaEditGuard.Damage(areas));
+        entities.registerSystem(new sisso.logicsim.classroom.learning.AreaEditGuard.Use(areas));
         getCommandRegistry().registerCommand(new ClassroomCommand(classroom));
         classroomPresence = new ClassroomPresence(classroom);
         getEventRegistry().registerGlobal(PlayerReadyEvent.class, classroomPresence::ready);
         getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, classroomPresence::disconnected);
+        getEventRegistry().registerGlobal(PlayerDisconnectEvent.class,event->areas.disconnected(event.getPlayerRef().getUuid()));
+        getEventRegistry().registerGlobal(PlayerReadyEvent.class,event->{
+            var ref=event.getPlayerRef();
+            if(ref!=null && ref.isValid()) {
+                var player=ref.getStore().getComponent(ref,com.hypixel.hytale.server.core.universe.PlayerRef.getComponentType());
+                if(player!=null)areas.observe(player,ref.getStore().getExternalData().getWorld());
+            }
+        });
+        getEventRegistry().registerGlobal(com.hypixel.hytale.server.core.event.events.player.RemovedPlayerFromWorldEvent.class,event->{
+            var player=event.getHolder().getComponent(com.hypixel.hytale.server.core.universe.PlayerRef.getComponentType());
+            if(player!=null)areas.removedFromWorld(player.getUuid(),event.getHolder().getComponent(com.hypixel.hytale.server.core.entity.entities.Player.getComponentType()));
+        });
         var classroomPermissions = new ClassroomPermissions(classroom);
         getEventRegistry().registerGlobal(PlayerPermissionChangeEvent.PermissionsAdded.class, classroomPermissions::playerChanged);
         getEventRegistry().registerGlobal(PlayerPermissionChangeEvent.PermissionsRemoved.class, classroomPermissions::playerChanged);
@@ -83,6 +106,7 @@ public final class LogicSimPlugin extends JavaPlugin {
     }
 
     @Override protected void shutdown() {
+        if(areas!=null)areas.close();
         if (classroomPresence != null) classroomPresence.close();
         if (classroom != null) classroom.close();
     }

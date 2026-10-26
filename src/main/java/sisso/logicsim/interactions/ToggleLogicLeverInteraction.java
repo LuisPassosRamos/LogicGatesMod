@@ -26,7 +26,11 @@ public final class ToggleLogicLeverInteraction extends SimpleBlockInteraction {
             Vector3i target, CooldownHandler cooldownHandler) {
         var position = new BlockPosition(target.x, target.y, target.z);
         // Queue the authoritative operation outside both stores' ECS processing.
-        world.execute(() -> toggle(world, position));
+        var player=commandBuffer.getComponent(context.getEntity(),com.hypixel.hytale.server.core.universe.PlayerRef.getComponentType());
+        world.execute(() -> {
+            var areas=LogicSimPlugin.getAreas();
+            if(player!=null && (areas==null || areas.allows(player.getUuid(),world.getWorldConfig().getUuid(),position.x(),position.y(),position.z()))) toggle(world, position);
+        });
     }
 
     public static boolean toggle(World world, BlockPosition position) {
