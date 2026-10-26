@@ -1,6 +1,6 @@
 # Classroom rc.10 — regressão curta das leituras
 
-**Cliente pendente.** A rc.10 agrega consultas SQLite sem mudar layout, comandos, regras de vínculo ou esquema v4. Os resultados automatizados, build ID e SHA-256 ficam no [registro de validação](validation.md#leituras-agregadas--rc10). A linha de base rc.9 permanece preservada. Instalar somente `LogicGates-1.4.0-rc.10.jar` em `mods`, substituindo o anterior com o servidor parado; guardar o ZIP fora de `mods`.
+**Cinco cenários breves confirmados pelo cliente em 26/10/2026; aceite complementar pendente.** O [relato e as duas capturas](evidence/classroom/2026-10-26-rc10-client.md) confirmam abas instantâneas, atualização de professor/aluno, contagem após saída, busca e preservação/salvamento da descrição durante atualização. A rc.10 agrega consultas SQLite sem mudar layout, comandos, regras de vínculo ou esquema v4. Os resultados automatizados, build ID e SHA-256 ficam no [registro de validação](validation.md#leituras-agregadas--rc10). A linha de base rc.9 permanece preservada. Instalar somente `LogicGates-1.4.0-rc.10.jar` em `mods`, substituindo o anterior com o servidor parado; guardar o ZIP fora de `mods`.
 
 Candidata exata: **`1.4.0-rc.10+86bb2076e27f`**, SHA-256 `471c5b66fcde9146b4b18006a9ec2f7f304902f9b9033c3c3b8b2987ca0ad657`. O JAR embutido no ZIP conserva essa identidade.
 
@@ -23,6 +23,6 @@ Preparar listas longas com o [gerador existente](classroom-rc9-acceptance.md#mas
 
 ## Pendências preservadas
 
-Conteúdo longo e ações fora da rolagem; pt-BR/en-US em 1280×720 e 1920×1080 com escala padrão; recusa/cancelamento; mensagem vazia; edição durante atualização e restauração automática; histórico/paginação extensa e casos de encerramento não discriminados no relato. As regressões centrais já confirmadas não são apagadas, mas a candidata ainda exige o teste breve acima.
+Conteúdo longo e ações fora da rolagem; en-US e combinações de resolução/escala previstas; recusa/cancelamento; mensagem vazia; revogação/restauração automática e descarte de rascunho nesta candidata; reabertura/reinício e histórico/paginação extensa; casos de encerramento não discriminados no relato anterior. Preservação da descrição durante atualização está confirmada nesta rodada; outros campos, revisão concorrente e demais contextos não foram discriminados. Busca positiva/negativa foi confirmada; não confundir esse resultado com paginação com mais de 20 registros. Os casos da tabela acima servem de referência e não precisam ser todos repetidos sem nova alteração.
 
 Sem tag, publicação estável ou merge em `main` automático. Atividades permanecem um incremento separado com contrato aprovado.

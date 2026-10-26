@@ -70,6 +70,8 @@ O histórico é mantido no banco: conteúdo da turma, matrículas, datas, víncu
 
 ## Roteiro de cliente — rc.10
 
+**Atualização em 26/10/2026:** os cinco testes breves da rc.10 foram confirmados: abas instantâneas, ingresso e saída com atualização automática, filtros positivos/negativos e descrição preservada/salva durante atualização. As [duas capturas e o relato](evidence/classroom/2026-10-26-rc10-client.md) identificam o build; idioma/resoluções complementares, paginação extensa e demais pendências continuam no roteiro. O parágrafo seguinte preserva o contexto histórico anterior a essa rodada.
+
 **Estado rc.9: aceite parcial por relato em 25/10/2026.** O usuário confirmou o funcionamento do encerramento; o [registro do relato](evidence/classroom/2026-10-25-rc9-client-report.md) preserva as limitações. Os demais cenários não foram confirmados individualmente, inclusive a demora inicial após as otimizações da rc.8. A rc.6 permanece com aceite parcial histórico. A [captura da visão geral docente](evidence/classroom/2026-10-24-rc6-client.md) confirma abertura em pt-BR e rótulos Anterior/Próxima completos. Fechar/Esc/reabrir e os testes detalhados continuam pendentes. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. A rc.10 altera somente as leituras do banco e exige a [regressão curta da candidata](classroom-rc10-acceptance.md); o roteiro rc.9 conserva as pendências anteriores.
 
 | Cenário | Resultado esperado |

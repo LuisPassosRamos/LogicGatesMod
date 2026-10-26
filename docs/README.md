@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Estado atual: pré-versão **1.4.0-rc.10**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.10 otimiza leituras de banco com uma conexão por tela e mantém as otimizações da rc.8. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; reteste das otimizações e demais cenários de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
+Estado atual: pré-versão **1.4.0-rc.10**, Hytale **0.7.4**; base de circuitos consolidada em **1.3.3**. Classroom implementa o MVP administrativo; rc.10 otimiza leituras de banco com uma conexão por tela e mantém as otimizações da rc.8. Atividades permanecem documentadas, sem implementação. Abertura rc.6 capturada; multiplayer e revogação automática relatados após rc.7; cinco cenários da regressão curta rc.10 confirmados, incluindo abas instantâneas e preservação da descrição; cenários complementares de cliente pendentes. O fluxo central da prova mínima de rc.1 foi confirmado em pt-BR. Este índice substitui a leitura paralela dos roteiros antigos e do pacote `docs-hytale`.
 
 ## Uso e manutenção
 
@@ -33,3 +33,5 @@ A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo fic
 A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preserva o esquema v4; [roteiro atual](classroom-rc10-acceptance.md).
 
 A [revisão de otimização e testes de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) distingue ajustes de runtime, código sem chamadas internas e execução proporcional das verificações. O [relato rc.9](evidence/classroom/2026-10-25-rc9-client-report.md) confirma o encerramento da turma, mantendo pendências sem confirmação individual.
+
+A [validação breve rc.10](evidence/classroom/2026-10-26-rc10-client.md) distingue as duas capturas dos cinco resultados relatados. A [análise de logging](reviews/2026-10-26-logging-feasibility.md) recomenda ampliar falhas operacionais com volume limitado e diagnóstico temporário, ainda sem implementação.
