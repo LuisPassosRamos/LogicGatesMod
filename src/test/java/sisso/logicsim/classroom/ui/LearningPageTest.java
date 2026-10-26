@@ -27,7 +27,7 @@ class LearningPageTest {
         assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.contains(".Anchor.")));
         assertWidgetProperties(commands);
         var publish=Arrays.stream(events.getEvents()).filter(e->e.selector.equals("#Publish")).findFirst().orElseThrow();var fields=BsonDocument.parse(publish.data);
-        assertEquals(Set.of("Action","@Title","@Description","@Deadline","@Value"),fields.keySet());
+        assertEquals(Set.of("Action","@Title","@Description","@Day","@Month","@Year","@Hour","@Minute","@Value"),fields.keySet());
         var grade=Arrays.stream(events.getEvents()).filter(e->e.selector.equals("#SaveGrade")).findFirst().orElseThrow();assertEquals(Set.of("Action","@Score","@Feedback"),BsonDocument.parse(grade.data).keySet());
     }
     @Test void codecAcceptsLiteralFieldsButNoClaimedStudentPublicationOrGradeRevision() throws Exception {
@@ -70,6 +70,30 @@ class LearningPageTest {
             assertOperationState(LearningPage.operationState(false,LearningPage.error(new LearningException(code))),false);
     }
 
+    @Test void creationStaysWideAfterSaveAndReturnsToTheListAfterPublishOrBack() throws Exception {
+        var activity=new Activity(ACTIVITY,CLASSROOM,1,false,Draft.empty(),null);
+        var page=page(true,false,activity,null);page.created(activity);
+        for(boolean saved:new boolean[]{false,true}) {
+            if(saved)page.saved(false);
+            var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),!saved,null,true);
+            assertWidgetProperties(c);
+            for(String id:List.of("ListPanel","New","Filter","Archive","Students"))assertFalse(value(c,"#"+id+".Visible").asBoolean().getValue(),id);
+            assertTrue(value(c,"#Discard.Visible").asBoolean().getValue());
+            assertEquals(180,value(c,"#DescriptionField.Anchor").asDocument().getInt32("Height").getValue());
+            assertTrue(value(c,"#Activities.TextSpans").toString().contains("backToActivities"));
+            if(saved)assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+        }
+        page.saved(true);var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#ListPanel.Visible").asBoolean().getValue());assertTrue(value(c,"#Archive.Visible").asBoolean().getValue());
+        page.created(activity);page.backToActivities();set(page,"activity",null);
+        c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#ListPanel.Visible").asBoolean().getValue());assertFalse(value(c,"#Editor.Visible").asBoolean().getValue());
+    }
+
+    private static org.bson.BsonValue value(UICommandBuilder c,String selector) {
+        return BsonDocument.parse(Arrays.stream(c.getCommands()).filter(x->selector.equals(x.selector)).findFirst().orElseThrow().data).get("0");
+    }
+
     private static void assertOperationState(UICommandBuilder commands,boolean busy) throws Exception {
         assertWidgetProperties(commands);
         assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value")));
@@ -93,7 +117,8 @@ class LearningPageTest {
             assertTrue(target.find(),command.selector);var type=types.get(target.group(1));assertNotNull(type,command.selector);
             switch(target.group(2)) {
                 case "Disabled"->assertTrue(type.endsWith("Button"),"Disabled is not a TextField/MultilineTextField property: "+command.selector);
-                case "Value"->assertTrue(Set.of("TextField","MultilineTextField").contains(type),command.selector);
+                case "Value"->assertTrue(Set.of("TextField","MultilineTextField","DropdownBox").contains(type),command.selector);
+                case "Entries"->assertEquals("DropdownBox",type,command.selector);
                 case "TextSpans"->assertTrue(type.equals("Label") || type.endsWith("Button"),command.selector);
                 case "Visible","Anchor"->{ }
                 default->fail("Unreviewed native widget property: "+command.selector);

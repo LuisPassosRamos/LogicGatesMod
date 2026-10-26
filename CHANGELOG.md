@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.12.
+Nenhuma alteração registrada após 1.4.0-rc.13.
+
+## [1.4.0-rc.13] - 2026-10-26
+
+### Polimento de turmas e atividades
+- Painéis com margem externa de 16 unidades, consultas com lateral de 280, navegação e ações com quebra de linha. Fichas compactas usam altura do conteúdo; feedback vazio fica oculto. Ocupação e escalas continuam sujeitas ao aceite no cliente.
+- Criação de atividade em largura total, sem lista lateral ou paginação. Salvar rascunho mantém o formulário; publicar retorna à apresentação normal e Voltar às atividades preserva o rascunho já criado, sem salvar campos automaticamente.
+- Prazo com seletores nativos de dia, mês, ano, hora e minuto, em Brasília. Data vazia permite rascunho; parcial ou inexistente é recusada. Dias acompanham mês/ano, todos os minutos estão disponíveis e a persistência permanece em UTC.
+- Resumo da turma informa atividades não arquivadas para o professor e somente publicadas para o aluno, sem duplicar edição privada. Contagem no mesmo snapshot e orçamento de uma conexão/até três SELECTs na tela docente; invalidações de catálogo separadas de entregas/notas e mensagem do dia.
+- Administração coloca Salvar alterações e Encerrar turma na mesma linha quando possível, com controles próprios de confirmação. Regras de autorização, revisões, SQLite v5, circuitos e conteúdo das entregas preservados.
 
 ## [1.4.0-rc.12] - 2026-10-26
 

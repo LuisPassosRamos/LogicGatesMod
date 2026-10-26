@@ -2,28 +2,28 @@ $C = "../../Common.ui";
 
 $C.@PageOverlay {}
 $C.@Container {
-  Anchor: (Width: 960, Height: 680);
+  Anchor: (Full: 16);
   #Title { $C.@Title { @Text = %server.logicgates.classroom.title; } }
   #Content {
     LayoutMode: Top;
     Padding: (Full: 20);
     Group #Navigation {
-      LayoutMode: Left;
-      Anchor: (Height: 40, Bottom: 8);
+      LayoutMode: LeftWrap;
+      Anchor: (Bottom: 8);
       $C.@SecondaryTextButton #NavClass { @Anchor = (Width: 210, Right: 8); @Text = %server.logicgates.classroom.nav.class; }
       $C.@SecondaryTextButton #NavIntakes { @Anchor = (Width: 210, Right: 8); @Text = %server.logicgates.classroom.nav.intakes; }
       $C.@SecondaryTextButton #NavInvite { @Anchor = (Width: 210, Right: 8); @Text = %server.logicgates.classroom.invite; Visible: false; }
       $C.@SecondaryTextButton #NavSettings { @Anchor = (Width: 210); @Text = %server.logicgates.classroom.nav.settings; Visible: false; }
     }
-    Label #HeaderTitle { Anchor: (Height: 34, Bottom: 4); Text: %server.logicgates.classroom.title; Style: (FontSize: 24, Wrap: true, TextColor: #ffffff); }
-    Label #HeaderInfo { Anchor: (Height: 40, Bottom: 10); Text: %server.logicgates.classroom.oneClass; Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+    Label #HeaderTitle { Anchor: (Bottom: 4); Text: %server.logicgates.classroom.title; Style: (FontSize: 24, Wrap: true, TextColor: #ffffff); }
+    Label #HeaderInfo { Anchor: (Bottom: 10); Text: %server.logicgates.classroom.oneClass; Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
     Group #Body {
       FlexWeight: 1;
       Anchor: (Bottom: 12);
       LayoutMode: Left;
       Group #ListPanel {
         Visible: false;
-        Anchor: (Width: 285, Right: 20);
+        Anchor: (Width: 280, Right: 16);
         LayoutMode: Top;
         Group #SearchBar {
           LayoutMode: Left;
@@ -45,7 +45,7 @@ $C.@Container {
           Group {
             Anchor: (Height: 40);
             LayoutMode: Left;
-            $C.@SecondaryTextButton #Previous { @Anchor = (Width: 138, Right: 8); @Text = %server.logicgates.classroom.previous; }
+            $C.@SecondaryTextButton #Previous { @Anchor = (Width: 136, Right: 8); @Text = %server.logicgates.classroom.previous; }
             $C.@SecondaryTextButton #Next { @Text = %server.logicgates.classroom.next; FlexWeight: 1; }
           }
         }
@@ -59,24 +59,24 @@ $C.@Container {
           ScrollbarStyle: $C.@DefaultScrollbarStyle;
           Group #View {
             LayoutMode: Top;
-            Label #DetailTitle { Anchor: (Height: 32, Bottom: 8); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
-            Label #MetaTeacher { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
-            Label #MetaState { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
-            Label #MetaEnrollment { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
-            Label #MetaDate { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
-            Label #MetaType { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
-            Label #MetaUuid { Visible: false; Anchor: (Height: 24, Bottom: 4); Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
+            Label #DetailTitle { Anchor: (Bottom: 8); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
+            Label #MetaTeacher { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+            Label #MetaState { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+            Label #MetaEnrollment { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+            Label #MetaDate { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+            Label #MetaType { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 15, Wrap: true, TextColor: #9daec2); }
+            Label #MetaUuid { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
             Group #DescriptionDisplay {
               LayoutMode: Top;
               Anchor: (Top: 8);
               Label { Anchor: (Height: 24, Bottom: 4); Text: %server.logicgates.classroom.description; Style: (FontSize: 17, TextColor: #ffffff); }
-              Label #DescriptionText { Anchor: (Height: 24, Bottom: 12); Style: (FontSize: 17, Wrap: true, TextColor: #c8d3e0); }
+              Label #DescriptionText { Anchor: (Bottom: 12); Style: (FontSize: 17, Wrap: true, TextColor: #c8d3e0); }
             }
             Group #MessageDisplay {
               Visible: false;
               LayoutMode: Top;
               Label { Anchor: (Height: 24, Bottom: 4); Text: %server.logicgates.classroom.message; Style: (FontSize: 17, TextColor: #ffffff); }
-              Label #MessageText { Anchor: (Height: 24, Bottom: 12); Style: (FontSize: 17, Wrap: true, TextColor: #c8d3e0); }
+              Label #MessageText { Anchor: (Bottom: 12); Style: (FontSize: 17, Wrap: true, TextColor: #c8d3e0); }
             }
           }
           Group #Form {
@@ -111,18 +111,27 @@ $C.@Container {
             $C.@CancelTextButton #Danger { @Anchor = (Bottom: 6); @Text = %server.logicgates.classroom.remove; Visible: false; }
             $C.@SecondaryTextButton #CancelConfirm { @Anchor = (Bottom: 6); @Text = %server.logicgates.classroom.cancel; Visible: false; }
           }
-          $C.@TextButton #Save { @Anchor = (Width: 250); @Text = %server.logicgates.classroom.save; Visible: false; Disabled: true; }
+          Group #SettingsActions {
+            LayoutMode: LeftWrap;
+            Visible: false;
+            $C.@TextButton #Save { @Anchor = (Width: 250, Right: 8, Bottom: 6); @Text = %server.logicgates.classroom.save; Visible: false; Disabled: true; }
+            $C.@CancelTextButton #Disband { @Anchor = (Width: 250, Bottom: 6); @Text = %server.logicgates.classroom.disband; Visible: false; }
+            $C.@CancelTextButton #ConfirmDisband { @Anchor = (Width: 420, Right: 8, Bottom: 6); @Text = %server.logicgates.classroom.confirmDisband; Visible: false; }
+            $C.@SecondaryTextButton #CancelDisband { @Anchor = (Width: 200, Bottom: 6); @Text = %server.logicgates.classroom.cancel; Visible: false; }
+          }
         }
       }
     }
     Label #Status { Anchor: (Height: 42, Bottom: 8); Text: %server.logicgates.classroom.loading; Style: (FontSize: 16, Wrap: true, TextColor: #c8d3e0); }
     Group {
-      LayoutMode: Left;
-      Anchor: (Height: 40);
-      $C.@SecondaryTextButton #Reload { @Anchor = (Width: 160, Right: 10); @Text = %server.logicgates.classroom.reload; }
-      $C.@CancelTextButton #Close { @Anchor = (Width: 130, Right: 12); @Text = %server.logicgates.classroom.probe.close; }
-      $C.@SecondaryTextButton #Activities { @Anchor = (Width: 150, Right: 12); @Text = %server.logicgates.learning.activities; Visible: false; }
-      Label #Build { FlexWeight: 1; Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
+      LayoutMode: Top;
+      Group {
+        LayoutMode: LeftWrap;
+        $C.@SecondaryTextButton #Reload { @Anchor = (Width: 160, Right: 10); @Text = %server.logicgates.classroom.reload; }
+        $C.@CancelTextButton #Close { @Anchor = (Width: 130, Right: 12); @Text = %server.logicgates.classroom.probe.close; }
+        $C.@SecondaryTextButton #Activities { @Anchor = (Width: 150, Right: 12); @Text = %server.logicgates.learning.activities; Visible: false; }
+      }
+      Label #Build { Anchor: (Top: 6); Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
     }
   }
 }

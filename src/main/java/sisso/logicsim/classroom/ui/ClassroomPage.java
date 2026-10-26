@@ -40,8 +40,8 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private final ClassroomPageRefresh dataRefresh=new ClassroomPageRefresh(), authorizationRefresh=new ClassroomPageRefresh();
     private final ClassroomPageChanges dataChanges=new ClassroomPageChanges();
     private volatile boolean dismissed;
-    private AutoCloseable subscription, authorizationSubscription;
-    private static final String[] OPERATIONS = {"#Save","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings","#Activities"};
+    private AutoCloseable subscription, authorizationSubscription, catalogSubscription;
+    private static final String[] OPERATIONS = {"#Save","#Disband","#ConfirmDisband","#CancelDisband","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings","#Activities"};
 
     public ClassroomPage(PlayerRef playerRef, ClassroomRuntime runtime, World world) {
         super(playerRef, CustomPageLifetime.CanDismiss, ActionEvent.CODEC);
@@ -50,6 +50,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     @Override public void build(Ref<EntityStore> ref, UICommandBuilder c, UIEventBuilder e, Store<EntityStore> store) {
         c.append(LAYOUT);
         c.set("#Build.TextSpans", text("build").param("build", BuildInfo.BUILD_ID).param("hytale", BuildInfo.HYTALE_VERSION));
+        bind(e,"#Disband","Danger"); bind(e,"#ConfirmDisband","Danger"); bind(e,"#CancelDisband","CancelConfirm");
         for (String action : new String[]{"Close","Reload","Activities","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm"}) bind(e,"#"+action,action);
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Save",EventData.of("Action","Save")
                 .append("@Name","#Name.Value").append("@Description","#Description.Value").append("@Message","#Message.Value"));
@@ -58,6 +59,12 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         controls(c,true);
     }
     public void load(Ref<EntityStore> ref, Store<EntityStore> store) {
+        if(catalogSubscription==null) catalogSubscription=runtime.listenActivityCatalog(playerRef.getUuid(),
+                classroom->busy || notificationInterest.test(new ClassroomRuntime.Change(classroom,null,false)),classroom->{
+            dataChanges.add(new ClassroomRuntime.Change(classroom,null,false));
+            try { dataRefresh.schedule(world::execute,()->{if(!active(ref,store)){dispose();return;}if(!busy)refreshIfPending(ref,store);}); }
+            catch(RuntimeException stoppedWorld){dispose();}
+        });
         if (authorizationSubscription == null) {
             authorizationSubscription = runtime.listenAuthorization(playerRef.getUuid(), allowed -> {
                 access.changed(allowed); // Invalidates old callbacks before scheduling any world work.
@@ -258,6 +265,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         dataChanges.clear();
         if(subscription!=null) { try { subscription.close(); } catch(Exception ignored) { } subscription=null; }
         if(authorizationSubscription!=null) { try { authorizationSubscription.close(); } catch(Exception ignored) { } authorizationSubscription=null; }
+        if(catalogSubscription!=null) { try { catalogSubscription.close(); } catch(Exception ignored) { } catalogSubscription=null; }
     }
     @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store) { dispose(); }
     public static final class ActionEvent {

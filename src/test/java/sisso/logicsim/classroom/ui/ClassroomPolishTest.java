@@ -141,12 +141,12 @@ class ClassroomPolishTest {
         var page=new ClassroomPage(null,null,null);
         page.model.apply(new Screen(new Home(classroom,teacherLink,"Teacher",true),Kind.SETTINGS,new Page<>(List.of(),0,false),0),true);
         var c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),true);
-        assertTrue(value(c,"#Actions.Visible").asBoolean().getValue()); assertTrue(value(c,"#Danger.Visible").asBoolean().getValue());
-        assertTrue(value(c,"#Danger.Text").toString().contains("server.logicgates.classroom.disband"));
+        assertTrue(value(c,"#SettingsActions.Visible").asBoolean().getValue()); assertFalse(value(c,"#Actions.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#Disband.Visible").asBoolean().getValue());
         assertTrue(value(c,"#Save.Visible").asBoolean().getValue()); assertFalse(value(c,"#CancelConfirm.Visible").asBoolean().getValue());
         page.model.confirming=true; c=new UICommandBuilder(); page.render(c,new UIEventBuilder(),false);
-        assertTrue(value(c,"#Danger.Text").toString().contains("server.logicgates.classroom.confirmDisband"));
-        assertTrue(value(c,"#CancelConfirm.Visible").asBoolean().getValue()); assertFalse(value(c,"#Save.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#ConfirmDisband.Visible").asBoolean().getValue()); assertFalse(value(c,"#Disband.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#CancelDisband.Visible").asBoolean().getValue()); assertFalse(value(c,"#Save.Visible").asBoolean().getValue());
         assertEquals("server.logicgates.classroom.confirmDisbandHint",ClassroomScreenRenderer.status(page.model,false).getMessageId());
         assertTrue(Arrays.stream(c.getCommands()).noneMatch(command->command.selector!=null && command.selector.endsWith(".Value")));
         // A different classroom or loss of membership can never reuse a previous closure confirmation.

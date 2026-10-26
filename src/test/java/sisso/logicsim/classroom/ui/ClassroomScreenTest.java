@@ -56,15 +56,8 @@ class ClassroomScreenTest {
                     anchors.put(command.selector,anchor);
                 }
             }
-            assertTrue(anchors.containsKey("#HeaderTitle.Anchor"));
-            assertEquals(4,anchors.get("#HeaderTitle.Anchor").getInt32("Bottom").getValue());
-            assertEquals(8,anchors.get("#HeaderInfo.Anchor").getInt32("Bottom").getValue());
-            if (screen.kind()!=Kind.SETTINGS) {
-                assertEquals(8,anchors.get("#DetailTitle.Anchor").getInt32("Bottom").getValue());
-                assertEquals(12,anchors.get("#DescriptionText.Anchor").getInt32("Bottom").getValue());
-                assertEquals(12,anchors.get("#MessageText.Anchor").getInt32("Bottom").getValue());
-                assertTrue(anchors.get("#DetailTitle.Anchor").getInt32("Height").getValue()>=32);
-            }
+            for(String label:List.of("HeaderTitle","HeaderInfo","DetailTitle","DescriptionText","MessageText"))
+                assertFalse(anchors.containsKey("#"+label+".Anchor"),"Wrapped labels must measure their own height: "+label);
             for (int i=0;i<screen.rows().items().size();i++) assertEquals(6,anchors.get("#Rows["+i+"].Anchor").getInt32("Bottom").getValue());
         }
     }
