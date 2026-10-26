@@ -21,6 +21,7 @@ final class AreaServerChecks {
     private final GateServerChecks gates;
     private final SubmissionFiles files;
     private final Map<String,Object> measurements=new LinkedHashMap<>();
+    private AreaSnapshot maximumSnapshot;
     private static final LearningLimits LIMITS=LearningLimits.DEFAULT;
     private static final Bounds SOURCE=new Bounds(29,96,-16,9,2,12);
     private static final Bounds TARGET=new Bounds(1,128,-16,9,2,12);
@@ -75,6 +76,10 @@ final class AreaServerChecks {
             passed.add("area proof: independent circuit simulation and discard removes edits throughout leased bounds");
             NativeAreaAdapter.clear(world,SOURCE);
             maximum(world);
+        })).thenCompose(ignored->CompletableFuture.runAsync(()->{
+            long start=System.nanoTime();var saved=files.write(maximumSnapshot);files.read(saved.id(),saved.checksum());
+            measurements.put("maxFileBytes",saved.bytes());measurements.put("maxFileRoundTripMs",millis(start));
+            measurements.put("maxRawBytes",new com.google.gson.Gson().toJson(maximumSnapshot).getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
         })).thenCompose(ignored->simulation(world));
     }
     private void fixture(World world) {
@@ -92,10 +97,13 @@ final class AreaServerChecks {
     private void maximum(World world) {
         var source=new Bounds(0,96,-32,32,16,32);var target=new Bounds(32,96,-32,32,16,32);
         for(int y=0;y<source.height();y++)for(int z=0;z<source.depth();z++)for(int x=0;x<source.width();x++)gates.place(world,p(source,x,y,z),"Rock_Stone");
-        long memoryBefore=usedMemory(),start=System.nanoTime();var snapshot=NativeAreaAdapter.capture(world,source,LIMITS);measurements.put("maxCaptureMs",millis(start));
+        var allocationBean=(com.sun.management.ThreadMXBean)java.lang.management.ManagementFactory.getThreadMXBean();
+        long allocatedBefore=allocationBean.isThreadAllocatedMemorySupported()?allocationBean.getThreadAllocatedBytes(Thread.currentThread().threadId()):-1;
+        long memoryBefore=usedMemory(),start=System.nanoTime();var snapshot=NativeAreaAdapter.capture(world,source,LIMITS);maximumSnapshot=snapshot;measurements.put("maxCaptureMs",millis(start));
         var preview=NativeAreaAdapter.preview(snapshot);measurements.put("maxPreviewBytes",preview.computeSize());
         start=System.nanoTime();NativeAreaAdapter.paste(world,snapshot,target);measurements.put("maxPasteMs",millis(start));
         measurements.put("maxTransientHeapDeltaBytes",Math.max(0,usedMemory()-memoryBefore));
+        if(allocatedBefore>=0)measurements.put("maxWorldThreadAllocatedBytes",allocationBean.getThreadAllocatedBytes(Thread.currentThread().threadId())-allocatedBefore);
         start=System.nanoTime();NativeAreaAdapter.clear(world,target);measurements.put("maxDiscardMs",millis(start));
         NativeAreaAdapter.clear(world,source);
         passed.add("area proof: maximum 16384-position capture, preview, empty-space paste and complete discard measured");
