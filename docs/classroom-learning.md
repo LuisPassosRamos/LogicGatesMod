@@ -69,4 +69,14 @@ Falha anterior ao commit não oferece a revisão ao professor. No início, a rec
 
 Faça backup **do banco e da pasta `submissions` juntos**, com servidor parado, e conserve a configuração. O backup automático pré-migração conserva o banco anterior; para voltar à rc.10, restaure esse banco v4. Não abra o banco v5 em versões antigas. Mundos/circuitos não são migrados por esta entrega.
 
-Avaliação automática, proteção permanente das bancadas, logging ampliado e publicação estável permanecem posteriores.
+Pontuação automática, proteção permanente das bancadas, logging ampliado e publicação estável permanecem posteriores.
+
+## Critérios e verificação assistida — rc.15
+
+Professor define quantidades exatas de módulos/alavancas/cabos/lâmpadas: vazio deixa livre; zero proíbe. Os critérios são privados no rascunho e imutáveis em cada publicação. Opcionalmente define tabela completa `entradas -> saídas`, uma combinação por linha, com alavancas I e lâmpadas O ordenadas por posição local X/Y/Z. Até seis entradas, quatro saídas e 64 combinações.
+
+Em uma entrega selecionada, **Verificar circuito** confere quantidades e simula a cópia fixa no avaliador existente, fora do contexto do mundo e pela fila pesada limitada. Não altera nota, feedback ou blocos; divergência não impede o envio. Circuito equivalente pode passar no comportamento sem satisfazer restrições de módulos. Quantidade de I/O incompatível não executa a tabela; I/O sem conexão física e realimentação não resolvida são inconclusivos. Somente componentes dentro da área entregue participam. A análise comportamental admite até 2048 componentes lógicos; volumes maiores continuam disponíveis para correção manual.
+
+O relatório pertence à revisão selecionada e não é persistido; verificação é explícita, sem varredura periódica ou atualização de outras telas. Nota e feedback continuam manuais. Cada revisão usa os critérios da publicação entregue mesmo após republicação. A [validação rc.15](classroom-rc15-acceptance.md) explica configuração, mapeamento e limites.
+
+SQLite **v6** acrescenta `draft_rules` e `rules`, com backup transacional pré-migração. Dados v5 anteriores recebem critérios livres, mantendo versões, conteúdo, reservas e notas. Para downgrade, restaurar banco v5 compatível junto dos arquivos privados. Pontuação automática, logging ampliado e proteção permanente continuam posteriores.

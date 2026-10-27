@@ -55,3 +55,7 @@ Estes casos orientam regressões automatizadas e aceite no cliente; execução p
 - Limites padrão: 32 × 16 × 32 incluindo ar, 8 MiB descomprimidos por revisão, 1 GiB por turma, uma operação pesada + oito aguardando. Listas apenas de metadados; conteúdo só da revisão selecionada. Esses valores não certificam capacidade de jogadores.
 
 A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva exigem contratos futuros. Logging seletivo e avaliação automática continuam no backlog.
+
+## Verificação assistida — contrato rc.15
+
+Aprovado em 26/10/2026: quantidades exatas, campo vazio livre e zero proibido; alavancas são entradas e lâmpadas saídas com tabela esperada. Regras pertencem ao rascunho e à publicação correspondente. Nota continua manual. O primeiro incremento usa ordem por coordenadas locais X/Y/Z, tabela completa de até 6 entradas/4 saídas, limite de 2048 componentes para simulação e execução explícita na fila pesada existente. Não bloqueia entregas divergentes. Não há pontuação automática, execução contínua ou histórico persistido dos relatórios. Consulte [uso](../classroom-learning.md#critérios-e-verificação-assistida--rc15) e [aceite](../classroom-rc15-acceptance.md).

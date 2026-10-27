@@ -2,7 +2,7 @@
 
 Build entregue: **1.4.0-rc.14+5485651dd6e3**, revisão de produção `4e1722060e14`. JAR SHA-256 `5cbeaa10090437eb4192223f34cb69526ff95ef3919de5e100f48675ff78a03e`. [Verificações automatizadas](evidence/classroom/2026-10-26-rc14-server.json).
 
-**Cliente desta candidata: pendente.** As [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação docente naquela configuração e fundamentam este ajuste; não aprovam as proporções ou a edição explícita da rc.14. SQLite v5, circuitos e conteúdo das entregas permanecem.
+**Cliente: funcionamento/polimento aprovados por [relato do usuário](evidence/classroom/2026-10-26-rc14-client.md).** O relato não discrimina a matriz de resoluções, escalas e idiomas abaixo; combinações não informadas continuam sem execução registrada. As [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação docente naquela configuração e fundamentam este ajuste; não aprovam as proporções ou a edição explícita da rc.14. SQLite v5, circuitos e conteúdo das entregas permanecem.
 
 Com o mundo parado, substitua o JAR por `LogicGates-1.4.0-rc.14.jar`, mantendo somente uma versão em `mods`. Guarde o ZIP fora de `mods`. Preserve o banco, `submissions`, configuração e mundos; não apague dados. Registre build ID/SHA-256 do arquivo entregue.
 
