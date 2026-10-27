@@ -1,5 +1,7 @@
 # Classroom — aceite da 1.4.0-rc.17
 
+**Bloqueada no cliente em 27/10/2026:** o [log enviado](evidence/classroom/2026-10-27-rc17-client.md) confirmou alinhamento inválido em ClassroomRow.ui, impedindo entrar no mundo. Usar a [rc.18 corrigida](classroom-rc18-acceptance.md). Os resultados automatizados abaixo permanecem históricos e não comprovam carregamento no cliente.
+
 Candidata de acompanhamento e clareza da interface, Hytale **0.7.4**, SQLite **v6**. Build **1.4.0-rc.17+1ee2a26cc4dc**, revisão de produção `a8e231672b57`, compilação limpa. JAR SHA-256 `2cb243eaaa389d50548ef8c8c2c607602fbffc29c313a211692ef41f798a7ca6`. A renderização da candidata no cliente **está pendente**; não é inferida dos testes de transporte nem das capturas rc.15. Artefatos rc.16 são preservados. Sem tag, merge ou publicação estável nesta entrega.
 
 ## Comportamentos esperados

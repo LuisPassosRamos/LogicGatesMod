@@ -134,6 +134,18 @@ class BuildToolsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Custom UI parameter @Anchor must precede'):
             self.verify(jar)
 
+    def test_distribution_rejects_rc17_invalid_label_alignment_in_packaged_bytes(self):
+        jar = self.make_jar()
+        with zipfile.ZipFile(jar) as archive:
+            entries = {name: archive.read(name) for name in archive.namelist()}
+        document = next(name for name in entries if name.endswith('/Classroom.ui'))
+        entries[document] = b'Label { Style: (HorizontalAlignment: Right); }'
+        with zipfile.ZipFile(jar, 'w') as archive:
+            for name, data in entries.items():
+                archive.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'HorizontalAlignment must use Start, Center or End; got Right'):
+            self.verify(jar)
+
     def test_distribution_rejects_missing_sqlite_native_resource(self):
         jar = self.make_jar()
         with zipfile.ZipFile(jar) as archive:

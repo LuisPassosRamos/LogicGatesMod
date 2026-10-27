@@ -8,6 +8,18 @@ from verify_custom_ui import check_document
 
 
 class CustomUiTest(unittest.TestCase):
+    def test_rc17_right_alignment_and_other_non_label_values_are_rejected(self):
+        for prop in ('HorizontalAlignment', 'VerticalAlignment'):
+            for value in ('Right', 'Left', 'Top', 'Bottom'):
+                with self.subTest(prop=prop, value=value), self.assertRaisesRegex(ValueError, f'{prop} must use Start, Center or End; got {value}'):
+                    check_document(f'Label {{ Style: ({prop}: {value}); }}', 'ClassroomRow.ui')
+
+    def test_native_label_alignment_values_and_references_are_accepted(self):
+        for value in ('Start', 'Center', 'End', '@Alignment', '$C.@Alignment'):
+            check_document(f'Label {{ Style: (HorizontalAlignment: {value}, VerticalAlignment: {value}); }}', 'Example.ui')
+        check_document('Label { Text: "HorizontalAlignment: Right"; /* VerticalAlignment: Bottom */\n'
+                       '// HorizontalAlignment: Left\nStyle: (HorizontalAlignment: End); }', 'Example.ui')
+
     def test_rc5_search_and_next_order_are_rejected(self):
         for body in ('FlexWeight: 1; @Anchor = (Right: 8); MaxLength: 128;',
                      'FlexWeight: 1; @Text = %server.logicgates.classroom.next;'):

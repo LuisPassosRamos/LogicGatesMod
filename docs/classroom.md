@@ -1,12 +1,12 @@
 # Classroom — turmas e administração
 
-Disponível na candidata **1.4.0-rc.17**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros, mensagem do dia, permissões automáticas e encerramento estão implementados. Este guia descreve o comportamento atual; [atividades, entregas e correção](classroom-learning.md) têm guia próprio.
+Disponível na candidata **1.4.0-rc.18**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros, mensagem do dia, permissões automáticas e encerramento estão implementados. Este guia descreve o comportamento atual; [atividades, entregas e correção](classroom-learning.md) têm guia próprio.
 
-Os fluxos administrativos centrais e o funcionamento em multiplayer foram confirmados nos relatos anteriores. O polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/escalas. O [estado de validação](validation.md) preserva os resultados por build; o [roteiro da candidata](classroom-rc17-acceptance.md) orienta a regressão atual. Critérios e verificação assistida da rc.15 ainda exigem aceite específico de interação.
+Os fluxos administrativos centrais e o funcionamento em multiplayer foram confirmados nos relatos anteriores. O polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/escalas. O [estado de validação](validation.md) preserva os resultados por build; o [roteiro da candidata](classroom-rc18-acceptance.md) orienta a regressão atual. Critérios e verificação assistida da rc.15 ainda exigem aceite específico de interação.
 
 ## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.17.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.17.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A rc.15 migra para o esquema v6 com backup automático antes da alteração; não apague os dados. Para voltar à rc.14, restaure o banco v5 compatível do backup. Entregas precisam de backup conjunto de `classroom.db` e `submissions`. Para retornar à rc.10, restaure o banco v4 do backup. Para voltar à rc.8 ou anterior, restaure também o banco compatível do backup, com o servidor parado.
+Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.18.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.18.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A rc.15 migra para o esquema v6 com backup automático antes da alteração; não apague os dados. Para voltar à rc.14, restaure o banco v5 compatível do backup. Entregas precisam de backup conjunto de `classroom.db` e `submissions`. Para retornar à rc.10, restaure o banco v4 do backup. Para voltar à rc.8 ou anterior, restaure também o banco compatível do backup, com o servidor parado.
 
 Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
@@ -72,7 +72,7 @@ O histórico é mantido no banco: conteúdo da turma, matrículas, datas, víncu
 
 ## Roteiro de regressão administrativa
 
-Use duas contas e uma turma descartável. Escolha os casos afetados pela mudança e registre build ID, idioma, resolução/escala e resultado. O [roteiro atual](classroom-rc17-acceptance.md) indica a regressão da candidata; os roteiros rc.1–rc.15 e os registros abaixo conservam o contexto histórico. Não repetir toda a campanha de circuitos/fabricação para uma alteração apenas administrativa.
+Use duas contas e uma turma descartável. Escolha os casos afetados pela mudança e registre build ID, idioma, resolução/escala e resultado. O [roteiro atual](classroom-rc18-acceptance.md) indica a regressão da candidata; os roteiros rc.1–rc.15 e os registros abaixo conservam o contexto histórico. Não repetir toda a campanha de circuitos/fabricação para uma alteração apenas administrativa.
 
 | Cenário | Resultado esperado |
 | --- | --- |

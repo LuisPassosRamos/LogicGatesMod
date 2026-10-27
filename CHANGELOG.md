@@ -4,7 +4,14 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.17.
+Nenhuma alteração registrada após 1.4.0-rc.18.
+
+## [1.4.0-rc.18] - 2026-10-27
+
+### Correção de carregamento da interface
+- Corrigido `HorizontalAlignment: Right` para `End` no contador de progresso de `ClassroomRow.ui`. O valor inválido da rc.17 fazia o cliente desconectar durante o carregamento dos documentos Custom UI, antes de entrar no mundo.
+- Verificador de UI agora recusa alinhamentos literais fora de Start/Center/End, tanto nas fontes quanto nos documentos empacotados no JAR. Testes reproduzem o erro da rc.17 e preservam comentários, textos e referências válidas.
+- Mantidos fluxos rc.17, SQLite v6 e dados existentes. A entrada no cliente com o JAR corrigido ainda depende de reteste; o erro original foi confirmado no log enviado pelo usuário.
 
 ## [1.4.0-rc.17] - 2026-10-27
 

@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.17**, com Classroom em **SQLite v6**. Circuitos, administração de turmas, atividades versionadas, entregas de áreas e avaliação manual estão implementados. A verificação assistida compara quantidades e tabela verdade sobre a entrega salva; **não atribui nota automaticamente**.
+Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.18**, com Classroom em **SQLite v6**. Circuitos, administração de turmas, atividades versionadas, entregas de áreas e avaliação manual estão implementados. A verificação assistida compara quantidades e tabela verdade sobre a entrega salva; **não atribui nota automaticamente**.
 
 ## Por onde começar
 
@@ -11,7 +11,7 @@ Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.17**, com Classroom em **SQLite 
 | Publicar atividades, entregar áreas e corrigir | [Atividades e entregas](classroom-learning.md) |
 | Usar portas, ajuda, tabelas verdade e inspeção | [Ensino e comandos](teaching.md) |
 | Encontrar componentes e fabricar na bancada | [Inventário e fabricação](crafting.md) |
-| Conferir o estado de aceite e os testes necessários | [Validação](validation.md) e [roteiro da candidata](classroom-rc17-acceptance.md) |
+| Conferir o estado de aceite e os testes necessários | [Validação](validation.md) e [roteiro da candidata](classroom-rc18-acceptance.md) |
 
 O fluxo principal de atividades/entregas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/resoluções. Os novos critérios e o relatório da rc.15 ainda exigem validação de interação. A rc.17 acrescenta acompanhamento por aluno e polimento da interface: execução automatizada e aceite no cliente são registrados separadamente, sem inferir aprovação estável. Consulte [resultados e evidências](validation.md).
 

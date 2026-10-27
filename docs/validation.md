@@ -2,7 +2,7 @@
 
 ## Estado atual e como interpretar os registros
 
-A candidata atual é **1.4.0-rc.17**, Hytale **0.7.4**, SQLite **v6**. A seção própria da candidata identifica a execução automatizada e a identidade do arquivo testado. O [roteiro rc.17](classroom-rc17-acceptance.md) concentra a regressão atual; este arquivo conserva também os registros das candidatas anteriores.
+A candidata atual é **1.4.0-rc.18**, Hytale **0.7.4**, SQLite **v6**. A seção própria da candidata identifica a execução automatizada e a identidade do arquivo testado. O [roteiro rc.18](classroom-rc18-acceptance.md) concentra a regressão atual; este arquivo conserva também os registros das candidatas anteriores.
 
 | Área | Evidência disponível | O que continua separado |
 | --- | --- | --- |
@@ -275,3 +275,7 @@ O [roteiro rc.17](classroom-rc17-acceptance.md) cobre progresso por aluno, tabel
 A rc.17 passou uma rodada final de `fullCheck`: 922 testes Java, 38 Python e 90 verificações nativas (63 criação + 27 após reinício), sem falhas. Build **1.4.0-rc.17+1ee2a26cc4dc**, revisão `a8e231672b57`, compilação limpa; [registro completo](evidence/classroom/2026-10-27-rc17-server.json). A [comparação de desempenho](evidence/classroom/2026-10-27-rc17-performance.json) usa o mesmo harness administrativo de 25 membros nos JARs preservados rc.16/rc.17, três rodadas alternadas, sem clientes. Não substitui o [aceite rc.17](classroom-rc17-acceptance.md).
 
 CI Windows/Linux aprovada na mesma revisão: [execução 40492988939](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40492988939). O ZIP final acrescenta estas evidências sem regenerar o JAR testado.
+
+## Correção rc.18 — falha no carregamento do cliente
+
+O [log do computador secundário](evidence/classroom/2026-10-27-rc17-client.md) confirma que a rc.17 não permitiu entrar no mundo: `ClassroomRow.ui` usava `HorizontalAlignment: Right`, rejeitado como LabelAlignment. A rc.18 usa `End` e valida o enum literal nas fontes e no JAR. A regressão detecta o problema no próprio JAR rc.17 preservado. Resultados automatizados da candidata corrigida e reteste no jogo são separados no [roteiro rc.18](classroom-rc18-acceptance.md).
