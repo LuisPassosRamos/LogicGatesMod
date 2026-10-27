@@ -6,7 +6,6 @@ All items share an orthographic camera, soft directional light and transparent c
 import argparse
 import json
 import math
-from pathlib import Path
 
 from project_config import ROOT
 from generate_terminal_assets import rotate

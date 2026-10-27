@@ -4,7 +4,7 @@ from copy import deepcopy
 import json
 
 from generate_cable_assets import RESOURCES, THICKNESS, box
-from generate_terminal_assets import BODY_SCALE, hitboxes, read
+from generate_terminal_assets import BODY_SCALE, hitboxes
 from workshop_material import atlas, apply_surface, gate_role, ITEMS
 
 from gate_catalog import GATES
