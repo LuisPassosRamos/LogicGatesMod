@@ -254,3 +254,16 @@ Uma rodada final de `fullCheck` aprovada, log `build/tmp/rc15-fullCheck.log`; te
 Os [testes de cliente rc.15](classroom-rc15-acceptance.md) continuam pendentes. JAR/ZIP rc.14 preservados; documentação posterior empacotada sem recompilar o JAR verificado. Tags, merge e publicação estável permanecem explícitos.
 
 CI Windows/Linux do commit de produção `cc8da1b18d8847a20b9291043282987b9003fe0f` aprovada: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40427580938). O fechamento posterior apenas de documentação/evidências não repete essa bateria nem recompila o JAR testado.
+
+
+## Polimento técnico e documental — rc.16
+
+Candidata de manutenção, sem novo esquema, layout, comandos ou critérios. A [revisão](reviews/2026-10-27-project-polish.md) registra infraestrutura SQLite compartilhada, orientação única das portas, organização do controlador/validador, três wrappers sem consumidores e dois imports removidos. Guias atuais e roadmap foram reconciliados com a implementação; os registros históricos anteriores e seus anchors permanecem intactos.
+
+Build **1.4.0-rc.16+922db3324774**, revisão de produção `dd67acbe89ff`, compilação limpa. JAR SHA-256 `0cc156676d12971a749bd68241ecb02bb763fdf509309cbb91114ed1ac83ef08`. A [evidência](evidence/classroom/2026-10-27-rc16-server.json) registra **910 JUnit**, zero falhas/erros/ignorados, **38 Python**, **296 chaves por idioma** e **90 verificações nativas** (63 criação, 27 após reinício real). Os 167 testes direcionados anteriores passaram; a rodada final única de `fullCheck` foi aprovada em 3 min 23 s. Logs: `build/tmp/rc16-targeted.log` e `build/tmp/rc16-fullCheck.log`.
+
+As regressões novas cobrem falha de configuração/fechamento da conexão, binding/paginação, rollback em erro de ação/commit, preservação da causa, limpeza do editor após revogação e orientação inclinada. As regressões existentes de leitura mantêm uma conexão/até três SELECTs, equivalência de papéis e snapshot concorrente. A prova nativa confronta topologia e snapshot, mantém fallback seguro e recusa inclinação não reproduzível. Testes/harnesses não são empacotados no mod.
+
+O [roteiro rc.16](classroom-rc16-acceptance.md) exige regressão curta de cliente; o aceite específico dos critérios/relatório rc.15 continua separado. Esta execução não comprova renderização nem capacidade de jogadores. Artefatos rc.15 preservados com os checksums anteriores. Documentação/evidências finais são incorporadas ao ZIP mantendo o JAR exato testado; nenhuma tag, merge ou publicação estável.
+
+CI Windows/Linux aprovada no commit `dd67acbe89ff639765e8e1be496e26eca79606f7`: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40444170877). O fechamento posterior apenas de documentação/evidências não repete a bateria nem recompila o JAR testado.
