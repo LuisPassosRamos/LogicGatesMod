@@ -55,6 +55,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private final LearningTruthTable truth=new LearningTruthTable();
     private LearningEditorSnapshot initialEditor;
     private Event pendingNavigation,afterSaveNavigation;
+    private record DraftDeletion(UUID activity,long revision,Message title) { }
+    private DraftDeletion draftDeletion;
     private boolean skipLeaveGuard,copyConfirm,truthHelp,showDelivery,showStatement=true;
     private int editorSection;
     private String tableReplacement;
@@ -62,7 +64,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private sisso.logicsim.classroom.domain.ClassroomViews.Overview overview=sisso.logicsim.classroom.domain.ClassroomViews.Overview.EMPTY;
     private Map<UUID,sisso.logicsim.classroom.domain.ClassroomViews.ActivityProgress> catalogProgress=Map.of();
     private static final Set<String> LEAVE_ACTIONS=Set.of("Back","Close","Reload","Activities","New","Filter","Previous","Next","Select","CancelEdit","Archive","Restore","Students");
-    private static final String[] ACTIONS={"New","Activities","Previous","Next","Edit","CancelEdit","SaveDraft","Publish","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard","Verify","SectionBasics","SectionComponents","SectionTable","SectionBasicsActive","SectionComponentsActive","SectionTableActive","TruthToggle","TruthMode","TruthAnd","TruthHelp","TruthPrevious","TruthNext","TruthConfirmChange","TruthCancelChange","SaveAndLeave","DiscardChanges","KeepEditing","ConfirmCopy","CancelCopy","ShowStatement","ShowSubmission"};
+    private static final String[] ACTIONS={"New","Activities","Previous","Next","Edit","CancelEdit","SaveDraft","Publish","Archive","Restore","DeleteDraft","ConfirmDeleteDraft","CancelDeleteDraft","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard","Verify","SectionBasics","SectionComponents","SectionTable","SectionBasicsActive","SectionComponentsActive","SectionTableActive","TruthToggle","TruthMode","TruthAnd","TruthHelp","TruthPrevious","TruthNext","TruthConfirmChange","TruthCancelChange","SaveAndLeave","DiscardChanges","KeepEditing","ConfirmCopy","CancelCopy","ShowStatement","ShowSubmission"};
     private static final String[] FIELDS={"TitleField","DescriptionField","ValueField","ScoreField","FeedbackField"};
     public LearningPage(PlayerRef player,ClassroomRuntime runtime,World world,UUID activity,UUID submission) {
         super(player,CustomPageLifetime.CanDismiss,Event.CODEC);this.runtime=runtime;this.world=world;this.areas=LogicSimPlugin.getAreas();
@@ -83,7 +85,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         for (String action : ACTIONS) {
             String eventAction=action.endsWith("Active")?action.substring(0,action.length()-6):action;
             EventData fields = switch (eventAction) {
-                case "SaveDraft", "Publish" -> activityFields(eventAction);
+                case "SaveDraft", "Publish", "DeleteDraft" -> activityFields(eventAction);
                 case "SaveGrade" -> EventData.of("Action", eventAction)
                         .append("@Score", "#ScoreField.Value").append("@Feedback", "#FeedbackField.Value");
                 default -> LEAVE_ACTIONS.contains(eventAction)?activityFields(eventAction):EventData.of("Action", eventAction).append("@TruthTable","#TruthTableField.Value");
@@ -149,9 +151,15 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         UUID a=activityId,who=studentId,selected=submissionId;boolean showStudents=students;int number=page,history=revisionPage;var selectedFilter=filter;
         var review=areas.review(playerRef.getUuid());
         runtime.learn(s->{
-            var ctx=s.context(playerRef.getUuid());var catalog=showStudents && ctx.teacher() && a!=null?null:s.catalog(playerRef.getUuid(),selectedFilter,number);
+            var ctx=s.context(playerRef.getUuid());
+            Activity activity=null;
+            if(a!=null)try{activity=s.activity(playerRef.getUuid(),a);}catch(ClassroomException ex){
+                if(ex.reason()!=ClassroomException.Reason.NOT_FOUND)throw ex;
+                var fallback=s.catalog(playerRef.getUuid(),selectedFilter,0);
+                return new Data(ctx,fallback.rows(),null,null,new Page<Submission>(List.of(),0,false),null,null,fallback,null,null);
+            }
+            var catalog=showStudents && ctx.teacher() && a!=null?null:s.catalog(playerRef.getUuid(),selectedFilter,number);
             Page<?> list=catalog==null?s.students(playerRef.getUuid(),a,number):catalog.rows();
-            Activity activity=a==null?null:s.activity(playerRef.getUuid(),a);
             UUID target=ctx.teacher()?who:playerRef.getUuid();
             Submission chosen=selected==null?null:s.submission(playerRef.getUuid(),selected);
             if(chosen!=null && a!=null && !chosen.activity().equals(a))chosen=null;
@@ -167,6 +175,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             if(!access.current(stamp)){busy=false;refresh(ref,store,false,null);return;}
             busy=false;validated=stamp;
             if(failure!=null){fail(ref,store,failure);return;}
+            if(a!=null && data.activity==null){deletedDraft();clearPreview();}
             context=data.context;rows=data.rows;activity=data.activity;studentId=data.student;revisions=data.revisions;submission=data.selected;submittedVersion=data.version;discardDrafts=false;
             if(data.catalog!=null){overview=data.catalog.overview();catalogProgress=data.catalog.progress();}
             reviewInfo=data.review;
@@ -185,7 +194,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     void render(UICommandBuilder c,UIEventBuilder e,boolean reset,AreaSessions.Session selection,boolean hasReview) {
         boolean teacher = context.teacher();
         boolean editor = editingActivity();
-        setLifetime(editor?CustomPageLifetime.CantClose:CustomPageLifetime.CanDismiss);
+        boolean decision=pendingNavigation!=null || draftDeletion!=null;
+        setLifetime(editor || decision?CustomPageLifetime.CantClose:CustomPageLifetime.CanDismiss);
         c.set("#Body.Visible", true);
         c.set("#Details.Visible", true);
         controls(c, false);
@@ -202,9 +212,11 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         renderActions(c, teacher, editor, selection, hasReview);
         if(editor && reset)renderEditor(c);
         c.set("#BasicsPanel.Visible",editorSection==0);c.set("#ComponentsPanel.Visible",editorSection==1);c.set("#TablePanel.Visible",editorSection==2);
-        c.set("#EditorTabs.Visible",editor && pendingNavigation==null);
-        c.set("#DetailsScroll.Visible",pendingNavigation==null);
-        c.set("#ActionDock.Visible",pendingNavigation==null);
+        c.set("#EditorTabs.Visible",editor && !decision);
+        c.set("#DetailsScroll.Visible",!decision);
+        c.set("#ActionDock.Visible",!decision);
+        c.set("#DeleteDraftPrompt.Visible",draftDeletion!=null);
+        if(draftDeletion!=null)c.set("#DeleteDraftContext.TextSpans",text("learning.deleteDraftContext").param("activity",draftDeletion.title()));
         String[] sections={"Basics","Components","Table"};
         for(int i=0;i<sections.length;i++){
             c.set("#Section"+sections[i]+".Visible",i!=editorSection);
@@ -222,6 +234,10 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             if (!editor) renderActivity(c, teacher && !students);
         }
         renderSubmission(c, teacher, reset);
+        if(draftDeletion!=null){
+            controls(c,true);
+            c.set("#ConfirmDeleteDraft.Disabled",false);c.set("#CancelDeleteDraft.Disabled",false);
+        }
     }
 
     private void renderList(UICommandBuilder c, UIEventBuilder e, boolean teacher) {
@@ -286,11 +302,12 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         c.set("#Editor.Visible", editor && pendingNavigation==null);
         c.set("#Read.Visible", activity != null && !editor);
         c.set("#ActivityActions.Visible", editor && pendingNavigation==null);
-        c.set("#CatalogActions.Visible", catalog);
+        c.set("#CatalogActions.Visible", catalog || canDeleteDraft());
         c.set("#Edit.Visible", catalog && !editor && !activity.archived());
         c.set("#CancelEdit.Visible", editor && !creating);
         c.set("#Restore.Visible", catalog && activity.archived());
         c.set("#Archive.Visible", catalog && !activity.archived());
+        c.set("#DeleteDraft.Visible",canDeleteDraft());
         c.set("#Students.Visible", catalog && !editor);
         c.set("#Deliver.Visible", !teacher && activity != null);
         c.set("#SubmitArea.Visible", !teacher && selection != null && selection.submission == null
@@ -416,6 +433,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         c.set("#ReadMeta.TextSpans", metadata);
     }
     Message guidance() {
+        if(draftDeletion!=null)return text("learning.deleteDraftHelp");
         if(pendingNavigation!=null)return text("editor.leaveHelp");
         if(editingActivity())return text(switch(editorSection){
             case 1->"editor.componentsHelp";case 2->"editor.tableHelp";default->"editor.basicsHelp";
@@ -450,6 +468,17 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         if(!active(ref,store))return;
         String action=event.action==null?"":event.action;
         if("Filter".equals(action) && filter.name().equals(event.filter)){acknowledge(ref,store);return;}
+        if(draftDeletion!=null && access.current(validated)) {
+            if(busy || saving){acknowledge(ref,store);return;}
+            if("CancelDeleteDraft".equals(action)){cancelDraftDeletion();publishRendered(ref,store,false,null);return;}
+            if("ConfirmDeleteDraft".equals(action) && context!=null && context.teacher()){
+                var request=draftDeletion;
+                mutate(ref,store,runtime.learn(s->{s.deleteDraft(playerRef.getUuid(),request.activity(),request.revision());return null;}),
+                        ignored->deletedDraft(),true,true);
+                return;
+            }
+            acknowledge(ref,store);return;
+        }
         if(pendingNavigation!=null && access.current(validated)) {
             if("KeepEditing".equals(action)){pendingNavigation=null;publishRendered(ref,store,false,null);return;}
             if("DiscardChanges".equals(action)){var next=pendingNavigation;pendingNavigation=null;dispatchNavigation(ref,store,next);return;}
@@ -496,6 +525,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                     submissionId=null;revisionPage=0;clearPreview();refresh(ref,store,true,null);
                 }
                 case "SaveDraft","Publish"->saveActivity(ref,store,event,"Publish".equals(action));
+                case "DeleteDraft"->{if(requestDraftDeletion(event))publishRendered(ref,store,false,null);else acknowledge(ref,store);}
                 case "Archive","Restore"->{if(context.teacher() && !students && activity!=null && !creating){var a=activity;long revision=editingActivity()?editRevision:a.revision();mutate(ref,store,runtime.learn(s->s.archive(playerRef.getUuid(),a.id(),revision,"Archive".equals(action))),ignored->{editing=false;},true,true);}}
                 case "Students"->{if(context.teacher() && activity!=null && !creating){editing=false;students=true;showStatement=false;studentId=null;submissionId=null;page=0;clearPreview();refresh(ref,store,true,null);}}
                 case "ShowStatement"->{showDelivery=false;showStatement=!context.teacher() || !showStatement;publishRendered(ref,store,false,null);}
@@ -519,6 +549,21 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     }
     private void dispatchNavigation(Ref<EntityStore> ref,Store<EntityStore> store,Event event) {
         skipLeaveGuard=true;try{handleDataEvent(ref,store,event);}finally{skipLeaveGuard=false;}
+    }
+    private boolean canDeleteDraft() {
+        return context!=null && context.teacher() && !students && activity!=null && activity.published()==null && activity.draft()!=null;
+    }
+    boolean requestDraftDeletion(Event event) {
+        if(!canDeleteDraft() || pendingNavigation!=null || draftDeletion!=null)return false;
+        String title=editingActivity()?Objects.requireNonNullElse(event.title,activity.title()):activity.title();
+        draftDeletion=new DraftDeletion(activity.id(),editingActivity()?editRevision:activity.revision(),activityTitle(title,activity.id()));
+        return true;
+    }
+    void cancelDraftDeletion() { draftDeletion=null; }
+    void deletedDraft() {
+        creating=false;editing=false;students=false;activity=null;activityId=null;studentId=null;submissionId=null;
+        draftDeletion=null;pendingNavigation=null;afterSaveNavigation=null;tableReplacement=null;initialEditor=null;
+        editorSection=0;page=0;revisionPage=0;truth.load("");
     }
     private void saveActivity(Ref<EntityStore> ref,Store<EntityStore> store,Event event,boolean publish) {
         if(!editingActivity()){acknowledge(ref,store);return;}
@@ -641,7 +686,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     }
     void startCreating() {
         activity=null;activityId=null;students=false;creating=true;editing=true;studentId=null;submissionId=null;
-        page=0;revisionPage=0;editorSection=0;pendingNavigation=null;afterSaveNavigation=null;
+        page=0;revisionPage=0;editorSection=0;pendingNavigation=null;afterSaveNavigation=null;draftDeletion=null;
     }
 
     void saved(boolean published) {
@@ -660,7 +705,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         }
         editing = false;
         students = false;
-        editorSection=0;showDelivery=false;showStatement=true;tableReplacement=null;pendingNavigation=null;
+        editorSection=0;showDelivery=false;showStatement=true;tableReplacement=null;pendingNavigation=null;draftDeletion=null;
         studentId = null;
         submissionId = null;
         page = 0;
@@ -672,8 +717,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         creating = false;
         editing = false;
         copyConfirm=false;reviewInfo=null;selectedStudent=null;
-        setLifetime(CustomPageLifetime.CanDismiss);truth.load("");initialEditor=null;pendingNavigation=null;afterSaveNavigation=null;tableReplacement=null;
-        c.clear("#TruthRows");c.set("#UnsavedPrompt.Visible",false);c.set("#CopyBanner.Visible",false);c.set("#CopyConfirm.Visible",false);c.set("#CatalogOverview.Visible",false);
+        setLifetime(CustomPageLifetime.CanDismiss);truth.load("");initialEditor=null;pendingNavigation=null;afterSaveNavigation=null;tableReplacement=null;draftDeletion=null;
+        c.clear("#TruthRows");c.set("#UnsavedPrompt.Visible",false);c.set("#DeleteDraftPrompt.Visible",false);c.set("#CopyBanner.Visible",false);c.set("#CopyConfirm.Visible",false);c.set("#CatalogOverview.Visible",false);
         for (String field : FIELDS) c.set("#" + field + ".Value", "");
         LearningDeadline.render(c, null, currentYear());
         LearningVerification.render(c, VerificationRules.EMPTY);

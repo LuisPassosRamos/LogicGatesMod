@@ -162,6 +162,18 @@ public final class LearningStore {
         return write(c->{ var ctx=context(c,actor); teacher(ctx); checkRevision(activity(c,ctx,id),revision);
             execute(c,"UPDATE learning_activities SET archived=?,revision=revision+1 WHERE id=?",archived?1:0,id); return activity(c,ctx,id); });
     }
+    /** Only never-published activities can be removed; immutable versions and student history are retained. */
+    public void deleteDraft(UUID actor,UUID id,long revision) {
+        write(c->{
+            var ctx=context(c,actor);teacher(ctx);
+            var current=activity(c,ctx,id);checkRevision(current,revision);
+            if(current.published()!=null || one(c,"SELECT 1 FROM learning_versions WHERE activity_id=? LIMIT 1",r->r.getInt(1),id).isPresent())
+                throw new LearningException(PUBLISHED_ACTIVITY);
+            if(current.draft()==null)throw new LearningException(NO_DRAFT);
+            execute(c,"DELETE FROM learning_activities WHERE id=? AND classroom_id=?",id,ctx.classroom());
+            return null;
+        });
+    }
     private static void checkRevision(Activity activity,long expected) { if(activity.revision()!=expected) throw new ClassroomException(STALE); }
     public Publication publication(UUID actor, UUID activity, int number) {
         return read(c -> {

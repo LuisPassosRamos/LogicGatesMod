@@ -35,6 +35,54 @@ class LearningStoreTest {
     Activity published() { var a=store.create(teacher);a=store.save(teacher,a.id(),a.revision(),new Draft("A","Statement",clock.millis()+60000,1000L));return store.publish(teacher,a.id(),a.revision()); }
     AreaSnapshot snapshot() { return new AreaSnapshot(1,2,1,1,List.of(new AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null))); }
     Submission submit(Activity a) { return store.submit(student,a.id(),a.published().number(),membership,UUID.randomUUID(),files.write(snapshot())); }
+    @Test void deletingIncompleteAndArchivedDraftsUpdatesCatalogAndSurvivesReopen() {
+        var blank=store.create(teacher,Draft.empty(),false);
+        var kept=store.create(teacher,new Draft("Keep","",null,null),false);
+        assertEquals(2,store.catalog(teacher,LearningStore.Filter.ALL,0).overview().drafts());
+        store.deleteDraft(teacher,blank.id(),blank.revision());
+        assertEquals(NOT_FOUND,assertThrows(ClassroomException.class,()->store.activity(teacher,blank.id())).reason());
+        assertEquals(1,store.catalog(teacher,LearningStore.Filter.DRAFT,0).overview().drafts());
+        var archived=store.archive(teacher,kept.id(),kept.revision(),true);
+        store.deleteDraft(teacher,archived.id(),archived.revision());
+        var reopened=new LearningStore(dir.resolve("classroom.db"),id->id.equals(teacher),LearningLimits.DEFAULT,clock);
+        assertTrue(reopened.activities(teacher,LearningStore.Filter.ALL,0).items().isEmpty());
+        assertTrue(reopened.activities(teacher,LearningStore.Filter.ARCHIVED,0).items().isEmpty());
+        assertTrue(reopened.contentIds().isEmpty());
+    }
+    @Test void draftDeletionRejectsForeignStudentsRevokedPermissionAndStaleConfirmation() {
+        var draft=store.create(teacher,Draft.empty(),false);
+        assertEquals(FORBIDDEN,assertThrows(ClassroomException.class,()->store.deleteDraft(student,draft.id(),draft.revision())).reason());
+        var repo=new SqliteClassroomRepository(dir.resolve("classroom.db"));
+        new ClassroomService(repo,id->true).create(other,"Other","");
+        var both=new LearningStore(dir.resolve("classroom.db"),id->true,LearningLimits.DEFAULT,clock);
+        assertEquals(NOT_FOUND,assertThrows(ClassroomException.class,()->both.deleteDraft(other,draft.id(),draft.revision())).reason());
+        var changed=store.save(teacher,draft.id(),draft.revision(),new Draft("Changed","Keep",null,1000L));
+        assertEquals(STALE,assertThrows(ClassroomException.class,()->store.deleteDraft(teacher,draft.id(),draft.revision())).reason());
+        permission.set(false);
+        assertEquals(FORBIDDEN,assertThrows(ClassroomException.class,()->store.deleteDraft(teacher,changed.id(),changed.revision())).reason());
+        permission.set(true);assertEquals(changed,store.activity(teacher,changed.id()));
+    }
+    @Test void publishedActivityCannotBeDeletedEvenWithPrivateEditsAndArchivedHistory() {
+        var activity=published();var submitted=submit(activity);var graded=store.grade(teacher,submitted.id(),0,500,"Keep grade");
+        var edited=store.save(teacher,activity.id(),activity.revision(),Draft.empty());
+        assertEquals(PUBLISHED_ACTIVITY,assertThrows(LearningException.class,()->store.deleteDraft(teacher,edited.id(),edited.revision())).code());
+        var archived=store.archive(teacher,edited.id(),edited.revision(),true);
+        assertEquals(PUBLISHED_ACTIVITY,assertThrows(LearningException.class,()->store.deleteDraft(teacher,archived.id(),archived.revision())).code());
+        assertEquals(graded,store.submission(teacher,submitted.id()));
+        assertEquals(activity.published(),store.publication(teacher,activity.id(),1));
+        assertEquals(snapshot(),files.read(submitted.content(),submitted.checksum()));
+    }
+    @Test void concurrentPublicationAndDeletionCannotRemovePublishedHistory() throws Exception {
+        var draft=store.create(teacher,new Draft("Race","Statement",clock.millis()+60000,1000L),false);
+        var gate=new CountDownLatch(1);
+        try(var pool=Executors.newFixedThreadPool(2)) {
+            var deletion=pool.submit(()->{gate.await();try{store.deleteDraft(teacher,draft.id(),draft.revision());return true;}catch(ClassroomException conflict){assertTrue(Set.of(STALE,NOT_FOUND).contains(conflict.reason()));return false;}});
+            var publication=pool.submit(()->{gate.await();try{store.publish(teacher,draft.id(),draft.revision());return true;}catch(ClassroomException conflict){assertEquals(NOT_FOUND,conflict.reason());return false;}});
+            gate.countDown();boolean deleted=deletion.get(),published=publication.get();assertNotEquals(deleted,published);
+            if(published)assertNotNull(store.activity(teacher,draft.id()).published());
+            else assertEquals(NOT_FOUND,assertThrows(ClassroomException.class,()->store.activity(teacher,draft.id())).reason());
+        }
+    }
     @Test void firstExplicitSaveAndPublicationAreAtomicAndCatalogKeepsStudentMetadataPrivate() {
         var invalid=new Draft("New","Statement",clock.millis()-1,1000L);
         assertThrows(LearningException.class,()->store.create(teacher,invalid,true));

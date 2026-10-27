@@ -16,6 +16,63 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Transport/codec regression, not a substitute for testing the native client. */
 class LearningPageTest {
     private static final UUID CLASSROOM=UUID.randomUUID(),ACTIVITY=UUID.randomUUID(),STUDENT=UUID.randomUUID();
+    @Test void draftDeletionRequiresConfirmationAndCancelPreservesTheUnsavedEditor() throws Exception {
+        var draft=new Activity(ACTIVITY,CLASSROOM,7,false,new Draft("Saved","Statement",null,1000L),null);
+        var page=page(true,false,draft,null);assertTrue(page.beginEditing());
+        page.render(new UICommandBuilder(),new UIEventBuilder(),true,null,false);
+        var event=new LearningPage.Event();event.title="Unsaved %server.fake title";
+        assertTrue(page.requestDraftDeletion(event));assertFalse(page.requestDraftDeletion(event));
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);assertWidgetProperties(c);
+        assertTrue(value(c,"#DeleteDraftPrompt.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#DeleteDraftContext.TextSpans").toString().contains(event.title));
+        assertFalse(value(c,"#DetailsScroll.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#ActionDock.Visible").asBoolean().getValue());
+        assertEquals(com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime.CantClose,page.getLifetime());
+        assertEquals("server.logicgates.learning.deleteDraftHelp",page.guidance().getMessageId());
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
+        page.cancelDraftDeletion();c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertFalse(value(c,"#DeleteDraftPrompt.Visible").asBoolean().getValue());assertTrue(page.editingActivity());
+        assertTrue(value(c,"#Editor.Visible").asBoolean().getValue());assertTrue(value(c,"#DeleteDraft.Visible").asBoolean().getValue());
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->"#TitleField.Value".equals(x.selector)));
+        var bindings=new UIEventBuilder();page.build(null,new UICommandBuilder(),bindings,null);
+        for(String action:List.of("ConfirmDeleteDraft","CancelDeleteDraft")){
+            var binding=Arrays.stream(bindings.getEvents()).filter(x->("#"+action).equals(x.selector)).findFirst().orElseThrow();
+            assertFalse(BsonDocument.parse(binding.data).containsKey("Target"));
+        }
+    }
+    @Test void onlySavedNeverPublishedDraftsOfferDeletionIncludingFirstSaveAndArchivedDraft() throws Exception {
+        var draft=new Activity(ACTIVITY,CLASSROOM,1,false,Draft.empty(),null);
+        var publication=new Publication(ACTIVITY,1,"Published","Statement",Long.MAX_VALUE,1000,1);
+        for(var activity:List.of(draft,new Activity(ACTIVITY,CLASSROOM,2,true,Draft.empty(),null),new Activity(ACTIVITY,CLASSROOM,3,false,Draft.empty(),publication))){
+            for(boolean teacher:new boolean[]{false,true}){
+                var page=page(teacher,false,activity,null);
+                if(!teacher && activity.published()==null){assertFalse(page.requestDraftDeletion(new LearningPage.Event()));continue;}
+                var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+                boolean allowed=teacher && activity.published()==null;
+                assertEquals(allowed,value(c,"#DeleteDraft.Visible").asBoolean().getValue());
+                assertEquals(allowed,page.requestDraftDeletion(new LearningPage.Event()));
+            }
+        }
+        var page=page(true,false,null,null);page.startCreating();
+        assertFalse(page.requestDraftDeletion(new LearningPage.Event()));
+        page.created(draft);var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#CatalogActions.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#DeleteDraft.Visible").asBoolean().getValue());
+        assertTrue(page.requestDraftDeletion(new LearningPage.Event()));
+        c=new UICommandBuilder();page.discardEditor(c);
+        assertFalse(value(c,"#DeleteDraftPrompt.Visible").asBoolean().getValue());
+    }
+    @Test void deletedDraftReturnsToFirstCatalogPageAndKeepsTheChosenFilter() throws Exception {
+        var draft=new Activity(ACTIVITY,CLASSROOM,1,false,Draft.empty(),null);
+        var page=page(true,false,draft,null);set(page,"page",2);set(page,"filter",LearningStore.Filter.DRAFT);
+        assertTrue(page.requestDraftDeletion(new LearningPage.Event()));page.deletedDraft();
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertEquals("DRAFT",value(c,"#Filter.Value").asString().getValue());
+        assertFalse(value(c,"#DeleteDraftPrompt.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#DeleteDraft.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#CatalogOverview.Visible").asBoolean().getValue());
+        var field=LearningPage.class.getDeclaredField("page");field.setAccessible(true);assertEquals(0,field.get(page));
+    }
     @Test void eachEditorSectionKeepsItsActiveNavigationAndContextWithoutResettingDraftFields() throws Exception {
         var page=page(true,false,null,null);var start=LearningPage.class.getDeclaredMethod("startCreating");start.setAccessible(true);start.invoke(page);
         page.render(new UICommandBuilder(),new UIEventBuilder(),true,null,false);

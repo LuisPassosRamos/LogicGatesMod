@@ -111,6 +111,10 @@ final class ClassroomText {
         c.set("#CancelEdit.Text", Message.translation("server.logicgates.learning.cancelEdit"));
         c.set("#Archive.Text", Message.translation("server.logicgates.learning.archive"));
         c.set("#Restore.Text", Message.translation("server.logicgates.learning.restore"));
+        c.set("#DeleteDraft.Text", Message.translation("server.logicgates.learning.deleteDraft"));
+        c.set("#ConfirmDeleteDraft.Text", Message.translation("server.logicgates.learning.confirmDeleteDraft"));
+        c.set("#CancelDeleteDraft.Text", Message.translation("server.logicgates.classroom.cancel"));
+        c.set("#DeleteDraftWarning.TextSpans", Message.translation("server.logicgates.learning.deleteDraftWarning"));
         c.set("#Students.Text", Message.translation("server.logicgates.learning.students"));
         c.set("#Deliver.Text", Message.translation("server.logicgates.learning.deliver"));
         c.set("#SubmitArea.Text", Message.translation("server.logicgates.learning.submitArea"));

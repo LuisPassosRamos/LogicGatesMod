@@ -32,9 +32,17 @@ final class AreaServerChecks {
     CompletableFuture<Void> run(World world) {
         fixture(world);
         return gates.afterTicks(world,()->{}).thenCompose(ignored->gates.inWorld(world,()->{
-            long start=System.nanoTime();var snapshot=NativeAreaAdapter.capture(world,SOURCE,LIMITS);
+            var sessions=new AreaSessions();
+            var session=sessions.begin(UUID.randomUUID(),world.getWorldConfig().getUuid(),new Object(),UUID.randomUUID(),UUID.randomUUID(),1,null,LIMITS);
+            session.first=new AreaSessions.Point(SOURCE.x(),SOURCE.y(),SOURCE.z());
+            session.second=new AreaSessions.Point(SOURCE.x()+SOURCE.width()-1,SOURCE.y(),SOURCE.z()+SOURCE.depth()-1);
+            var selected=sessions.bounds(session,LIMITS);
+            check(selected.equals(SOURCE),"floor corners include exactly one extra layer above the highest clicked block");
+            long start=System.nanoTime();var snapshot=NativeAreaAdapter.capture(world,selected,LIMITS);
             measurements.put("smallCaptureMs",millis(start));
+            check(snapshot.blocks().stream().anyMatch(b->b.y()==0 && b.asset().equals("Rock_Stone")),"selected floor is retained");
             check(snapshot.blocks().stream().anyMatch(b->Boolean.TRUE.equals(b.leverOn())),"on lever captured");
+            passed.add("area selection: floor corners capture the support and circuit layer without support pillars");
             var nodes=NativeAreaAdapter.verificationNodes(snapshot);
             long directional=0;
             for(var entry:nodes.entrySet())if(entry.getValue().isGate()){

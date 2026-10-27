@@ -14,7 +14,10 @@ public final class AreaSessions {
                     || (long)x+width-1>Integer.MAX_VALUE || (long)y+height-1>Integer.MAX_VALUE || (long)z+depth-1>Integer.MAX_VALUE)throw new LearningException(AREA_LIMIT);
         }
         public static Bounds between(Point a,Point b,LearningLimits limits) {
-            long w=Math.abs((long)a.x-b.x)+1,h=Math.abs((long)a.y-b.y)+1,d=Math.abs((long)a.z-b.z)+1;
+            return between(a,b,limits,0);
+        }
+        private static Bounds between(Point a,Point b,LearningLimits limits,int extraTop) {
+            long w=Math.abs((long)a.x-b.x)+1,h=Math.abs((long)a.y-b.y)+1+extraTop,d=Math.abs((long)a.z-b.z)+1;
             if(w>limits.width() || h>limits.height() || d>limits.depth()) throw new LearningException(AREA_LIMIT);
             return new Bounds(Math.min(a.x,b.x),Math.min(a.y,b.y),Math.min(a.z,b.z),(int)w,(int)h,(int)d);
         }
@@ -49,7 +52,8 @@ public final class AreaSessions {
     public Bounds bounds(Session session,LearningLimits limits) {
         if(clock.millis()>=session.expires) throw new LearningException(SELECTION_EXPIRED);
         if(session.first==null || session.second==null) throw new LearningException(NO_SELECTION);
-        return Bounds.between(session.first,session.second,limits);
+        // Submission corners may be clicked on the floor below the circuit. Paste origins stay exact.
+        return Bounds.between(session.first,session.second,limits,session.submission==null?1:0);
     }
     public boolean active(Session session) { return sessions.get(session.actor)==session && clock.millis()<session.expires; }
     public void cancel(UUID actor) { sessions.remove(actor); }

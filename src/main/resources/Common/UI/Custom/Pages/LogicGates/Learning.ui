@@ -75,6 +75,14 @@ $C.@Container {
             $C.@TextButton #SectionTableActive { @Text = ""; Anchor: (Height: 48); Visible: false; }
           }
         }
+        Group #DeleteDraftPrompt { Visible: false; LayoutMode: Top; Anchor: (Left: 0, MaxWidth: 900, Bottom: 12); Padding: (Full: 16); Background: (Color: #233047);
+          Label #DeleteDraftContext { Anchor: (Bottom: 10); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
+          Label #DeleteDraftWarning { Text: ""; Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); }
+          Group { LayoutMode: LeftWrap;
+            $C.@CancelTextButton #ConfirmDeleteDraft { @Text = ""; Anchor: (Width: 260, Right: 8, Bottom: 6, Height: 48); }
+            $C.@SecondaryTextButton #CancelDeleteDraft { @Text = ""; Anchor: (Width: 190, Bottom: 6, Height: 48); }
+          }
+        }
         Group #UnsavedPrompt { Visible: false; LayoutMode: Top; Anchor: (Left: 0, MaxWidth: 900, Bottom: 12); Padding: (Full: 16); Background: (Color: #233047);
           Label #UnsavedContext { Anchor: (Bottom: 10); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
           Label #UnsavedLabel { Text: ""; Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); }
@@ -334,7 +342,8 @@ $C.@Container {
             Anchor: (Bottom: 6);
             Visible: false;
             $C.@SecondaryTextButton #Archive { @Text = ""; Anchor: (Width: 190, Right: 8, Bottom: 6, Height: 48); Visible: false; }
-            $C.@SecondaryTextButton #Restore { @Text = ""; Anchor: (Width: 190, Bottom: 6, Height: 48); Visible: false; }
+            $C.@SecondaryTextButton #Restore { @Text = ""; Anchor: (Width: 190, Right: 8, Bottom: 6, Height: 48); Visible: false; }
+            $C.@CancelTextButton #DeleteDraft { @Text = ""; Anchor: (Width: 250, Bottom: 6, Height: 48); Visible: false; }
           }
           $C.@SecondaryTextButton #Students { @Text = ""; Anchor: (Bottom: 6, Height: 48); Visible: false; }
           $C.@TextButton #Deliver { @Text = ""; Anchor: (Bottom: 6, Height: 48); Visible: false; }
