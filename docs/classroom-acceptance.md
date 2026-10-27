@@ -19,11 +19,11 @@ Capturas, relatos e resultados automatizados permanecem como evidências datadas
 
 ## Estado atual
 
-**Candidata 1.4.0-rc.20 em preparação:** exclusão confirmada de rascunhos nunca publicados e uma camada extra na seleção de entrega implementadas. Hytale **0.7.4**, SQLite **v6**. A identidade e os resultados finais serão registrados após a validação. Os 11 ajustes da rc.19 permanecem incorporados; aceite de cliente atual pendente.
+**Candidata 1.4.0-rc.20 pronta para reteste:** exclusão confirmada de rascunhos nunca publicados e uma camada extra na seleção de entrega implementadas, com `fullCheck` e CI Windows/Linux aprovados. Hytale **0.7.4**, SQLite **v6**. Build **`1.4.0-rc.20+583de4f99bdc`**, revisão **`a7240c13f618b0128cd277a04bd0bdb8a0747bc9`**, compilação com `dirty=false`. Os 11 ajustes da rc.19 permanecem incorporados; aceite de cliente atual pendente.
 
 | Arquivo entregue para teste | SHA-256 / identificação |
 | --- | --- |
-| `build/libs/LogicGates-1.4.0-rc.20.jar` | A registrar após a validação final |
+| `build/libs/LogicGates-1.4.0-rc.20.jar` | `faebfb96b532e19ccd59d47af70e08c90d2b63ee103bb4010fa0c4cf2d3ee5dd` |
 | `build/releases/LogicGates-1.4.0-rc.20.zip` | Mesmo JAR validado, documentação final e checksum externo em `LogicGates-1.4.0-rc.20.zip.sha256`, ao lado do ZIP. |
 
 A rc.20 preserva os artefatos anteriores e o esquema/dados existentes. A exclusão atinge somente o rascunho confirmado de atividade nunca publicada. Não atribuir à nova candidata os resultados de cliente da anterior. A instalação de teste usa o JAR final identificado aqui, sem misturar versões em mods.
@@ -38,8 +38,8 @@ A rc.20 preserva os artefatos anteriores e o esquema/dados existentes. A exclus�
 | Atividade, entrega e correção com duas contas | [Fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md); [polimento rc.14 por relato](evidence/classroom/2026-10-26-rc14-client.md) | Histórico confirmado no escopo descrito. Novos critérios/progresso e casos complementares não são aprovados por esses relatos. |
 | Aluno, progresso, critérios e relatório atuais | Últimos lotes mostram zero alunos e zero entregas; usuário não dispõe de aluno neste momento | Testes com aluno, dados reais e verificação assistida continuam pendentes. Indisponibilidade de conta não é reprovação do recurso. |
 | Resolução e escala | Ambos os lotes rc.18: **1280×720 relatados**, escala de interface/SO não informada | Outros tamanhos, escala padrão/máxima e ocupação útil não medidos. Dimensões físicas dos PNGs não provam viewport ou escala. |
-| Automação da rc.19 | 927 Java, 44 Python, 90 verificações nativas; CI Windows/Linux aprovada | Aprovada nas camadas exercitadas. Não executa renderização/cliques do cliente nem valida idioma resolvido. |
-| Novos pedidos rc.20 | [Captura de rascunhos na rc.19](evidence/classroom/2026-10-27-rc19-ptbr-drafts.png) e relato do usuário em 27/10 | Exclusão e camada extra implementadas; validação automatizada final e reteste E08/D10 pendentes. |
+| Automação da rc.20 | 937 Java, 44 Python, 91 verificações nativas; [registro](evidence/classroom/2026-10-27-rc20-server.json) | Aprovada nas camadas exercitadas. Não executa renderização/cliques do cliente nem valida idioma resolvido. |
+| Novos pedidos rc.20 | [Captura de rascunhos na rc.19](evidence/classroom/2026-10-27-rc19-ptbr-drafts.png) e relato do usuário em 27/10 | Exclusão e camada extra implementadas; validação automatizada aprovada, reteste E08/D10 no cliente pendente. |
 
 Os 32 originais e seus hashes estão nos manifestos [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr/manifest.json) e [jogo em inglês](evidence/classroom/2026-10-27-rc18-en/manifest.json). Os lotes foram recebidos do computador secundário do trabalho. Variação de contagens entre imagens não comprova registro fantasma, nova gravação ou atualização correta após cada operação.
 
@@ -248,7 +248,13 @@ A massa serve para UI/paginação, não estimativa de jogadores suportados nem p
 
 ## Verificação automatizada
 
-**rc.20:** rodada direcionada/final em andamento. Os resultados desta candidata serão registrados aqui, sem converter testes de servidor em aceite de cliente.
+**rc.20:** `fullCheck` aprovado em **3 min 11 s**, com **937 testes Java** (zero falhas, erros ou ignorados), **44 Python**, **91 verificações nativas** (64 criação + 27 após reinício real) e verificações de projeto/assets/JAR/ZIP. **376 chaves por idioma**, dois idiomas e seis documentos UI. A rodada direcionada de Classroom passou com **184 testes**. [Registro integral](evidence/classroom/2026-10-27-rc20-server.json); logs locais `build/tmp/rc20-classroom.log` e `build/tmp/rc20-fullCheck.log`; relatório `build/reports/server-integration/20261027-183540-5092e2/summary.json`.
+
+As regressões exercitam exclusão persistida de rascunho incompleto/arquivado, autorização, turma, revisão antiga, disputa publicação/exclusão e conservação de publicação/entrega/nota. Testes UI conferem confirmação, cancelamento sem redefinir campos e retorno ao catálogo. No servidor nativo, os cantos no chão capturam apoio e componentes acima; limites, ordem/desnível e overflow têm regressões Java. A colagem docente e arquivos antigos não recebem outra camada. Interação real no cliente continua pendente.
+
+CI **Windows e Linux aprovada** na mesma revisão `a7240c13f618b0128cd277a04bd0bdb8a0747bc9`: [run 40587843831](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40587843831). Empacotamento final da documentação conferido com `verifyRelease`, sem recompilar o JAR validado; log local `build/tmp/rc20-release-final.log`.
+
+O fingerprint empacotado rc.20 `583de4f99bdc90ba2033869e24b9326967e8d933412fa20913ef86211b670b48` confere com as fontes de produção commitadas. JAR/ZIP rc.19 foram preservados byte a byte: respectivamente `2ef952bddde211103c78698524a8c4507f38ba442d66b0e58cbf3bbaa3a104ad` e `f7001a6f668240d479aca4906872837b7543f63cb12bf3b7f3c7f8ad66e2898a`. Atualizar o ZIP com documentação final conserva os bytes do JAR validado.
 
 **rc.19:** `fullCheck` aprovado em **3 min 5 s**, com **927 testes Java** (zero falhas, erros ou ignorados), **44 Python** e **90 verificações nativas** (63 criação + 27 após reinício real em outro processo). Projeto e distribuição aprovados: **370 chaves em cada um dos dois idiomas**, seis documentos UI e verificações de assets/ZIP. [Registro integral](evidence/classroom/2026-10-27-rc19-server.json); log local `build/tmp/rc19-fullCheck-final.log`; relatório `build/reports/server-integration/20261027-123118-0576c3/summary.json`.
 
@@ -319,5 +325,6 @@ Os antigos `classroom-rc6-acceptance.md` a `classroom-rc18-acceptance.md` foram 
 | [rc.18 automatizada](evidence/classroom/2026-10-27-rc18-server.json), [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr-client.md), [jogo em inglês](evidence/classroom/2026-10-27-rc18-en-client.md) | End corrigiu bloqueio nesta sessão; 32 capturas documentam apresentação e novos estados da tabela | Inglês reprovado por mistura, onze achados abertos; sem aluno ou outra resolução/escala registrada. |
 | [rc.19 automatizada](evidence/classroom/2026-10-27-rc19-server.json) | I18N-01 e UI-01–UI-10 implementados; 927 Java, 44 Python, 90 verificações nativas e CI Windows/Linux aprovados | Reteste do cliente nos dois idiomas, limites de tela/escala e casos com aluno continuam pendentes. |
 | [Captura rc.19 de rascunhos](evidence/classroom/2026-10-27-rc19-ptbr-drafts.png) | Referências distintas, seção ativa e reorganização/orientação do formulário visíveis; usuário solicita exclusão e camada extra na seleção | Evidência visual parcial em pt-BR; não comprova ações ou outros cenários. Pedidos implementados na rc.20, ainda sem reteste do cliente. |
+| [rc.20 automatizada](evidence/classroom/2026-10-27-rc20-server.json) | DRAFT-01/SELECT-01 implementados; 937 Java, 44 Python, 91 verificações nativas e CI Windows/Linux aprovados | Exclusão e seleção pelo chão ainda exigem E08/D10 no cliente. |
 
-A coleta e a consolidação anteriores foram documentais. A rc.19 implementa os 11 ajustes acima, mantendo o banco e os artefatos anteriores; confirmações históricas não aprovam sua renderização.
+A rc.19 implementou os 11 ajustes de apresentação/localização; a rc.20 acrescenta DRAFT-01/SELECT-01. Ambas mantêm SQLite v6 e os artefatos anteriores. Evidências históricas não aprovam a renderização ou os novos cliques da candidata atual.
