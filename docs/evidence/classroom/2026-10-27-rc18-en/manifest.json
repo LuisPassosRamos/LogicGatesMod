@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-27",
+  "buildId": "1.4.0-rc.18+2e27a7893893",
+  "hytaleVersion": "0.7.4",
+  "gameLanguageReported": "English",
+  "localeTarget": "en-US",
+  "localizationObserved": "mixed pt-BR/en-US; English visual acceptance failed",
+  "reportedGameResolution": {
+    "width": 1280,
+    "height": 720,
+    "source": "user report; same configuration as Portuguese batch"
+  },
+  "uiScale": null,
+  "osDisplayScale": null,
+  "role": "teacher",
+  "activeStudentsShown": 0,
+  "studentTests": "unavailable per user; pending",
+  "provenance": "13 screenshots supplied by user from secondary work computer after changing game language to English. Broad screenshots display the same build footer. Copies preserve original PNG bytes. No restart or cache reset was reported.",
+  "dimensionsNote": "Image dimensions are screenshot file dimensions, not inferred game viewport or UI scale. Broad images differ from the reported configured game resolution; do not infer scaling or screen occupancy.",
+  "screens": [
+    {
+      "id": "E01",
+      "title": "Turma sem alunos e resumo docente",
+      "file": "01-turma.png",
+      "originalAttachment": "codex-clipboard-cd696c26-695d-4713-b733-602a7b28ce4c.png",
+      "imageWidth": 1917,
+      "imageHeight": 1105,
+      "sha256": "45ae2c6fa70b3f3c8b6558d9bb2926681585d9e043781d154b3b0134cff36cdb",
+      "croppedDetail": false
+    },
+    {
+      "id": "E02",
+      "title": "Catálogo: dois rascunhos e uma atividade publicada",
+      "file": "02-catalogo.png",
+      "originalAttachment": "codex-clipboard-1d5b29d1-f336-421c-9cb8-cf6b02526b36.png",
+      "imageWidth": 1917,
+      "imageHeight": 1106,
+      "sha256": "dbb8881056fbb128d479e86b644bac5ec6ed3afa842de5e06658b441ace8c1bd",
+      "croppedDetail": false
+    },
+    {
+      "id": "E03",
+      "title": "Consulta de rascunho privado com tabela AND completa",
+      "file": "03-consulta-rascunho.png",
+      "originalAttachment": "codex-clipboard-2b8da3e0-b686-4ae9-9592-762e85836a1a.png",
+      "imageWidth": 1897,
+      "imageHeight": 1090,
+      "sha256": "77ad07503edf6df2061e0620e6219c149c1e7fbe93bce5da75a75d811869058e",
+      "croppedDetail": false
+    },
+    {
+      "id": "E04",
+      "title": "Nova atividade: dados iniciais",
+      "file": "04-nova-dados.png",
+      "originalAttachment": "codex-clipboard-554069b1-c6c8-4f27-9806-21ed71fcd3e8.png",
+      "imageWidth": 1883,
+      "imageHeight": 1082,
+      "sha256": "26048c0b905d1f4cd9302c008972647f0b1532c5309570702af3833554efcdef",
+      "croppedDetail": false
+    },
+    {
+      "id": "E05",
+      "title": "Nova atividade: componentes",
+      "file": "05-nova-componentes.png",
+      "originalAttachment": "codex-clipboard-e3eaa705-6430-4917-9a7f-038ff73fff5e.png",
+      "imageWidth": 1895,
+      "imageHeight": 1085,
+      "sha256": "98c32df491fd3dd365f35bf97021cbc9ef562dff03f87642d9e1361a84e6ea66",
+      "croppedDetail": false
+    },
+    {
+      "id": "E06",
+      "title": "Resultados esperados desativados",
+      "file": "06-resultados-desativados.png",
+      "originalAttachment": "codex-clipboard-0c91be0c-7cb3-4c49-930e-cf71ba8c0de5.png",
+      "imageWidth": 1888,
+      "imageHeight": 1078,
+      "sha256": "4cf0f286006b2d7d185cc951b91741a11da704f642db79e700f0ff51f7536ba5",
+      "croppedDetail": false
+    },
+    {
+      "id": "E07",
+      "title": "Tabela visual: saída 1 e contador 1 de 4",
+      "file": "07-tabela-visual.png",
+      "originalAttachment": "codex-clipboard-fcc39da6-fbf7-4d87-8d8f-024c8b25fbab.png",
+      "imageWidth": 1895,
+      "imageHeight": 1080,
+      "sha256": "e1ddf471de9e4c2e80d9a6876073179c51dc62f533797b00478025163a26983f",
+      "croppedDetail": false
+    },
+    {
+      "id": "E08",
+      "title": "Tabela em texto e ajuda expandida",
+      "file": "08-tabela-texto-ajuda.png",
+      "originalAttachment": "codex-clipboard-2fc31728-fa20-44c7-8640-35f3bb7ccaf5.png",
+      "imageWidth": 1882,
+      "imageHeight": 1080,
+      "sha256": "2de31ab2075a78e4dc63ceb400b7cc33c6b25019000c38d73fd5459d7635c266",
+      "croppedDetail": false
+    },
+    {
+      "id": "E09",
+      "title": "Confirmação de substituição da tabela",
+      "file": "09-confirmacao-tabela.png",
+      "originalAttachment": "codex-clipboard-4d734127-e22a-483e-ac7c-5a0f7ea20201.png",
+      "imageWidth": 1892,
+      "imageHeight": 1078,
+      "sha256": "afc3ce426da1fdf462230e3bf729aa2bb1c74a1cfab62d3a564352afcc58e518",
+      "croppedDetail": false
+    },
+    {
+      "id": "E10",
+      "title": "Confirmação de alterações não salvas",
+      "file": "10-alteracoes-nao-salvas.png",
+      "originalAttachment": "codex-clipboard-357f3519-c4b1-4d84-a38b-3c2c6512c6a1.png",
+      "imageWidth": 1886,
+      "imageHeight": 1090,
+      "sha256": "a89225e34dfcd03dcd7e7e0dd1bece25d0e8afa35ded3b19362b49da72215921",
+      "croppedDetail": false
+    },
+    {
+      "id": "E11",
+      "title": "Ingressos sem registros pendentes",
+      "file": "11-ingressos.png",
+      "originalAttachment": "codex-clipboard-7696a03c-1b89-4630-9308-4aa5a931a8f9.png",
+      "imageWidth": 1892,
+      "imageHeight": 1081,
+      "sha256": "51bbfb9d7baaba4d0b92aeedc7a13f6fae114d56c2aef28f2c55819f1903fbff",
+      "croppedDetail": false
+    },
+    {
+      "id": "E12",
+      "title": "Convidar jogador sem resultados",
+      "file": "12-convidar-jogador.png",
+      "originalAttachment": "codex-clipboard-ec38ed22-0ce0-41f9-b4de-86c69009853c.png",
+      "imageWidth": 1897,
+      "imageHeight": 1077,
+      "sha256": "ed66ed83bef46873e70720e6770588a9a9cc7fa544b09393e33547080a0799f2",
+      "croppedDetail": false
+    },
+    {
+      "id": "E13",
+      "title": "Administração da turma",
+      "file": "13-administracao.png",
+      "originalAttachment": "codex-clipboard-91552673-c1c1-4667-ad67-4b08e9252e6d.png",
+      "imageWidth": 1892,
+      "imageHeight": 1090,
+      "sha256": "ee0ecbc8c6fff3169524d987f819de65553afdfb8894abd652cf60458cc228ce",
+      "croppedDetail": false
+    }
+  ]
+}

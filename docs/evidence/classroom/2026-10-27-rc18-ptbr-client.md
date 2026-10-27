@@ -87,3 +87,7 @@ Arquivos relacionados, consultados para contextualizar os achados: [ClassroomScr
 ## Próxima coleta
 
 Acrescentar inglês e outras dimensões ao registro da **mesma build**, identificando resolução configurada, escala de interface e, quando conhecido, tamanho da janela/viewport. Capturas completas com menus abertos ajudam a separar corte real de recorte da imagem. Para comportamento, acrescentar sequência/relato do que foi clicado e resultado após voltar/reabrir; isso permite promover um item de apresentação parcial a teste funcional confirmado. Testes com aluno permanecem pendentes até haver conta disponível.
+
+## Atualização posterior — lote do jogo em inglês
+
+Recebidas [13 capturas com o jogo em inglês](2026-10-27-rc18-en-client.md), na mesma resolução relatada 1280×720 e mesma build. Localização reprovada por mistura de idiomas, I18N-01. O novo lote acrescenta saída 1/contador 1 de 4, consistência visual com texto, ajuda expandida, confirmação de substituição e consulta com AND completa; somente esses estados deixam de estar sem evidência visual. Resultados de ações, persistência, aluno e outras dimensões/escalas permanecem pendentes. Este registro pt-BR conserva o escopo e as conclusões do primeiro lote.
