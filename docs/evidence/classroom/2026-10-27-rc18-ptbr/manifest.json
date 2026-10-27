@@ -1,0 +1,210 @@
+{
+  "date": "2026-10-27",
+  "buildId": "1.4.0-rc.18+2e27a7893893",
+  "hytaleVersion": "0.7.4",
+  "locale": "pt-BR",
+  "reportedGameResolution": {
+    "width": 1280,
+    "height": 720,
+    "source": "user report"
+  },
+  "uiScale": null,
+  "osDisplayScale": null,
+  "role": "teacher; additional screenshot of denied account state",
+  "activeStudentsShown": 0,
+  "studentTests": "unavailable per user; pending",
+  "provenance": "19 screenshots supplied by user from secondary work computer. Broad screenshots display the build footer; cropped details are associated with this batch. Copies preserve original PNG bytes.",
+  "dimensionsNote": "Image dimensions are screenshot file dimensions, not inferred game viewport or UI scale. Broad images differ from the reported configured game resolution; do not infer scaling or screen occupancy.",
+  "screens": [
+    {
+      "id": "S01",
+      "title": "Turma sem alunos e resumo docente",
+      "file": "01-turma.png",
+      "originalAttachment": "codex-clipboard-fa0f7d30-c7da-4a39-8759-ab7eab649f3c.png",
+      "imageWidth": 1890,
+      "imageHeight": 1072,
+      "sha256": "0930eca57adff37047a96122829ab56fb1a9614ea0cf1c361b7c3421953dc852",
+      "croppedDetail": false
+    },
+    {
+      "id": "S02",
+      "title": "Catálogo com uma publicada e um rascunho",
+      "file": "02-catalogo.png",
+      "originalAttachment": "codex-clipboard-1baa3ce0-4e88-4d8a-9f8b-8134498679f8.png",
+      "imageWidth": 1887,
+      "imageHeight": 1071,
+      "sha256": "bff850abbd886097aae09258dd00b0e413c7a5e5248caf41c745fd49762d20d9",
+      "croppedDetail": false
+    },
+    {
+      "id": "S03",
+      "title": "Nova atividade: dados iniciais",
+      "file": "03-nova-dados.png",
+      "originalAttachment": "codex-clipboard-4da61ebc-b8a5-459e-8117-b3a4993197da.png",
+      "imageWidth": 1885,
+      "imageHeight": 1071,
+      "sha256": "a25b6f9b110b7836222f10166d12d21af261f4c265d51f5519b0d061d801b2f6",
+      "croppedDetail": false
+    },
+    {
+      "id": "S04",
+      "title": "Nova atividade: componentes",
+      "file": "04-nova-componentes.png",
+      "originalAttachment": "codex-clipboard-b1f029b9-700d-4ec7-a6dd-40a2ac178089.png",
+      "imageWidth": 1886,
+      "imageHeight": 1082,
+      "sha256": "f63af03bc50a351f56c032c88e4188397a076a1effa06092a1a3645007829d66",
+      "croppedDetail": false
+    },
+    {
+      "id": "S05",
+      "title": "Resultados esperados desativados",
+      "file": "05-resultados-desativados.png",
+      "originalAttachment": "codex-clipboard-2ca94303-29f6-4a06-964f-9ba90e1ff5e4.png",
+      "imageWidth": 1890,
+      "imageHeight": 1075,
+      "sha256": "4b86adc779e064c42db462d30e05e7c952c3ecf5eb94fc48dce3f2e448a80c00",
+      "croppedDetail": false
+    },
+    {
+      "id": "S06",
+      "title": "Tabela visual: duas entradas e uma saída",
+      "file": "06-tabela-visual.png",
+      "originalAttachment": "codex-clipboard-54c3c0a1-bebc-49d2-ac9d-b47e3d986121.png",
+      "imageWidth": 1896,
+      "imageHeight": 1081,
+      "sha256": "91997ea778da86ff668a56a2151db09dd98c039c2159da0da098caf46bafdc51",
+      "croppedDetail": false
+    },
+    {
+      "id": "S07",
+      "title": "Tabela em modo texto com saídas indefinidas",
+      "file": "07-tabela-texto.png",
+      "originalAttachment": "codex-clipboard-ff271b89-fde4-4b16-bde3-4b4411ff0e17.png",
+      "imageWidth": 1885,
+      "imageHeight": 1082,
+      "sha256": "c31f7df17e2316e102162dcf6e92cea347e61c01619bf362ec129ae6d86308b5",
+      "croppedDetail": false
+    },
+    {
+      "id": "S08",
+      "title": "Prazo: menu de dias aberto",
+      "file": "08-prazo-dia.png",
+      "originalAttachment": "codex-clipboard-91d249d9-955d-473f-b253-9fd1aa901472.png",
+      "imageWidth": 1891,
+      "imageHeight": 1077,
+      "sha256": "7dae42b27558f99abf471086ceef766b79dbdfb0f340d673d5410203d095e9a4",
+      "croppedDetail": false
+    },
+    {
+      "id": "S09",
+      "title": "Prazo: menu de meses (recorte)",
+      "file": "09-prazo-mes.png",
+      "originalAttachment": "codex-clipboard-ea8f130c-bc18-4a2f-a3fa-170f67c48682.png",
+      "imageWidth": 777,
+      "imageHeight": 401,
+      "sha256": "d7ff67809376dca063198c7395b6c3285feb5c16667b895ac6bd8990daaf85e3",
+      "croppedDetail": true
+    },
+    {
+      "id": "S10",
+      "title": "Prazo: menu de horas (recorte)",
+      "file": "10-prazo-hora.png",
+      "originalAttachment": "codex-clipboard-9f22d96f-b2f3-46ae-bc16-7e9bc3486b32.png",
+      "imageWidth": 247,
+      "imageHeight": 410,
+      "sha256": "a931203a3a8d1d841630b10b060171acbb2127933351bfd5fbdb5a9244338dc4",
+      "croppedDetail": true
+    },
+    {
+      "id": "S11",
+      "title": "Prazo: menu de minutos (recorte)",
+      "file": "11-prazo-minuto.png",
+      "originalAttachment": "codex-clipboard-c1b8bb84-4bd9-4484-93b6-8f9503f60dc0.png",
+      "imageWidth": 198,
+      "imageHeight": 403,
+      "sha256": "c93e9e4b95aae0e0ea845028ce2865bbcda10985c8e905f2e157a62c6fab94b7",
+      "croppedDetail": true
+    },
+    {
+      "id": "S12",
+      "title": "Atividade publicada em consulta",
+      "file": "12-consulta-atividade.png",
+      "originalAttachment": "codex-clipboard-d57066d7-49b2-41bc-ae3d-d757f3e23a32.png",
+      "imageWidth": 1887,
+      "imageHeight": 1076,
+      "sha256": "be9a77ca566e7b17cfc2fc337182bb180a62afbe9ad035092a976fa43a416f6e",
+      "croppedDetail": false
+    },
+    {
+      "id": "S13",
+      "title": "Atividade existente em edição",
+      "file": "13-edicao-atividade.png",
+      "originalAttachment": "codex-clipboard-6849ec5e-7756-49d5-b28d-26fbcf4817c8.png",
+      "imageWidth": 1890,
+      "imageHeight": 1077,
+      "sha256": "9f646e75b308f958bae80f0f12c1b09b0316c46dd420f4c9cfeea0996fe3f128",
+      "croppedDetail": false
+    },
+    {
+      "id": "S14",
+      "title": "Confirmação de alterações não salvas",
+      "file": "14-alteracoes-nao-salvas.png",
+      "originalAttachment": "codex-clipboard-c70131f2-0bd5-4e69-b5bd-6104b70d2b71.png",
+      "imageWidth": 1882,
+      "imageHeight": 1071,
+      "sha256": "d27bc22aeb406bb325613bb9906e6e4407895f559925f1a64e7d79ed8fa97cdc",
+      "croppedDetail": false
+    },
+    {
+      "id": "S15",
+      "title": "Ingressos sem registros pendentes",
+      "file": "15-ingressos.png",
+      "originalAttachment": "codex-clipboard-3b7217ec-eaf0-49c6-9199-b91a0057b0b9.png",
+      "imageWidth": 1900,
+      "imageHeight": 1080,
+      "sha256": "5258c4470efccd17e1cf0666fa07428c95ce7cd7e301c2e7163148c8b33bfb24",
+      "croppedDetail": false
+    },
+    {
+      "id": "S16",
+      "title": "Convidar jogador sem resultados",
+      "file": "16-convidar-jogador.png",
+      "originalAttachment": "codex-clipboard-f72c3ac8-56cf-4019-935c-267a332116fc.png",
+      "imageWidth": 1892,
+      "imageHeight": 1082,
+      "sha256": "57f7a496650b23a88801a2c7f5b3afcd2a061fae0026a24e8c6e81d3dc9bf2b3",
+      "croppedDetail": false
+    },
+    {
+      "id": "S17",
+      "title": "Administração da turma",
+      "file": "17-administracao.png",
+      "originalAttachment": "codex-clipboard-137a1c23-7c7e-4878-b144-b931f59f387e.png",
+      "imageWidth": 1907,
+      "imageHeight": 1077,
+      "sha256": "6e14fa7cfef5b7d8fd78064e95027a90c1ae3c86771bc6d63a322402573e77e9",
+      "croppedDetail": false
+    },
+    {
+      "id": "S18",
+      "title": "Tela de conta sem autorização",
+      "file": "18-sem-autorizacao.png",
+      "originalAttachment": "codex-clipboard-7c3f4269-ba9f-47c5-b802-33d51f9cde7b.png",
+      "imageWidth": 1896,
+      "imageHeight": 1088,
+      "sha256": "8fd2758b587902a8a331bda4cf7b343535718d7f2751945b8e8839e00b6d82ff",
+      "croppedDetail": false
+    },
+    {
+      "id": "S19",
+      "title": "Opções do filtro (recorte)",
+      "file": "19-filtro.png",
+      "originalAttachment": "codex-clipboard-a3c6c27b-7a5b-409e-af0e-918b22e97cf5.png",
+      "imageWidth": 537,
+      "imageHeight": 183,
+      "sha256": "c41003c18a8f6375597920168cb74e30baf4589e6f33616819c7498c3bd951f7",
+      "croppedDetail": true
+    }
+  ]
+}

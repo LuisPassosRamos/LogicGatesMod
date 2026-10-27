@@ -9,6 +9,7 @@ A candidata atual é **1.4.0-rc.18**, Hytale **0.7.4**, SQLite **v6**. A seção
 | Circuitos e fabricação | Consolidação 1.3.3, automação e relatos de multiplayer/crafts | Coleta de drops, cancelamento/reembolso e Blockbench sem confirmação manual discriminada |
 | Classroom administrativo | Fluxos rc.4, multiplayer/permissões e cinco cenários breves rc.10 | Cenários complementares identificados nos roteiros originais |
 | Atividades, áreas e avaliação manual | [Capturas e relato rc.12](evidence/classroom/2026-10-26-rc12-client.md) com professor/aluno, preview/cópia, revisão, nota e limpeza | Matriz completa de idiomas/resoluções e situações não discriminadas |
+| UI rc.18 em pt-BR | [19 capturas docentes](evidence/classroom/2026-10-27-rc18-ptbr-client.md), build 2e27a7893893, resolução configurada relatada 1280×720, escala não informada; carregamento e estados visuais confirmados | Cortes/alinhamentos e mensagens registrados; aluno, persistência, inglês e outras resoluções/escalas pendentes |
 | Polimento e edição explícita | [Aceite rc.14 por relato](evidence/classroom/2026-10-26-rc14-client.md) | O relato não identifica individualmente toda a matriz de escalas/idiomas |
 | Critérios e verificação assistida | [Automação rc.15](evidence/classroom/2026-10-26-rc15-server.json); captura do campo de tabela e pedido de explicação | [Interação rc.15](classroom-rc15-acceptance.md), quantidades, relatório e critérios por publicação ainda sem aceite específico |
 
@@ -283,3 +284,9 @@ O [log do computador secundário](evidence/classroom/2026-10-27-rc17-client.md) 
 Build corrigido **1.4.0-rc.18+2e27a7893893**, revisão `0ac666f4ab40`: fullCheck aprovado em 2 min 48 s, com 922 testes Java, 41 Python e 90 verificações nativas. [Evidência automatizada](evidence/classroom/2026-10-27-rc18-server.json). O JAR preservado da rc.17 é recusado pelo novo guard de alinhamento, enquanto a fonte e o JAR rc.18 usam End. Reteste de entrada no cliente permanece pendente.
 
 CI Windows/Linux aprovada na revisão `0ac666f4ab40a01d3960cebefaeeb0fd53aac834`: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944). O ZIP final incorpora documentação e evidências sem regenerar o JAR testado.
+
+## Capturas rc.18 pt-BR — acompanhamento de 27/10/2026
+
+O usuário enviou [19 capturas](evidence/classroom/2026-10-27-rc18-ptbr-client.md) do computador secundário e informou configuração **1280×720**, sem informar escala de interface. A reabertura da UI após corrigir LabelAlignment está confirmada nesta sessão, assim como a apresentação dos formulários docentes, seletores abertos, tabela visual/texto e confirmação de alterações. Foram preservados PNGs originais, dimensões e hashes. A evidência contém critérios satisfeitos somente no escopo visível, dez achados de polimento e cenários pendentes.
+
+Não é um aceite funcional completo. Conta de aluno indisponível; telas mostram zero alunos/entregas. Não foram inferidos efeitos dos botões, persistência, conversão UTC, filtros aplicados ou meta de área útil. Inglês e outras resoluções serão enviados depois. Nenhuma produção/JAR foi alterada por este registro; foi executado somente o verificador documental, sem repetir fullCheck ou gerar nova versão.
