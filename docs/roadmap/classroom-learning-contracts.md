@@ -24,6 +24,7 @@ Rascunhos são privados e podem ficar incompletos. Publicar exige título e enun
 - A consulta inicial do aluno usa a última versão publicada de atividades não arquivadas da turma atual. A data de ingresso não elimina publicações atuais da lista.
 - O vencimento indica **Prazo encerrado** e mantém a consulta disponível. Não arquiva automaticamente. **Envio inicial e reenvios atrasados são aceitos e identificados como atrasados**, conforme a decisão posterior.
 - Arquivar oculta a atividade dos alunos e conserva rascunho e versões para o professor. Restaurar reapresenta a última versão publicada sem criar uma versão; se vencida, continua indicando prazo encerrado. Uma atividade que só possuía rascunho continua privada após restaurar.
+- Na rc.20, o responsável autorizado pode excluir definitivamente uma atividade nunca publicada, inclusive rascunho incompleto/arquivado, após confirmação identificada. Cancelar preserva campos. A transação verifica turma, permissão, revisão e ausência de qualquer publicação; histórico publicado, entregas e notas não são excluídos. Sem migração de SQLite v6.
 - Entregas e avaliações referenciam a versão correspondente. Publicar outra versão não altera silenciosamente enunciado, prazo ou valor usados por uma entrega/avaliação anterior.
 
 Arquivamento/restauração de atividade é distinto do encerramento administrativo de turma implementado na rc.9. Restaurar ou excluir definitivamente uma turma continua fora do MVP. O contrato foi documentado na rc.7 (v3); rc.9/rc.10 usavam v4. A implementação rc.11 acrescenta v5 com backup, sem alterar IDs ou vínculos anteriores.
@@ -53,8 +54,9 @@ Estes casos orientam regressões automatizadas e aceite no cliente; execução p
 - Professor consulta atividade → aluno → revisão. Preview 3D é visual; testar/alterar o circuito exige cópia temporária no mundo escolhido. Espaço vazio, proteção por eventos nativos, uma reserva persistente por professor; descarte remove o volume editado, preservando a entrega.
 - Nota entre zero e valor **daquela publicação**, feedback e revisão explícitos. Corrigir uma revisão antiga não avalia a mais recente. Histórico de alterações da avaliação é preservado.
 - Limites padrão: 32 × 16 × 32 incluindo ar, 8 MiB descomprimidos por revisão, 1 GiB por turma, uma operação pesada + oito aguardando. Listas apenas de metadados; conteúdo só da revisão selecionada. Esses valores não certificam capacidade de jogadores.
+- Na rc.20, cantos de entrega permanecem inclusivos e o maior Y recebe uma camada adicional. Clicar no chão inclui o circuito sobre ele; essa camada integra limites/contorno/captura. Sem ampliação de limites, alteração de entregas antigas ou do volume de colagem docente.
 
-A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva exigem contratos futuros. Logging seletivo e pontuação automática continuam no backlog. A verificação assistida implementada é descrita abaixo.
+A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva de histórico publicado exigem contratos futuros. Logging seletivo e pontuação automática continuam no backlog. A verificação assistida implementada é descrita abaixo.
 
 ## Verificação assistida — contrato rc.15
 

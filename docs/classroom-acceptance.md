@@ -19,14 +19,14 @@ Capturas, relatos e resultados automatizados permanecem como evidências datadas
 
 ## Estado atual
 
-**Candidata 1.4.0-rc.19 pronta para reteste; 11 ajustes implementados e automação aprovada.** Hytale **0.7.4**, SQLite **v6**. Build **`1.4.0-rc.19+a15a278adf4c`**, revisão de produção **`4048f8f6b341003d1f796ed7a11bb3ae91b2b877`**, compilação com `dirty=false`. A evidência visual disponível ainda pertence à rc.18; o aceite de cliente da rc.19 continua pendente.
+**Candidata 1.4.0-rc.20 em preparação:** exclusão confirmada de rascunhos nunca publicados e uma camada extra na seleção de entrega implementadas. Hytale **0.7.4**, SQLite **v6**. A identidade e os resultados finais serão registrados após a validação. Os 11 ajustes da rc.19 permanecem incorporados; aceite de cliente atual pendente.
 
 | Arquivo entregue para teste | SHA-256 / identificação |
 | --- | --- |
-| `build/libs/LogicGates-1.4.0-rc.19.jar` | `2ef952bddde211103c78698524a8c4507f38ba442d66b0e58cbf3bbaa3a104ad` |
-| `build/releases/LogicGates-1.4.0-rc.19.zip` | Contém o mesmo JAR testado, com documentação final. Checksum externo em `LogicGates-1.4.0-rc.19.zip.sha256`, ao lado do ZIP; o hash não é embutido no próprio pacote. |
+| `build/libs/LogicGates-1.4.0-rc.20.jar` | A registrar após a validação final |
+| `build/releases/LogicGates-1.4.0-rc.20.zip` | Mesmo JAR validado, documentação final e checksum externo em `LogicGates-1.4.0-rc.20.zip.sha256`, ao lado do ZIP. |
 
-A rc.19 preserva os artefatos rc.18 e o esquema/dados existentes. Não atribuir à nova candidata os resultados de cliente da anterior. A instalação de teste usa o JAR final identificado aqui, sem misturar versões em mods.
+A rc.20 preserva os artefatos anteriores e o esquema/dados existentes. A exclusão atinge somente o rascunho confirmado de atividade nunca publicada. Não atribuir à nova candidata os resultados de cliente da anterior. A instalação de teste usa o JAR final identificado aqui, sem misturar versões em mods.
 
 | Área | Evidência disponível | Estado vigente / o que falta |
 | --- | --- | --- |
@@ -39,8 +39,11 @@ A rc.19 preserva os artefatos rc.18 e o esquema/dados existentes. Não atribuir 
 | Aluno, progresso, critérios e relatório atuais | Últimos lotes mostram zero alunos e zero entregas; usuário não dispõe de aluno neste momento | Testes com aluno, dados reais e verificação assistida continuam pendentes. Indisponibilidade de conta não é reprovação do recurso. |
 | Resolução e escala | Ambos os lotes rc.18: **1280×720 relatados**, escala de interface/SO não informada | Outros tamanhos, escala padrão/máxima e ocupação útil não medidos. Dimensões físicas dos PNGs não provam viewport ou escala. |
 | Automação da rc.19 | 927 Java, 44 Python, 90 verificações nativas; CI Windows/Linux aprovada | Aprovada nas camadas exercitadas. Não executa renderização/cliques do cliente nem valida idioma resolvido. |
+| Novos pedidos rc.20 | [Captura de rascunhos na rc.19](evidence/classroom/2026-10-27-rc19-ptbr-drafts.png) e relato do usuário em 27/10 | Exclusão e camada extra implementadas; validação automatizada final e reteste E08/D10 pendentes. |
 
 Os 32 originais e seus hashes estão nos manifestos [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr/manifest.json) e [jogo em inglês](evidence/classroom/2026-10-27-rc18-en/manifest.json). Os lotes foram recebidos do computador secundário do trabalho. Variação de contagens entre imagens não comprova registro fantasma, nova gravação ou atualização correta após cada operação.
+
+A captura adicional rc.19 tem build visível `1.4.0-rc.19+a15a278adf4c`, pt-BR, SHA-256 `1d1358d9e85227a9c912ea5d4aa886dbc0e1b825abd5e399bfe17e5b6420e470`. Mostra seis rascunhos com referências distintas, seção Dados destacada, prazo antes do enunciado e orientação contextual. Confirma somente essa apresentação: não demonstra cliques, popup, inglês ou todas as correções. Resolução/escala não foram reiteradas nesse print. O problema de altura na seleção foi relatado pelo usuário, sem captura do volume selecionado.
 
 ## Correções e melhorias abertas
 
@@ -66,11 +69,16 @@ UI-01/UI-07: os contratos usados foram conferidos em `Common/UI/Custom/Common.ui
 
 Compatibilidade dos cartões: altura explícita de 100 unidades, sem MinHeight/MaxHeight, ausentes do Anchor.CODEC 0.7.4. O guard agora verifica os campos literais de Anchor nas fontes e no JAR; oito testes direcionados de markup e 14 de empacotamento passaram, incluindo rejeição de bytes com MinHeight. Os 166 documentos UI nativos foram aceitos pelo guard ampliado. Não é um parser completo do cliente. Links de código nas evidências rc.18 foram fixados na revisão correspondente do GitHub para funcionarem também no ZIP, que não distribui fontes Java.
 
+| ID / prioridade | Novo pedido / implementação rc.20 | Critério de aceite |
+| --- | --- | --- |
+| DRAFT-01 / média | Excluir rascunho salvo nunca publicado, inclusive incompleto/arquivado. Confirmação identificada; cancelar preserva campos; permissão/turma/revisão/histórico conferidos em transação; catálogo e contagens notificadas. Publicadas usam arquivamento. | E08: cancelar/confirmar, reabrir, paginação, autorização e publicação concorrente; preservar entregas/notas. Cliente pendente. |
+| SELECT-01 / média | Cantos inclusivos recebem uma camada acima do maior Y. Contorno, dimensões e captura usam o volume ampliado; camada conta nos limites. Colagem docente e arquivos antigos mantêm dimensões. | D10: clicar chão plano/desnivelado em ambas as ordens; snapshot inclui chão/circuito, limites recusam sem corte. Cliente pendente. |
+
 ## Preparar o teste
 
-1. Registrar build ID, revisão quando conhecida e SHA-256 do JAR efetivamente instalado. Para o novo reteste, usar o JAR final rc.19 identificado acima; as coletas anteriores pertencem à rc.18.
+1. Registrar build ID, revisão quando conhecida e SHA-256 do JAR efetivamente instalado. Para o novo reteste, usar o JAR final rc.20 identificado acima; as coletas anteriores pertencem às rc.18/rc.19.
 2. Com mundo/servidor parado, preservar **banco, pasta `submissions`, configuração e mundos juntos**, fora de `build/`. Instalar somente uma versão do JAR do mod em `mods`; manter o ZIP fora dessa pasta.
-3. SQLite v6 não muda entre rc.15–rc.19. Atualização de v5 tem backup pré-migração consistente; rollback para rc.14 exige banco v5 correspondente, e para versões mais antigas exige esquema compatível. Não abrir v6 no mod antigo nem apagar dados para contornar erro de UI. Consultar [recuperação](classroom-learning.md#persistência-e-recuperação).
+3. SQLite v6 não muda entre rc.15–rc.20. Atualização de v5 tem backup pré-migração consistente; rollback para rc.14 exige banco v5 correspondente, e para versões mais antigas exige esquema compatível. Não abrir v6 no mod antigo nem apagar dados para contornar erro de UI. Consultar [recuperação](classroom-learning.md#persistência-e-recuperação).
 4. Usar turma descartável e contas separadas: professor autorizado e aluno **sem OP**. Outra conta/professor é necessária só para concorrência entre turmas e alguns processos simultâneos. Na falta de conta, marcar os casos dependentes como não executados e continuar os independentes.
 5. Obter UUIDs com `/uuid`. No console, conceder/remover a permissão específica conforme o cenário:
 
@@ -84,7 +92,7 @@ perm user remove <UUID> sisso.logicgates.classroom.teach
 
 ## Ordem de execução
 
-1. **Disponível agora sem aluno:** S01–S03, V01–V05, E01–E07, P01–P05, C01–C03 e T01–T06, nos casos que não dependem de outra conta/rascunho legado. Retestar I18N-01/UI-01 primeiro, seguido dos demais ajustes implementados; se falhar, registrar e corrigir antes de fechar o item.
+1. **Disponível agora sem aluno:** S01–S03, V01–V05, E01–E08, P01–P05, C01–C03 e T01–T06, nos casos que não dependem de outra conta/rascunho legado. Começar pela exclusão E08, depois a regressão de I18N-01/UI-01 e demais ajustes; se falhar, registrar e corrigir antes de fechar o item.
 2. **Com professor e aluno:** executar a [prova curta](#roteiro-com-professor-e-aluno), depois os complementos A, G, D, N e X afetados pela mudança. Não repetir como campanha nova tudo que já foi confirmado historicamente quando o código correspondente não mudou.
 3. **Com massa/ambiente isolado:** paginação, textos longos, contas concorrentes, limite de tabela/área e recuperação após interrupção. Não fabricar o caso de ano antigo alterando o banco real.
 4. **Matriz visual:** conferir os dois idiomas e as combinações de resolução/escala disponíveis, começando por 1280×720; registrar explicitamente cada combinação.
@@ -92,7 +100,7 @@ perm user remove <UUID> sisso.logicgates.classroom.teach
 
 ## Roteiros e critérios
 
-Os estados abaixo conciliam evidências recebidas e implementação até 27/10/2026; testes de cliente ainda referem-se às builds discriminadas, com reteste rc.19 pendente. **Visual parcial** confirma o que a imagem mostra; **histórico confirmado** conserva o resultado naquela build; ambos podem exigir execução funcional na candidata atual. **Pendente** significa que o cenário não foi demonstrado no escopo atual. Uma alteração apenas documental não executa nenhum caso de cliente.
+Os estados abaixo conciliam evidências recebidas e implementação até 27/10/2026; testes de cliente ainda referem-se às builds discriminadas, com reteste rc.20 pendente. **Visual parcial** confirma o que a imagem mostra; **histórico confirmado** conserva o resultado naquela build; ambos podem exigir execução funcional na candidata atual. **Pendente** significa que o cenário não foi demonstrado no escopo atual. Uma alteração apenas documental não executa nenhum caso de cliente.
 
 ### Abertura e sessão
 
@@ -138,6 +146,7 @@ Os estados abaixo conciliam evidências recebidas e implementação até 27/10/2
 | E05 | Publicar título/enunciado vazios, prazo passado/parcial, valor inválido/não positivo ou com mais de duas casas; corrigir e publicar. Sem publicação parcial ou registro fantasma; valor inicial 10. Rascunho aceita incompleto, sem inventar prazo. | Valor inicial e campos visíveis; erro de prazo com preservação confirmado rc.12; regressão completa atual pendente. |
 | E06 | Rascunho privado, publicada, publicada com edição privada, arquivada e vencida: aluno vê só publicação disponível. Editar sem republicar conserva anterior; republicar não muda enunciado/valor/critérios de entrega antiga; arquivar/restaurar não cria versão indevida. Vencida continua consultável e aceita envio/reenvio atrasado identificado. | Fluxo principal relatado rc.12; critérios por publicação e complementos atuais pendentes. |
 | E07 | Mais de vinte atividades/alunos/revisões: filtros Todas/Publicadas/Rascunhos/Arquivadas, paginação, retorno da lista de alunos e seleção correta. Paginador oculto numa única página; criação ampla sem lista/filtro/Nova atividade. Diferenciar rascunhos sem título. | Lista pequena, filtro aberto e criação ampla visíveis; filtros aplicados/paginação e UI-10 pendentes. |
+| E08 | Em turma descartável, excluir rascunho incompleto, recém-salvo e arquivado. Abrir confirmação com campos não salvos: cancelar conserva tudo; confirmar remove somente a atividade identificada, volta à página 1 do filtro e atualiza contagens. Reabrir/reiniciar: não reaparece. Excluir último item da página 2, repetir clique e tentar com aluno/outro professor/permissão revogada. Editar/publicar em outra sessão antes de confirmar deve recusar a revisão antiga. Atividade já publicada com edição privada não oferece exclusão; entregas/notas intactas. | Implementado rc.20; reteste no cliente pendente. |
 
 ### Prazo de Brasília
 
@@ -197,6 +206,7 @@ Prova curta inicial: E01/E02 → D01/D02 → D03/D04 → N01/N03 → D05 → D06
 | D07 | Cancelar seleção, desconectar, trocar mundo, expirar sessão; ferramenta antiga/passada para outra conta não envia. Sair/encerrar/republicar durante envio recusa contexto antigo. | Complementos pendentes. |
 | D08 | Limite **32×16×32**, área vazia, região indisponível, material especial recusado e conexão externa à seleção. Sem captura parcial nem carregamento forçado. Registrar recusa de material separadamente de erro lógico. | Automação cobre limites; `Soil_Grass_Full` recusado historicamente e continua limitação, sem promessa de suporte adicional. Cliente complementar pendente. |
 | D09 | Colar sobre construção/fluido, região protegida ou com outra cópia ativa: falha preserva construção e não deixa reserva utilizável. Conferir plugin de proteção usado no servidor, quando houver. | Complementos pendentes. |
+| D10 | Com aluno sem OP, selecionar cantos do chão permitido com esquerdo/direito, em ambas as ordens. Mesmo Y resulta em altura 2 (chão + componentes); em desnível, topo final é maior Y + 1. Contorno e dimensões correspondem ao preview/snapshot; sem pilares de apoio. Testar área máxima incluindo camada extra: excesso deve recusar sem corte, sem carregar regiões e sem burlar reserva/proteção. Colar entrega antiga mantém suas dimensões. | Implementado rc.20; reteste no cliente pendente. Restrições de materiais de D08 continuam. |
 
 ### Verificação assistida da entrega salva
 
@@ -238,6 +248,8 @@ A massa serve para UI/paginação, não estimativa de jogadores suportados nem p
 
 ## Verificação automatizada
 
+**rc.20:** rodada direcionada/final em andamento. Os resultados desta candidata serão registrados aqui, sem converter testes de servidor em aceite de cliente.
+
 **rc.19:** `fullCheck` aprovado em **3 min 5 s**, com **927 testes Java** (zero falhas, erros ou ignorados), **44 Python** e **90 verificações nativas** (63 criação + 27 após reinício real em outro processo). Projeto e distribuição aprovados: **370 chaves em cada um dos dois idiomas**, seis documentos UI e verificações de assets/ZIP. [Registro integral](evidence/classroom/2026-10-27-rc19-server.json); log local `build/tmp/rc19-fullCheck-final.log`; relatório `build/reports/server-integration/20261027-123118-0576c3/summary.json`.
 
 CI aprovada em **Windows e Linux** para a revisão de produção `4048f8f6b341003d1f796ed7a11bb3ae91b2b877`: [run 40531924972](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40531924972). A rodada direcionada anterior passou com 67 testes de UI; a revisão de compatibilidade passou com oito testes de markup e 14 de empacotamento. Logs locais `build/tmp/rc19-ui.log` e `build/tmp/rc19-build-tools.log`.
@@ -269,6 +281,7 @@ Não converter screenshot de botão em teste da ação, consulta de AND em execu
 Critérios para fechar a candidata:
 
 - [ ] Retestar I18N-01/UI-01 e os demais ajustes implementados na rc.19; registrar evidência por caso e decisão explícita para qualquer adiamento. Implementação não fecha o aceite visual.
+- [ ] Retestar exclusão de rascunhos E08 e seleção pelo chão D10 da rc.20.
 - [ ] Completar os novos fluxos de criação/saída, tabela, progresso e verificação assistida; executar regressão breve com professor/aluno, revisão/nota correta e dados preservados.
 - [ ] Registrar cada combinação visual executada e os complementos de autorização/concorrência/persistência; identificar claramente o que não pôde ser testado, sem declarar matriz completa.
 - [x] Associar a automação à build/JAR exatos, rodar verificações proporcionais e preservar evidências/checksums do arquivo entregue. Resultados futuros de cliente devem identificar o JAR efetivamente instalado.
@@ -305,5 +318,6 @@ Os antigos `classroom-rc6-acceptance.md` a `classroom-rc18-acceptance.md` foram 
 | [rc.17 automatizada](evidence/classroom/2026-10-27-rc17-server.json), [falha de cliente](evidence/classroom/2026-10-27-rc17-client.md) | Progresso/editor/tabela implementados; log comprovou alinhamento Right inválido | Automação aprovada não evitou bloqueio de carregamento. |
 | [rc.18 automatizada](evidence/classroom/2026-10-27-rc18-server.json), [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr-client.md), [jogo em inglês](evidence/classroom/2026-10-27-rc18-en-client.md) | End corrigiu bloqueio nesta sessão; 32 capturas documentam apresentação e novos estados da tabela | Inglês reprovado por mistura, onze achados abertos; sem aluno ou outra resolução/escala registrada. |
 | [rc.19 automatizada](evidence/classroom/2026-10-27-rc19-server.json) | I18N-01 e UI-01–UI-10 implementados; 927 Java, 44 Python, 90 verificações nativas e CI Windows/Linux aprovados | Reteste do cliente nos dois idiomas, limites de tela/escala e casos com aluno continuam pendentes. |
+| [Captura rc.19 de rascunhos](evidence/classroom/2026-10-27-rc19-ptbr-drafts.png) | Referências distintas, seção ativa e reorganização/orientação do formulário visíveis; usuário solicita exclusão e camada extra na seleção | Evidência visual parcial em pt-BR; não comprova ações ou outros cenários. Pedidos implementados na rc.20, ainda sem reteste do cliente. |
 
 A coleta e a consolidação anteriores foram documentais. A rc.19 implementa os 11 ajustes acima, mantendo o banco e os artefatos anteriores; confirmações históricas não aprovam sua renderização.

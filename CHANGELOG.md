@@ -4,7 +4,14 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.19.
+Nenhuma alteração registrada após 1.4.0-rc.20.
+
+## [1.4.0-rc.20] - 2026-10-27
+
+### Rascunhos e seleção de entregas
+- Professor responsável pode excluir definitivamente atividades nunca publicadas, inclusive incompletas/arquivadas, após confirmação. Cancelar conserva os campos; revisão, permissão e histórico publicado são conferidos em transação. Catálogo/contagens atualizam sem polling.
+- Seleção de entrega inclui uma camada acima do maior Y clicado, conservando os cantos inclusivos. Selecionar o chão captura os componentes sobre ele; a camada conta nos limites existentes. Preview/captura usam o mesmo volume; colagem docente e entregas antigas mantêm suas dimensões.
+- Confirmação e ajuda traduzidas em pt-BR/en-US; SQLite v6 e publicações/entregas/notas preservados.
 
 ## [1.4.0-rc.19] - 2026-10-27
 
