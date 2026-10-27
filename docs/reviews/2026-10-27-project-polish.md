@@ -1,6 +1,6 @@
 # Polimento técnico e documental — rc.16
 
-Base: `codex/classroom-ui`, revisão `c08e84159fb3`, rc.15, Hytale 0.7.4 e SQLite v6. Entrega de manutenção, sem novo esquema, comandos, critérios, layout ou regras de circuitos. A identidade e os resultados finais ficam no [aceite rc.16](../classroom-rc16-acceptance.md) e no [registro de validação](../validation.md).
+Base: `codex/classroom-ui`, revisão `c08e84159fb3`, rc.15, Hytale 0.7.4 e SQLite v6. Entrega de manutenção, sem novo esquema, comandos, critérios, layout ou regras de circuitos. A identidade e os resultados dessa rodada ficam no [registro de validação](../validation.md); os roteiros e o estado vigente estão no [aceite consolidado](../classroom-acceptance.md).
 
 ## Revisão e mudanças
 

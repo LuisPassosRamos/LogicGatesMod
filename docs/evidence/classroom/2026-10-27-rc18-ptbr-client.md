@@ -1,5 +1,7 @@
 # rc.18 — evidência visual pt-BR, lote 1
 
+Registro datado da coleta. O **[aceite único](../../classroom-acceptance.md)** mantém a situação vigente, os achados e os roteiros; as conclusões abaixo preservam o escopo destas capturas.
+
 Recebido em **27/10/2026**, computador secundário do trabalho. Build visível nos rodapés das capturas amplas: **1.4.0-rc.18+2e27a7893893**, Hytale **0.7.4**. O usuário informou resolução configurada **1280×720**. Escala de interface e escala do sistema operacional **não informadas**. O usuário informou que **não pode testar com aluno neste momento** e que enviará inglês e outras dimensões depois.
 
 São **19 imagens originais preservadas**, com [manifesto de dimensões e SHA-256](2026-10-27-rc18-ptbr/manifest.json). Há quinze capturas amplas e quatro recortes de menus. Os PNGs amplos medem de 1882 a 1907 px de largura e de 1071 a 1088 px de altura. Essas medidas não coincidem com a resolução configurada relatada: não inferimos resolução do viewport, escala/DPI ou percentual de ocupação a partir delas. A configuração declarada pelo usuário permanece registrada como 1280×720.

@@ -19,7 +19,7 @@ A candidata **1.4.0-rc.18** mantém o núcleo de circuitos, o MVP administrativo
 | Verificação assistida | Quantidades e tabela verdade versionadas na rc.15; automação aprovada e interação de cliente ainda pendente |
 | Manutenção | rc.16 reorganiza responsabilidades, remove redundâncias comprovadas e atualiza os guias; resultados próprios e identidade do arquivo constam no registro de validação |
 
-Consulte [validação por build](../validation.md), [guia administrativo](../classroom.md), [guia pedagógico](../classroom-learning.md) e [roteiro atual](../classroom-rc18-acceptance.md). Capturas, relatos e automação conservam seus escopos: um servidor iniciado não aprova renderização, e um relato genérico não discrimina toda a matriz de idiomas/escalas.
+Consulte [validação por build](../validation.md), [guia administrativo](../classroom.md), [guia pedagógico](../classroom-learning.md) e [roteiro atual](../classroom-acceptance.md). Capturas, relatos e automação conservam seus escopos: um servidor iniciado não aprova renderização, e um relato genérico não discrimina toda a matriz de idiomas/escalas.
 
 ## Regras confirmadas
 

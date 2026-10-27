@@ -56,7 +56,7 @@ No console, acrescente `--world=nome` à inspeção. O [guia Classroom](docs/cla
 
 Durante a edição, execute verificações direcionadas; reserve a bateria completa para a revisão final ou uma nova alteração que a justifique. Consulte [desenvolvimento](docs/development.md) para comandos, CI Windows/Linux e identidade dos artefatos, e [desempenho](docs/performance.md) para benchmarks.
 
-O fluxo principal de atividades, entregas e notas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato. Critérios e verificação assistida introduzidos na rc.15 ainda precisam de aceite de interação. O [registro de validação](docs/validation.md) separa automação, relatos, capturas e pendências; o [roteiro da candidata](docs/classroom-rc18-acceptance.md) orienta a regressão. Esta candidata não cria tag, merge ou publicação estável automaticamente.
+O fluxo principal de atividades, entregas e notas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato. Critérios e verificação assistida introduzidos na rc.15 ainda precisam de aceite de interação. O [registro de validação](docs/validation.md) separa automação, relatos, capturas e pendências; o [roteiro da candidata](docs/classroom-acceptance.md) orienta a regressão. Esta candidata não cria tag, merge ou publicação estável automaticamente.
 
 ## Documentação e próximos incrementos
 

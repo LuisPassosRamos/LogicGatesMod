@@ -100,7 +100,7 @@ Copiar `Server/Languages/en-US/server.lang` para a pasta do novo locale e traduz
 
 Os documentos Custom UI ficam em `src/main/resources/Common/UI/Custom/`; a distribuição exige sua presença no JAR. `verifyProject` e `verifyDistribution` rejeitam declarações `@parametro = ...` depois de propriedades/filhos no mesmo bloco, ignorando comentários e literais. Essa conferência é direcionada à falha histórica de markup e não implementa a gramática completa do cliente. Regressões de transporte também impedem seletores `.Anchor.*` e `.Disabled` em campos incompatíveis. Conferir [contratos da API](reference/hytale-074.md) antes de acrescentar propriedades.
 
-Builders, eventos e codecs exercitados em teste não interpretam layout nem simulam cliques do cliente. O [roteiro da candidata](classroom-rc16-acceptance.md) e o [estado de validação](validation.md) distinguem esses resultados, com evidências por build. Preservar o JAR já testado ao incorporar somente documentação posterior ao ZIP.
+Builders, eventos e codecs exercitados em teste não interpretam layout nem simulam cliques do cliente. O [roteiro da candidata](classroom-acceptance.md#ordem-de-execução) e o [estado de validação](validation.md) distinguem esses resultados, com evidências por build. Preservar o JAR já testado ao incorporar somente documentação posterior ao ZIP.
 
 SQLite JDBC 3.53.4.0 está fixado no Gradle e incorporado por `classroomRuntime`, com licenças e recursos nativos, sem empacotar Hytale. `test` depende do JAR e inclui uma execução isolada do driver no pacote final, também na matriz Windows/Linux. Os testes, o runner nativo e `runServer` habilitam `--enable-native-access=ALL-UNNAMED` no Java 25. Banco, backup e recuperação são descritos no [guia Classroom](classroom.md); não guardar a única cópia de dados em `build/`.
 
@@ -119,7 +119,7 @@ Os sete geradores incluem bancada, categoria e ícones. O ZIP contém fontes de 
 
 ## Massa sintética isolada
 
-`prepareClassroomUiFixture` usa os serviços e o repositório reais, gera um destino novo e recusa sobrescrever um banco existente. Fica no classpath de teste: gerador e dados sintéticos não entram no JAR/ZIP. O [roteiro de paginação](classroom-rc11-acceptance.md#massa-isolada-para-paginação) descreve as contas, os registros e a preparação do ambiente. Usar save/servidor com diretório de dados independente: outro mundo no mesmo servidor compartilha o banco. Nunca carregar a massa sobre a turma real.
+`prepareClassroomUiFixture` usa os serviços e o repositório reais, gera um destino novo e recusa sobrescrever um banco existente. Fica no classpath de teste: gerador e dados sintéticos não entram no JAR/ZIP. O [roteiro de paginação](classroom-acceptance.md#massa-isolada-para-paginação) descreve as contas, os registros e a preparação do ambiente. Usar save/servidor com diretório de dados independente: outro mundo no mesmo servidor compartilha o banco. Nunca carregar a massa sobre a turma real.
 
 ## Comparar leituras do Classroom
 

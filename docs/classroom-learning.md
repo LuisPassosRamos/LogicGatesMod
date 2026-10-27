@@ -1,6 +1,6 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.18**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc18-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
+Implementação candidata em **1.4.0-rc.18**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
 
 ## Atividades
 
@@ -51,7 +51,7 @@ O professor define quantidades exatas das sete portas, alavancas, cabos e lâmpa
 
 Em uma entrega selecionada, **Verificar circuito** confere quantidades e simula a cópia fixa no avaliador existente, fora do contexto do mundo e pela fila pesada limitada. Não altera nota, feedback ou blocos; divergência não impede o envio. Circuito equivalente pode passar no comportamento sem satisfazer restrições de módulos. Quantidade de I/O incompatível não executa a tabela; I/O sem conexão física e realimentação não resolvida são inconclusivos. Somente componentes dentro da área entregue participam. A análise comportamental admite até 2048 componentes lógicos; volumes maiores continuam disponíveis para correção manual.
 
-O relatório pertence à revisão selecionada e não é persistido; verificação é explícita, sem varredura periódica ou atualização de outras telas. Nota e feedback continuam manuais. Cada revisão usa os critérios da publicação entregue mesmo após republicação. A [validação rc.15](classroom-rc15-acceptance.md) explica configuração, mapeamento e limites.
+O relatório pertence à revisão selecionada e não é persistido; verificação é explícita, sem varredura periódica ou atualização de outras telas. Nota e feedback continuam manuais. Cada revisão usa os critérios da publicação entregue mesmo após republicação. A [validação rc.15](classroom-acceptance.md#verificação-assistida-da-entrega-salva) explica configuração, mapeamento e limites.
 
 ### Exemplo: duas alavancas e uma lâmpada AND
 

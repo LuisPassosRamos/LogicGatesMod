@@ -2,7 +2,7 @@
 
 Disponível na candidata **1.4.0-rc.18**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros, mensagem do dia, permissões automáticas e encerramento estão implementados. Este guia descreve o comportamento atual; [atividades, entregas e correção](classroom-learning.md) têm guia próprio.
 
-Os fluxos administrativos centrais e o funcionamento em multiplayer foram confirmados nos relatos anteriores. O polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/escalas. O [estado de validação](validation.md) preserva os resultados por build; o [roteiro da candidata](classroom-rc18-acceptance.md) orienta a regressão atual. Critérios e verificação assistida da rc.15 ainda exigem aceite específico de interação.
+Os fluxos administrativos centrais e o funcionamento em multiplayer foram confirmados nos relatos anteriores. O polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/escalas. O [estado de validação](validation.md) preserva os resultados por build; o [roteiro da candidata](classroom-acceptance.md) orienta a regressão atual. Critérios e verificação assistida da rc.15 ainda exigem aceite específico de interação.
 
 ## Instalar e autorizar
 
@@ -70,32 +70,9 @@ O servidor revalida permissão docente, responsabilidade, UUID e revisão da tur
 
 O histórico é mantido no banco: conteúdo da turma, matrículas, datas, vínculos encerrados e processos anteriores. O histórico pessoal de ingressos continua mostrando aprovações passadas como processos, sem indicar vínculo ativo. Não há botão para restaurar uma turma encerrada nem exclusão definitiva. A decisão de encerrar uma turma real deve ser tomada pelo seu professor; para validar o recurso, use uma turma de teste.
 
-## Roteiro de regressão administrativa
+## Aceite e regressão
 
-Use duas contas e uma turma descartável. Escolha os casos afetados pela mudança e registre build ID, idioma, resolução/escala e resultado. O [roteiro atual](classroom-rc18-acceptance.md) indica a regressão da candidata; os roteiros rc.1–rc.15 e os registros abaixo conservam o contexto histórico. Não repetir toda a campanha de circuitos/fabricação para uma alteração apenas administrativa.
-
-| Cenário | Resultado esperado |
-| --- | --- |
-| Abrir e navegar por turma, ingressos, convite e administração | Sem desconexão por seletor; títulos, descrição e mensagem legíveis; fechar/Esc e reabrir funcionam |
-| Abrir sem OP/permissão docente | Descoberta e próprios ingressos acessíveis; criação/administração indisponíveis |
-| Atualizar instalação anterior com turma salva | Mesma turma/UUID/conteúdo; backup anterior à migração disponível |
-| Professor criar/editar e reconectar | Uma turma, conteúdo salvo e painel correto |
-| Solicitação com `00123` | Aguarda conferência; professor aprova e aluno passa à própria turma |
-| Matrícula vazia/duplicada | Erro traduzido, sem vínculo parcial; professor pode corrigir e tentar novamente |
-| Convite com destinatário offline | Disponível após conexão e reinício completo; aceite ainda exige aprovação |
-| Convite e solicitação para a mesma turma | Um processo aberto, sem sobrescrever a conferência existente |
-| Duas turmas aprovando o mesmo aluno | Um vínculo efetivado; demais pendências encerradas |
-| Recusar/cancelar/rejeitar | Estado correspondente visível ao aluno; nenhum vínculo criado |
-| Corrigir matrícula/remover/sair | Operação autorizada, confirmação na saída/remoção, vínculo encerrado persistido |
-| Sair e solicitar novamente | Novo vínculo; ação antiga não interfere nele |
-| Mensagem do dia | Painel e chat privado na conexão; vazia não envia; troca de mundo não duplica |
-| Revogar permissão com página aberta | Painel bloqueado automaticamente e gravação negada; concessão restaura dados persistidos, sem Recarregar |
-| Atualização durante edição | Campo digitado mantido; conflito de revisão não sobrescreve alteração alheia |
-| Fechar/Esc/reabrir/desconectar durante I/O | Página atual e controle do jogo funcionais; nenhuma resposta antiga aplicada |
-| Listas com mais de 20 registros e textos longos | Paginação, rolagem, ficha e formulários legíveis nos dois idiomas |
-| `/classroom --probe` | Contagem, fechamento e reset continuam funcionando |
-
-Atividades, entregas, notas e verificação assistida seguem o [contrato pedagógico](roadmap/classroom-learning-contracts.md). A verificação apresenta resultados ao professor; nota e feedback permanecem manuais.
+O **[documento único de aceite](classroom-acceptance.md)** reúne pendências, preparação, [roteiro administrativo](classroom-acceptance.md#roteiro-administrativo), teste com professor/aluno e massa isolada. Escolher os casos afetados pela mudança e atualizar seus resultados somente ali. Os registros abaixo conservam o contexto histórico; os contratos de uso permanecem neste guia.
 
 ## Evidências históricas
 

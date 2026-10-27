@@ -11,9 +11,9 @@ Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.18**, com Classroom em **SQLite 
 | Publicar atividades, entregar áreas e corrigir | [Atividades e entregas](classroom-learning.md) |
 | Usar portas, ajuda, tabelas verdade e inspeção | [Ensino e comandos](teaching.md) |
 | Encontrar componentes e fabricar na bancada | [Inventário e fabricação](crafting.md) |
-| Conferir o estado de aceite e os testes necessários | [Validação](validation.md) e [roteiro da candidata](classroom-rc18-acceptance.md) |
+| Conferir o estado de aceite e os testes necessários | [Aceite e roteiro únicos](classroom-acceptance.md) e [histórico de validação](validation.md) |
 
-O fluxo principal de atividades/entregas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/resoluções. Os novos critérios e o relatório da rc.15 ainda exigem validação de interação. A rc.17 acrescenta acompanhamento por aluno e polimento da interface: execução automatizada e aceite no cliente são registrados separadamente, sem inferir aprovação estável. A rc.18 teve [reabertura e apresentação docente pt-BR documentadas](evidence/classroom/2026-10-27-rc18-ptbr-client.md) em 1280×720 relatados, com ressalvas visuais e escala não informada. O [lote do jogo em inglês](evidence/classroom/2026-10-27-rc18-en-client.md), na mesma configuração, registra localização reprovada por mistura de idiomas e novos estados visuais da tabela. Correção/reteste do inglês, aluno, outras dimensões e comportamentos não demonstrados continuam pendentes. Consulte [resultados e evidências](validation.md).
+O [documento único de aceite do Classroom](classroom-acceptance.md) concentra o estado atual, as correções e melhorias abertas, os roteiros de cliente, a massa isolada, os critérios de fechamento e as extensões futuras já registradas. Atualizar esse arquivo nas próximas candidatas. [Validação](validation.md) e anexos de evidência conservam a cronologia e os resultados por build, sem manter outro checklist vigente.
 
 ## Manutenção e contribuição
 
