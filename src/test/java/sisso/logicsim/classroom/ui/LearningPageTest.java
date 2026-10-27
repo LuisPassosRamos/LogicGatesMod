@@ -97,6 +97,24 @@ class LearningPageTest {
             assertOperationState(LearningPage.operationState(false,LearningPage.error(new LearningException(code))),false);
     }
 
+    @Test void revocationClearsActivityVerificationAndAssessmentInputsAndLeavesEditingMode() throws Exception {
+        var activity = new Activity(ACTIVITY, CLASSROOM, 1, false, Draft.empty(), null);
+        var page = page(true, false, activity, null);
+        page.created(activity);
+        assertTrue(page.editingActivity());
+
+        var commands = new UICommandBuilder();
+        page.discardEditor(commands);
+        assertWidgetProperties(commands);
+        assertFalse(page.editingActivity());
+        for (String field : List.of("TitleField", "DescriptionField", "ValueField", "ScoreField", "FeedbackField", "TruthTableField"))
+            assertEquals("", value(commands, "#" + field + ".Value").asString().getValue(), field);
+        for (var kind : sisso.logicsim.circuit.CircuitNode.Kind.values())
+            assertEquals("", value(commands, "#Required" + kind + ".Value").asString().getValue(), kind.name());
+        for (String part : List.of("Day", "Month", "Year"))
+            assertEquals("", value(commands, "#Deadline" + part + ".Value").asString().getValue(), part);
+    }
+
     @Test void creationStaysWideAfterSaveAndReturnsToTheListAfterPublishOrBack() throws Exception {
         var activity=new Activity(ACTIVITY,CLASSROOM,1,false,Draft.empty(),null);
         var page=page(true,false,activity,null);page.created(activity);
