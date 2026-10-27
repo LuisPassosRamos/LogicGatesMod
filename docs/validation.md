@@ -271,3 +271,7 @@ CI Windows/Linux aprovada no commit `dd67acbe89ff639765e8e1be496e26eca79606f7`: 
 ## Candidata rc.17 — acompanhamento e interface
 
 O [roteiro rc.17](classroom-rc17-acceptance.md) cobre progresso por aluno, tabela visual, criação temporária e navegação. As capturas rc.15 orientam o diagnóstico visual, mas não comprovam a renderização da nova candidata. Testes automatizados e aceite no jogo são registrados separadamente. Os artefatos rc.16 permanecem preservados; SQLite continua v6.
+
+A rc.17 passou uma rodada final de `fullCheck`: 922 testes Java, 38 Python e 90 verificações nativas (63 criação + 27 após reinício), sem falhas. Build **1.4.0-rc.17+1ee2a26cc4dc**, revisão `a8e231672b57`, compilação limpa; [registro completo](evidence/classroom/2026-10-27-rc17-server.json). A [comparação de desempenho](evidence/classroom/2026-10-27-rc17-performance.json) usa o mesmo harness administrativo de 25 membros nos JARs preservados rc.16/rc.17, três rodadas alternadas, sem clientes. Não substitui o [aceite rc.17](classroom-rc17-acceptance.md).
+
+CI Windows/Linux aprovada na mesma revisão: [execução 40492988939](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40492988939). O ZIP final acrescenta estas evidências sem regenerar o JAR testado.

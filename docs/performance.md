@@ -163,3 +163,18 @@ Começar o aceite por uma área pequena. Os limites de dimensão, bytes e cota s
 - Contagem sem tabela não roda o avaliador. Simulação acima do limite retorna erro explícito, mantendo entrega/correção manual.
 
 São amostras locais, sem limiar artificial, não medição de rede, cliente, espera na fila ou capacidade de jogadores. A execução real inclui leitura limitada do arquivo/checksum, resolução de assets e revalidação de autorização antes/depois. Usa o único trabalhador pesado existente com fila de oito; não roda a cada atualização da UI, em ticks ou ao salvar nota. Não acrescenta SELECTs à montagem do resumo administrativo. A CI portável também executa a regressão de custo, mas suas máquinas/arquivos não substituem a identidade desta medição.
+
+## Candidata rc.17 — comparação administrativa
+
+A [comparação local rc.16/rc.17](evidence/classroom/2026-10-27-rc17-performance.json) usou o mesmo `ClassroomBenchmark`, três JVMs novas por JAR, ordem alternada, Windows/Java 25. Classpath substituiu as classes/recursos de produção pelo JAR escolhido e conservou o mesmo harness de teste/dependências. Build IDs confirmam os bytes selecionados. Cada caso aquecido usa dez aquecimentos e 25 amostras; a tabela mostra a mediana dos três resultados de cada versão.
+
+| Consulta | rc.16 mediana / p95 (ms) | rc.17 mediana / p95 (ms) |
+| --- | --- | --- |
+| Membros | 1,4968 / 1,7158 | 1,6285 / 1,8986 |
+| Ingressos | 1,4881 / 1,7500 | 1,6289 / 1,8774 |
+| Jogadores | 1,3909 / 1,5144 | 1,4465 / 1,6488 |
+| Administração | 1,1278 / 1,2979 | 1,2668 / 1,5399 |
+
+Houve aumento pequeno de custo absoluto nesse ensaio; não é uma alegação de otimização de tempo. Todas as rajadas de 25/100/250 consultas terminaram sem falhas nas seis execuções. A fixture administrativa congelada tem 25 membros e **nenhuma atividade publicada**: não mede custo com muitas entregas. Progresso com publicações/reenvios/notas é verificado nos testes `ClassroomReadTest`, incluindo uma conexão/até três SELECTs e quatro na ficha, privacidade e snapshot consistente. A tabela visual cria no máximo oito linhas/32 dropdowns; interações locais não consultam o banco. Nenhuma capacidade de jogadores, FPS ou latência de cliente é inferida.
+
+A atualização idêntica de vinte linhas manteve **zero comandos, zero bindings e 59 bytes de confirmação** nas seis execuções. A seleção agora envia também os novos estados de acompanhamento; esse caso congelado não inclui consulta de ficha com entregas.

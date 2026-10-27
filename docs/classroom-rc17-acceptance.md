@@ -1,6 +1,6 @@
 # Classroom — aceite da 1.4.0-rc.17
 
-Candidata de acompanhamento e clareza da interface, Hytale **0.7.4**, SQLite **v6**. As verificações automatizadas serão identificadas pela revisão/build e pelo checksum do JAR na seção abaixo. A renderização da candidata no cliente **está pendente**; não é inferida dos testes de transporte nem das capturas rc.15. Artefatos rc.16 são preservados. Sem tag, merge ou publicação estável nesta entrega.
+Candidata de acompanhamento e clareza da interface, Hytale **0.7.4**, SQLite **v6**. Build **1.4.0-rc.17+1ee2a26cc4dc**, revisão de produção `a8e231672b57`, compilação limpa. JAR SHA-256 `2cb243eaaa389d50548ef8c8c2c607602fbffc29c313a211692ef41f798a7ca6`. A renderização da candidata no cliente **está pendente**; não é inferida dos testes de transporte nem das capturas rc.15. Artefatos rc.16 são preservados. Sem tag, merge ou publicação estável nesta entrega.
 
 ## Comportamentos esperados
 
@@ -31,4 +31,10 @@ Candidata de acompanhamento e clareza da interface, Hytale **0.7.4**, SQLite **v
 
 ## Verificação automatizada
 
-Registro final de testes, benchmark, CI e identificação do artefato será incluído após as execuções. Conferências de fonte e transporte não executam o renderizador Custom UI do cliente.
+Uma rodada final de `fullCheck` passou em **2 min 57 s**: **922 testes Java**, **38 Python**, **90 verificações nativas** (63 criação + 27 após reinício real). Dos Java, 169 pertencem a Classroom. A [evidência automatizada](evidence/classroom/2026-10-27-rc17-server.json) conserva identidade, checks e limites; log local `build/tmp/rc17-fullCheck.log`.
+
+Verificados isolamento de rascunhos, contagem distinta, nota zero/ausente/revisão anterior, orçamento de consultas, publicação inicial com rollback, respostas incompletas/legadas, limite de oito linhas/32 células e preservação de controles nativos durante atualização. Verificador documental aprovou links locais, **361 chaves por idioma** e **seis documentos UI**. Conferências de fonte e transporte não executam o renderizador Custom UI do cliente.
+
+O [benchmark comparativo](evidence/classroom/2026-10-27-rc17-performance.json) executou o mesmo harness administrativo contra os JARs rc.16/rc.17, três JVMs novas por versão, alternando a ordem. Não houve falha nas rajadas de 25/100/250 consultas. A fixture tem 25 membros e nenhuma atividade publicada: esse ensaio mede o custo administrativo, não certifica latência com muitas entregas. Correção e orçamento do progresso são exercitados pelos testes de banco. Consulte [desempenho](performance.md).
+
+A CI Windows/Linux passou na revisão `a8e231672b57951dae093322c50fae827f6029f6`: [run 40492988939](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40492988939). A documentação/evidência final é incorporada ao ZIP sem regenerar os bytes do JAR testado.
