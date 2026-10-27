@@ -8,10 +8,13 @@ TOKENS = re.compile(r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"|@[A-Za-z_]\w*|[A-Za-z
 PARAMETER = re.compile(r'@[A-Za-z_]\w*\Z')
 IDENTIFIER = re.compile(r'[A-Za-z_]\w*\Z')
 LABEL_ALIGNMENTS = {'Start', 'Center', 'End'}
+# Literal Anchor fields exposed by the resolved 0.7.4 Anchor.CODEC.
+ANCHOR_FIELDS = {'Left', 'Right', 'Top', 'Bottom', 'Height', 'Full', 'Horizontal',
+                 'Vertical', 'Width', 'MinWidth', 'MaxWidth'}
 
 
 def check_document(text, name):
-    """Check leading declarations and literal LabelAlignment values.
+    """Check leading declarations, literal Anchor fields and LabelAlignment values.
 
     Hytale 0.7.4 consumes leading declarations before element content. For example,
     its PointInspectorPage uses { @Anchor = (Right: 4); FlexWeight: 1; }.
@@ -23,6 +26,24 @@ def check_document(text, name):
               if not match.group().startswith(('//', '/*'))]
     blocks = []
     for index, (token, offset) in enumerate(tokens):
+        if token in ('Anchor', '@Anchor') and index + 1 < len(tokens):
+            opening = index + 1
+            if tokens[opening][0] in (':', '='):
+                opening += 1
+            if opening < len(tokens) and tokens[opening][0] == '(':
+                depth = 1
+                for field in range(opening + 1, len(tokens)):
+                    value, position = tokens[field]
+                    if value == '(':
+                        depth += 1
+                    elif value == ')':
+                        depth -= 1
+                        if depth == 0:
+                            break
+                    elif depth == 1 and IDENTIFIER.fullmatch(value) and field + 1 < len(tokens) and tokens[field + 1][0] == ':' and value not in ANCHOR_FIELDS:
+                        line = text.count('\n', 0, position) + 1
+                        column = position - text.rfind('\n', 0, position)
+                        raise ValueError(f'{name}:{line}:{column}: Unsupported Anchor field {value} for Hytale 0.7.4')
         if token in ('HorizontalAlignment', 'VerticalAlignment') and index + 2 < len(tokens):
             colon, value = tokens[index + 1][0], tokens[index + 2][0]
             if colon == ':' and IDENTIFIER.fullmatch(value) and value not in LABEL_ALIGNMENTS:

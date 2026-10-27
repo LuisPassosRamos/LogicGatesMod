@@ -91,9 +91,9 @@ $C.@Container {
           Group #CatalogOverview { Visible: false; LayoutMode: Top; Anchor: (Bottom: 16);
             Label #CatalogOverviewTitle { Text: ""; Anchor: (Bottom: 12); Style: (FontSize: 24, TextColor: #ffffff); }
             Group { LayoutMode: LeftWrap;
-              Label #CatalogPublished { Anchor: (Width: 260, MinHeight: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
-              Label #CatalogDrafts { Anchor: (Width: 260, MinHeight: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
-              Label #CatalogPending { Anchor: (Width: 260, MinHeight: 76, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #CatalogPublished { Anchor: (Width: 260, Height: 100, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #CatalogDrafts { Anchor: (Width: 260, Height: 100, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #CatalogPending { Anchor: (Width: 260, Height: 100, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
             }
             Label #CatalogHint { Anchor: (Bottom: 12); Style: (FontSize: 19, Wrap: true, TextColor: #9daec2); }
           }

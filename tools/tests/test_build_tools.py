@@ -155,6 +155,18 @@ class BuildToolsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Missing SQLite runtime resources'):
             self.verify(jar)
 
+    def test_distribution_rejects_unsupported_anchor_in_packaged_bytes(self):
+        jar = self.make_jar()
+        with zipfile.ZipFile(jar) as archive:
+            entries = {name: archive.read(name) for name in archive.namelist()}
+        document = next(name for name in entries if name.endswith('/Classroom.ui'))
+        entries[document] = b'Label { Anchor: (MinHeight: 76); }'
+        with zipfile.ZipFile(jar, 'w') as archive:
+            for name, data in entries.items():
+                archive.writestr(name, data)
+        with self.assertRaisesRegex(ValueError, 'Unsupported Anchor field MinHeight'):
+            self.verify(jar)
+
     def test_metadata_and_checksum_identify_packaged_bytes(self):
         jar = self.make_jar()
         output = self.root / "metadata"

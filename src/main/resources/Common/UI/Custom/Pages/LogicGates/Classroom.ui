@@ -66,9 +66,9 @@ $C.@Container {
             Label #OverviewTitle { Text: ""; Anchor: (Bottom: 10); Style: (FontSize: 22, TextColor: #ffffff); }
             Group #OverviewCards {
               LayoutMode: LeftWrap;
-              Label #SummaryPublished { Anchor: (Width: 260, MinHeight: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
-              Label #SummaryDelivered { Anchor: (Width: 260, MinHeight: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
-              Label #SummaryPending { Anchor: (Width: 260, MinHeight: 76, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #SummaryPublished { Anchor: (Width: 260, Height: 100, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #SummaryDelivered { Anchor: (Width: 260, Height: 100, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #SummaryPending { Anchor: (Width: 260, Height: 100, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
             }
             Label #OverviewHint { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
           }

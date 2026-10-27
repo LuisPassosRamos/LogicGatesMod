@@ -8,6 +8,19 @@ from verify_custom_ui import check_document
 
 
 class CustomUiTest(unittest.TestCase):
+    def test_unsupported_anchor_fields_are_rejected_in_properties_parameters_and_values(self):
+        for field in ('MinHeight', 'MaxHeight', 'Topp'):
+            for body in (f'Anchor: ({field}: 76);', f'@Anchor = ({field}: 76);', f'@Card = Anchor({field}: 76);'):
+                with self.subTest(field=field, body=body), self.assertRaisesRegex(ValueError, 'Unsupported Anchor field '+field):
+                    check_document('Label { '+body+' }', 'Card.ui')
+
+    def test_native_anchor_fields_spreads_comments_and_references_are_accepted(self):
+        check_document('@Card = Anchor(Width: 260, Height: 100);\n'
+                       'Group { @Anchor = (...$C.@Anchor, Left: 0, Right: 1, Top: 2, Bottom: 3,\n'
+                       'Height: 4, Full: 5, Horizontal: 6, Vertical: 7, Width: 8, MinWidth: 9, MaxWidth: 10);\n'
+                       'Anchor: @Anchor; Label { Text: "Anchor: (MinHeight: 1)"; }\n'
+                       '// Anchor: (MaxHeight: 1);\n}', 'Example.ui')
+
     def test_rc17_right_alignment_and_other_non_label_values_are_rejected(self):
         for prop in ('HorizontalAlignment', 'VerticalAlignment'):
             for value in ('Right', 'Left', 'Top', 'Bottom'):
