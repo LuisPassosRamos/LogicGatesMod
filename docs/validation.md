@@ -279,3 +279,7 @@ CI Windows/Linux aprovada na mesma revisão: [execução 40492988939](https://gi
 ## Correção rc.18 — falha no carregamento do cliente
 
 O [log do computador secundário](evidence/classroom/2026-10-27-rc17-client.md) confirma que a rc.17 não permitiu entrar no mundo: `ClassroomRow.ui` usava `HorizontalAlignment: Right`, rejeitado como LabelAlignment. A rc.18 usa `End` e valida o enum literal nas fontes e no JAR. A regressão detecta o problema no próprio JAR rc.17 preservado. Resultados automatizados da candidata corrigida e reteste no jogo são separados no [roteiro rc.18](classroom-rc18-acceptance.md).
+
+Build corrigido **1.4.0-rc.18+2e27a7893893**, revisão `0ac666f4ab40`: fullCheck aprovado em 2 min 48 s, com 922 testes Java, 41 Python e 90 verificações nativas. [Evidência automatizada](evidence/classroom/2026-10-27-rc18-server.json). O JAR preservado da rc.17 é recusado pelo novo guard de alinhamento, enquanto a fonte e o JAR rc.18 usam End. Reteste de entrada no cliente permanece pendente.
+
+CI Windows/Linux aprovada na revisão `0ac666f4ab40a01d3960cebefaeeb0fd53aac834`: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944). O ZIP final incorpora documentação e evidências sem regenerar o JAR testado.

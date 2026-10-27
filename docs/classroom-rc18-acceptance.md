@@ -1,5 +1,7 @@
 # Classroom — aceite da 1.4.0-rc.18
 
+Build **1.4.0-rc.18+2e27a7893893**, revisão de produção `0ac666f4ab40`. JAR SHA-256 `2ddb1af75d6b9c27d64ec0ed892ca50ada9857cede976cd3141b9832889d4630`.
+
 Candidata de correção para Hytale **0.7.4**, SQLite **v6**. Corrige exclusivamente o alinhamento inválido que impedia carregar a UI da rc.17 e amplia o verificador correspondente. Mantém progresso, formulários, tabela visual, entregas e notas existentes. Artefatos anteriores são preservados. Não há migração nova, tag, merge ou publicação estável nesta entrega.
 
 ## Diagnóstico e correção
@@ -15,4 +17,6 @@ O [log enviado pelo usuário](evidence/classroom/2026-10-27-rc17-client.md) iden
 
 ## Verificação automatizada
 
-Os testes direcionados de ferramentas passaram: seis casos de UI e treze de empacotamento. A nova verificação rejeitou o ClassroomRow.ui do JAR rc.17 preservado e aprovou os seis documentos de origem corrigidos. A rodada final de fullCheck, identidade do JAR e CI serão registradas após execução. Renderização e nova entrada no cliente continuam pendentes.
+Os testes direcionados de ferramentas passaram: seis casos de UI e treze de empacotamento. A nova verificação rejeitou o ClassroomRow.ui do JAR rc.17 preservado e aprovou os seis documentos de origem corrigidos. Uma rodada final de `fullCheck` passou em **2 min 48 s**: **922 testes Java**, **41 Python** e **90 verificações nativas** (63 criação + 27 após reinício real). O [registro automatizado](evidence/classroom/2026-10-27-rc18-server.json) conserva resultados, identidade e checksum; log local `build/tmp/rc18-fullCheck.log`. Fingerprint empacotado confere com as fontes de produção commitadas. O indicador dirty=true registrado durante a compilação decorreu do estado transitório do índice do manifest, sem diferença de conteúdo em relação ao commit; o JAR testado foi preservado.
+
+CI Windows/Linux aprovada na revisão `0ac666f4ab40a01d3960cebefaeeb0fd53aac834`, [run 40498835944](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944). Renderização e nova entrada no cliente continuam pendentes; não inferidas da integração de servidor.
