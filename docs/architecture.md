@@ -127,3 +127,11 @@ Entradas são alavancas e saídas são lâmpadas, ordenadas por posição local 
 ## Página de diagnóstico
 
 `/classroom --probe` conserva a prova mínima com `ClassroomProbePage`, `CustomPageLifetime.CanDismiss` e estilos nativos de `Common.ui`. O contador é independente por jogador/abertura, atualizado por `TextSpans`, sem persistência; eventos desconhecidos recebem confirmação vazia. A página de diagnóstico não participa de turmas, entregas ou notas. O [registro de validação](validation.md) conserva a confirmação original do cliente.
+
+## Progresso e formulários — rc.17
+
+`LearningProgress` concentra as projeções de metadados usadas por `SqliteClassroomRepository` e `LearningStore`. A lista docente usa uma conexão e até três SELECTs; selecionar um aluno acrescenta um SELECT paginado (até quatro), validando vínculo e lendo atividades/últimas entregas/últimas notas no mesmo snapshot diferido. Subconsultas usam os índices existentes; não há cache global, nova migração ou consulta por aluno. A contagem considera atividades distintas publicadas não arquivadas, independentemente do número de revisões/publicações. Notas usam o valor da publicação efetivamente entregue.
+
+`ClassroomRuntime.LearningChange` distingue catálogo, entrega, avaliação e outras mudanças. `listenProgress` recebe as três primeiras, com filtro por turma, após o commit; assinaturas continuam removidas ao fechar/desconectar. O canal administrativo/MOTD não recebe essas invalidações.
+
+`LearningTruthTable` mantém as respostas locais e `LearningTableRenderer` cria no máximo oito linhas/32 dropdowns nativos. Paginação, seções e seletores de data não consultam SQLite. Formulários novos permanecem locais até salvar; a primeira gravação/publicação é atômica. `LearningEditorSnapshot` compara os campos exibidos antes de sair; `CantClose` evita descarte por Esc durante edição. Revalidação de autorização continua limpando campos e invalidando callbacks antigos.

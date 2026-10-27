@@ -4,7 +4,7 @@ Plano inicial confirmado em **24/10/2026**, a partir de `v1.3.3` (`d33a2b5`), am
 
 ## Estado atual
 
-A candidata **1.4.0-rc.16** mantém o núcleo de circuitos, o MVP administrativo, atividades versionadas, entregas de áreas, revisões, preview/cópias temporárias, avaliação manual e verificação assistida. SQLite **v6**, arquivos privados imutáveis e leituras agregadas permanecem. A rc.16 é manutenção do código/documentação, sem novo contrato pedagógico ou mudança de esquema.
+A candidata **1.4.0-rc.17** mantém o núcleo de circuitos, o MVP administrativo, atividades versionadas, entregas de áreas, revisões, preview/cópias temporárias, avaliação manual e verificação assistida. SQLite **v6**, arquivos privados imutáveis e leituras agregadas permanecem. A rc.16 é manutenção do código/documentação, sem novo contrato pedagógico ou mudança de esquema.
 
 | Incremento | Implementação e evidência |
 | --- | --- |
@@ -13,13 +13,13 @@ A candidata **1.4.0-rc.16** mantém o núcleo de circuitos, o MVP administrativo
 | Ingresso e administração | Solicitação, convite, matrícula, conferência, membros e mensagem; fluxos centrais confirmados na rc.4 |
 | Permissões e notificações | Eventos nativos com revalidação; multiplayer/revogação relatados após rc.7; rc.8 reduz consultas/pacotes redundantes |
 | Encerramento de turma | Transação, confirmação e histórico desde rc.9; funcionamento confirmado por relato |
-| Leituras agregadas | Uma conexão por consulta e até três SELECTs na tela docente de membros desde rc.10; cinco cenários breves confirmados |
+| Leituras agregadas | Uma conexão por consulta; até três SELECTs na lista docente e quatro na ficha de atividades do aluno (rc.17). Cenários breves rc.10 conservam seu escopo |
 | Atividades, áreas e avaliação manual | Implementados na rc.11; falha de abertura corrigida na rc.12, cujo fluxo principal foi confirmado com duas contas |
 | Polimento de apresentação | Prazo por seletores, criação ampla, contagem por papel e fichas compactas na rc.13; proporções e edição explícita na rc.14, aprovada por relato |
 | Verificação assistida | Quantidades e tabela verdade versionadas na rc.15; automação aprovada e interação de cliente ainda pendente |
 | Manutenção | rc.16 reorganiza responsabilidades, remove redundâncias comprovadas e atualiza os guias; resultados próprios e identidade do arquivo constam no registro de validação |
 
-Consulte [validação por build](../validation.md), [guia administrativo](../classroom.md), [guia pedagógico](../classroom-learning.md) e [roteiro atual](../classroom-rc16-acceptance.md). Capturas, relatos e automação conservam seus escopos: um servidor iniciado não aprova renderização, e um relato genérico não discrimina toda a matriz de idiomas/escalas.
+Consulte [validação por build](../validation.md), [guia administrativo](../classroom.md), [guia pedagógico](../classroom-learning.md) e [roteiro atual](../classroom-rc17-acceptance.md). Capturas, relatos e automação conservam seus escopos: um servidor iniciado não aprova renderização, e um relato genérico não discrimina toda a matriz de idiomas/escalas.
 
 ## Regras confirmadas
 

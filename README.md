@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, candidata **1.4.0-rc.16**. Inclui alavanca, cabo, lâmpada, portas AND, OR, NOT, NAND, NOR, XOR e XNOR, bancada de fabricação e Classroom para turmas e atividades.
+Mod educacional de circuitos para **Hytale 0.7.4**, candidata **1.4.0-rc.17**. Inclui alavanca, cabo, lâmpada, portas AND, OR, NOT, NAND, NOR, XOR e XNOR, bancada de fabricação e Classroom para turmas e atividades.
 
 ## Recursos
 
@@ -25,8 +25,8 @@ No Linux/macOS: `bash ./gradlew build`.
 
 O comando compila, executa testes e confere versões, documentação, traduções, assets gerados e conteúdo do pacote. Produz:
 
-- `build/libs/LogicGates-1.4.0-rc.16.jar`: mod para instalar.
-- `build/releases/LogicGates-1.4.0-rc.16.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
+- `build/libs/LogicGates-1.4.0-rc.17.jar`: mod para instalar.
+- `build/releases/LogicGates-1.4.0-rc.17.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
 - `build/reports/tests/test/index.html`: relatório JUnit.
 
 Com o mundo/servidor parado, instale **somente o JAR de produção** em `mods`, substituindo o anterior para evitar duas cópias do plugin. Guarde o ZIP fora de `mods`; se recebeu apenas o ZIP, extraia dele o JAR. Reinicie para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar.
@@ -56,7 +56,7 @@ No console, acrescente `--world=nome` à inspeção. O [guia Classroom](docs/cla
 
 Durante a edição, execute verificações direcionadas; reserve a bateria completa para a revisão final ou uma nova alteração que a justifique. Consulte [desenvolvimento](docs/development.md) para comandos, CI Windows/Linux e identidade dos artefatos, e [desempenho](docs/performance.md) para benchmarks.
 
-O fluxo principal de atividades, entregas e notas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato. Critérios e verificação assistida introduzidos na rc.15 ainda precisam de aceite de interação. O [registro de validação](docs/validation.md) separa automação, relatos, capturas e pendências; o [roteiro da candidata](docs/classroom-rc16-acceptance.md) orienta a regressão. Esta candidata não cria tag, merge ou publicação estável automaticamente.
+O fluxo principal de atividades, entregas e notas foi confirmado em multiplayer na rc.12; o polimento rc.14 foi aprovado por relato. Critérios e verificação assistida introduzidos na rc.15 ainda precisam de aceite de interação. O [registro de validação](docs/validation.md) separa automação, relatos, capturas e pendências; o [roteiro da candidata](docs/classroom-rc17-acceptance.md) orienta a regressão. Esta candidata não cria tag, merge ou publicação estável automaticamente.
 
 ## Documentação e próximos incrementos
 

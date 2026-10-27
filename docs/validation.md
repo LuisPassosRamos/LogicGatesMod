@@ -2,7 +2,7 @@
 
 ## Estado atual e como interpretar os registros
 
-A candidata de manutenção é **1.4.0-rc.16**, Hytale **0.7.4**, SQLite **v6**. A seção própria da candidata identifica a execução automatizada e a identidade do arquivo testado. O [roteiro rc.16](classroom-rc16-acceptance.md) concentra a regressão atual; este arquivo conserva também os registros das candidatas anteriores.
+A candidata atual é **1.4.0-rc.17**, Hytale **0.7.4**, SQLite **v6**. A seção própria da candidata identifica a execução automatizada e a identidade do arquivo testado. O [roteiro rc.17](classroom-rc17-acceptance.md) concentra a regressão atual; este arquivo conserva também os registros das candidatas anteriores.
 
 | Área | Evidência disponível | O que continua separado |
 | --- | --- | --- |
@@ -267,3 +267,7 @@ As regressões novas cobrem falha de configuração/fechamento da conexão, bind
 O [roteiro rc.16](classroom-rc16-acceptance.md) exige regressão curta de cliente; o aceite específico dos critérios/relatório rc.15 continua separado. Esta execução não comprova renderização nem capacidade de jogadores. Artefatos rc.15 preservados com os checksums anteriores. Documentação/evidências finais são incorporadas ao ZIP mantendo o JAR exato testado; nenhuma tag, merge ou publicação estável.
 
 CI Windows/Linux aprovada no commit `dd67acbe89ff639765e8e1be496e26eca79606f7`: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40444170877). O fechamento posterior apenas de documentação/evidências não repete a bateria nem recompila o JAR testado.
+
+## Candidata rc.17 — acompanhamento e interface
+
+O [roteiro rc.17](classroom-rc17-acceptance.md) cobre progresso por aluno, tabela visual, criação temporária e navegação. As capturas rc.15 orientam o diagnóstico visual, mas não comprovam a renderização da nova candidata. Testes automatizados e aceite no jogo são registrados separadamente. Os artefatos rc.16 permanecem preservados; SQLite continua v6.

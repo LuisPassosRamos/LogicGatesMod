@@ -1,6 +1,6 @@
 # Atividades — contrato aprovado e etapas pedagógicas
 
-Contrato inicial aprovado em 24/10/2026, ampliado para áreas/correção e verificação assistida em 26/10/2026. Publicação, entregas e avaliação manual estão implementadas desde a rc.11; a rc.15 acrescentou critérios versionados e verificação de circuito, mantendo nota manual. A candidata atual é **rc.16**, com SQLite **v6**. Consulte [uso atual](../classroom-learning.md), [validação por build](../validation.md) e [roteiro da candidata](../classroom-rc16-acceptance.md). Este documento registra contratos, sem atribuir aceite automático às implementações.
+Contrato inicial aprovado em 24/10/2026, ampliado para áreas/correção e verificação assistida em 26/10/2026. Publicação, entregas e avaliação manual estão implementadas desde a rc.11; a rc.15 acrescentou critérios versionados e verificação de circuito, mantendo nota manual. A candidata atual é **rc.17**, com SQLite **v6**. Consulte [uso atual](../classroom-learning.md), [validação por build](../validation.md) e [roteiro da candidata](../classroom-rc17-acceptance.md). Este documento registra contratos, sem atribuir aceite automático às implementações.
 
 ## Primeiro incremento: publicar e consultar atividades
 
@@ -59,3 +59,7 @@ A prova no servidor isolado é complementada pelo teste no cliente de seleção,
 ## Verificação assistida — contrato rc.15
 
 Aprovado em 26/10/2026: quantidades exatas, campo vazio livre e zero proibido; alavancas são entradas e lâmpadas saídas com tabela esperada. Regras pertencem ao rascunho e à publicação correspondente. Nota continua manual. O primeiro incremento usa ordem por coordenadas locais X/Y/Z, tabela completa de até 6 entradas/4 saídas, limite de 2048 componentes para simulação e execução explícita na fila pesada existente. Não bloqueia entregas divergentes. Não há pontuação automática, execução contínua ou histórico persistido dos relatórios. Consulte [uso](../classroom-learning.md#critérios-e-verificação-assistida--rc15) e [aceite](../classroom-rc15-acceptance.md).
+
+## Acompanhamento e usabilidade — rc.17
+
+Implementados: contagem distinta de entregas/publicadas não arquivadas; ficha por aluno com nota da última revisão; tabela visual paginada com texto avançado preservado; nova atividade temporária até salvar e confirmação de saída. Rascunhos incompletos podem conservar saídas indefinidas; publicar exige tabela completa. Esses incrementos não alteram SQLite v6/formato 1, critérios por publicação, autoria, nota manual ou verificação isolada. O [roteiro rc.17](../classroom-rc17-acceptance.md) registra o aceite pendente no cliente.

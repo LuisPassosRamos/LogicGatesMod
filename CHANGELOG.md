@@ -4,7 +4,17 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.16.
+Nenhuma alteração registrada após 1.4.0-rc.17.
+
+## [1.4.0-rc.17] - 2026-10-27
+
+### Acompanhamento e clareza da interface
+- Progresso entregue/publicado junto ao nome do aluno, ficha paginada com situação, prazo e nota da última revisão e acesso direto à atividade. Resumos úteis para professor e aluno, sem contar rascunhos privados como pendência.
+- Formulário de atividade dividido em dados, componentes e resultados. Tabela visual de até seis entradas/quatro saídas, oito combinações por página, exemplo AND e fallback de texto sem perda silenciosa de rascunhos antigos.
+- Nova atividade só persiste ao salvar/publicar, com primeira publicação atômica e confirmação de alterações não salvas ao navegar. Rascunhos incompletos continuam permitidos.
+- Navegação superior, filtro suspenso, paginação ocultada quando desnecessária, gestão de aluno separada, metadados técnicos recolhidos e colunas de preview/avaliação. Cópia temporária identificada e descarte confirmado.
+- Consultas agregadas em snapshot: uma conexão/até três SELECTs na lista docente e quatro na ficha. Invalidações de catálogo, entrega e nota após commit, sem polling ou reenvio de MOTD. Mantidos SQLite v6, critérios/publicações, avaliação manual e arquivos entregues.
+- Testes de domínio, privacidade, consultas e transporte ampliados. Renderização e interação da candidata dependem do roteiro no cliente.
 
 ## [1.4.0-rc.16] - 2026-10-27
 
