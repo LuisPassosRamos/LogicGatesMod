@@ -15,9 +15,16 @@ final class LearningSchema {
             "CREATE INDEX learning_review_world ON learning_reviews(world_id)"
         }) try(var s=c.createStatement()) { s.execute(sql); }
     }
+    static void upgradeSix(Connection c) throws SQLException {
+        try(var s=c.createStatement()) {
+            s.execute("ALTER TABLE learning_activities ADD COLUMN draft_rules TEXT NOT NULL DEFAULT ''");
+            s.execute("ALTER TABLE learning_versions ADD COLUMN rules TEXT NOT NULL DEFAULT ''");
+        }
+    }
     static void verify(Connection c) throws SQLException {
         for(String sql:new String[]{"SELECT id,classroom_id,revision,archived,has_draft,draft_title,draft_description,draft_deadline,draft_value,current_version FROM learning_activities LIMIT 0",
-                "SELECT activity_id,number,title,description,deadline,value,published_at FROM learning_versions LIMIT 0",
+                "SELECT draft_rules FROM learning_activities LIMIT 0",
+                "SELECT activity_id,number,title,description,deadline,value,published_at,rules FROM learning_versions LIMIT 0",
                 "SELECT id,activity_id,publication,student_id,membership_id,revision,received_at,late,content_id,checksum,bytes,width,height,depth FROM learning_submissions LIMIT 0",
                 "SELECT submission_id,revision,score,feedback,graded_at,teacher_id FROM learning_grades LIMIT 0",
                 "SELECT id,teacher_id,submission_id,world_id,x,y,z,width,height,depth FROM learning_reviews LIMIT 0"})

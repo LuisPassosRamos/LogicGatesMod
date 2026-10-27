@@ -35,6 +35,18 @@ final class AreaServerChecks {
             long start=System.nanoTime();var snapshot=NativeAreaAdapter.capture(world,SOURCE,LIMITS);
             measurements.put("smallCaptureMs",millis(start));
             check(snapshot.blocks().stream().anyMatch(b->Boolean.TRUE.equals(b.leverOn())),"on lever captured");
+            var nodes=NativeAreaAdapter.verificationNodes(snapshot);
+            long directional=0;
+            for(var entry:nodes.entrySet())if(entry.getValue().isGate()){
+                var local=entry.getKey();var actual=BlockComponentAccess.gateTopologyIfLoaded(world,p(SOURCE,local.x(),local.y(),local.z()));
+                check(actual!=null && actual.outputDirection()==entry.getValue().outputDirection(),"offline gate orientation equals native topology");directional++;
+            }
+            check(directional==28,"seven gates in all four orientations decoded");
+            var small=new AreaSnapshot(1,5,2,1,snapshot.blocks().stream().filter(b->b.z()==0 && b.x()<5).toList());
+            var checked=new SubmissionVerifier().verify(new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.LEVER,1),"0 -> 0\n1 -> 1"),NativeAreaAdapter.verificationNodes(small));
+            check(checked.cases().size()==2 && checked.cases().stream().allMatch(c->c.outcome()==SubmissionVerifier.Outcome.MATCH),"saved native lever-cable-lamp verifies both truth cases");
+            check(snapshot.blocks().stream().anyMatch(b->Boolean.TRUE.equals(b.leverOn())),"assistance preserves submitted lever intent");
+            passed.add("assisted verification: native saved asset states, seven gates/four orientations and offline truth cases without world changes");
             var nativeSelection=NativeAreaAdapter.selection(snapshot);
             var nativeDocument=SelectionPrefabSerializer.serialize(nativeSelection);
             var nativeRestored=SelectionPrefabSerializer.deserialize(nativeDocument);

@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.14.
+Nenhuma alteração registrada após 1.4.0-rc.15.
+
+## [1.4.0-rc.15] - 2026-10-26
+
+### Critérios e verificação assistida
+- Atividades permitem quantidades exatas das sete portas, alavancas, cabos e lâmpadas: vazio deixa livre e zero proíbe. As regras e a tabela esperada pertencem à publicação imutável, incluindo entregas anteriores.
+- Professor configura tabela completa com alavancas como entradas e lâmpadas como saídas, ordenadas pelas posições locais X/Y/Z. Verificar circuito analisa a revisão salva pelo mesmo motor lógico, mostrando quantidades e cada caso; não modifica o mundo, nota ou feedback.
+- Tabela opcional, até seis entradas/quatro saídas e 2048 componentes lógicos. Verificação sob demanda usa a fila pesada limitada existente; portas desconectadas e realimentação não resolvida são inconclusivas, sem atribuir zero.
+- SQLite v6 acrescenta critérios aos rascunhos/publicações com backup e migração transacional; registros anteriores recebem critérios livres. Publicar formulário salva/publica em uma transação, revertendo também os campos em caso de tabela ou prazo inválidos.
+- Mantém seleção/preview/cópia temporária e avaliação manual. Apresentação e nova interação dependem do roteiro da candidata no cliente.
 
 ## [1.4.0-rc.14] - 2026-10-26
 

@@ -39,6 +39,8 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private Activity activity;
     private UUID activityId,studentId,submissionId,previewId,previewLoading;
     private Submission submission;
+    private UUID verificationId;
+    private SubmissionVerifier.Report verificationReport;
     private Publication submittedVersion;
     private Page<?> rows=new Page<>(List.of(),0,false);
     private Page<Submission> revisions=new Page<>(List.of(),0,false);
@@ -46,7 +48,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private boolean students,creating,editing,busy=true,dismissed,pending,saving,discardDrafts;
     private int page,revisionPage,gradeRevision;
     private long editRevision;
-    private static final String[] ACTIONS={"New","Filter","Activities","Previous","Next","Edit","CancelEdit","SaveDraft","Publish","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard"};
+    private static final String[] ACTIONS={"New","Filter","Activities","Previous","Next","Edit","CancelEdit","SaveDraft","Publish","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","SaveGrade","Paste","Discard","Verify"};
     private static final String[] FIELDS={"TitleField","DescriptionField","ValueField","ScoreField","FeedbackField"};
     public LearningPage(PlayerRef player,ClassroomRuntime runtime,World world,UUID activity,UUID submission) {
         super(player,CustomPageLifetime.CanDismiss,Event.CODEC);this.runtime=runtime;this.world=world;this.areas=LogicSimPlugin.getAreas();
@@ -58,11 +60,15 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     }
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder c,UIEventBuilder e,Store<EntityStore> store) {
         c.append(LAYOUT);c.set("#Build.TextSpans",text("build").param("build",BuildInfo.BUILD_ID).param("hytale",BuildInfo.HYTALE_VERSION));
-        for(String action:new String[]{"Back","Close","Reload","New","Filter","Activities","Previous","Next","Edit","CancelEdit","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","Paste","Discard"})
+        for(String action:new String[]{"Back","Close","Reload","New","Filter","Activities","Previous","Next","Edit","CancelEdit","Archive","Restore","Students","Deliver","SubmitArea","CancelSelection","Newer","Older","Paste","Discard","Verify"})
             e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action,EventData.of("Action",action));
-        for(String action:new String[]{"SaveDraft","Publish"})e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action,EventData.of("Action",action)
-                .append("@Title","#TitleField.Value").append("@Description","#DescriptionField.Value").append("@Value","#ValueField.Value")
-                .append("@Day","#DeadlineDay.Value").append("@Month","#DeadlineMonth.Value").append("@Year","#DeadlineYear.Value").append("@Hour","#DeadlineHour.Value").append("@Minute","#DeadlineMinute.Value"));
+        for(String action:new String[]{"SaveDraft","Publish"}){
+            var fields=EventData.of("Action",action).append("@Title","#TitleField.Value").append("@Description","#DescriptionField.Value").append("@Value","#ValueField.Value")
+                .append("@Day","#DeadlineDay.Value").append("@Month","#DeadlineMonth.Value").append("@Year","#DeadlineYear.Value").append("@Hour","#DeadlineHour.Value").append("@Minute","#DeadlineMinute.Value")
+                .append("@TruthTable","#TruthTableField.Value");
+            for(var kind:sisso.logicsim.circuit.CircuitNode.Kind.values())fields.append("@Required"+kind,"#Required"+kind+".Value");
+            e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action,fields);
+        }
         for(String id:new String[]{"DeadlineMonth","DeadlineYear"})e.addEventBinding(CustomUIEventBindingType.ValueChanged,"#"+id,EventData.of("Action","DeadlineChanged")
                 .append("@Day","#DeadlineDay.Value").append("@Month","#DeadlineMonth.Value").append("@Year","#DeadlineYear.Value"));
         e.addEventBinding(CustomUIEventBindingType.Activating,"#SaveGrade",EventData.of("Action","SaveGrade").append("@Score","#ScoreField.Value").append("@Feedback","#FeedbackField.Value"));
@@ -76,7 +82,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                 if(!allowed && (context==null || context.teacher())){
                     discardDrafts=true;
                     creating=false;editing=false;
-                    var c=new UICommandBuilder();for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());c.set("#Details.Visible",false);publish(ref,store,c,new UIEventBuilder());clearPreview();
+                    var c=new UICommandBuilder();for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());LearningVerification.render(c,VerificationRules.EMPTY);c.set("#Details.Visible",false);publish(ref,store,c,new UIEventBuilder());clearPreview();
                 }
                 if(busy)pending=true;else refresh(ref,store,false,null);
             });
@@ -154,7 +160,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         c.set("#CancelSelection.Visible",selection!=null);
         c.set("#Discard.Visible",teacher && hasReview);
         if(activity!=null){
-            if(editor && reset){var d=activity.editable();editRevision=activity.revision();c.set("#TitleField.Value",d.title());c.set("#DescriptionField.Value",d.description());LearningDeadline.render(c,d.deadline(),currentYear());c.set("#ValueField.Value",LearningViews.points(d.value()));}
+            if(editor && reset){var d=activity.editable();editRevision=activity.revision();c.set("#TitleField.Value",d.title());c.set("#DescriptionField.Value",d.description());LearningDeadline.render(c,d.deadline(),currentYear());c.set("#ValueField.Value",LearningViews.points(d.value()));LearningVerification.render(c,d.rules());}
             c.set("#StudentInfo.Visible",teacher && students && studentId!=null);
             if(teacher && students && studentId!=null) rows.items().stream().filter(r->r instanceof Student student && student.id().equals(studentId)).findFirst().ifPresent(r->{var student=(Student)r;c.set("#StudentInfo.TextSpans",text("learning.studentInfo").param("name",student.name()).param("enrollment",student.enrollment()).param("state",text(student.active()?"learning.activeStudent":"learning.formerStudent")));});
             if(!editor)renderActivity(c,teacher && !students);
@@ -163,8 +169,13 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         c.set("#ActivityScore.Visible",!teacher && activity!=null && submission==null);
         if(!teacher && activity!=null && submission==null)c.set("#ActivityScore.TextSpans",text("learning.assessment").param("score","—").param("value",LearningViews.points(activity.published().value())));
         c.set("#NoSubmission.Visible",teacher && students && studentId!=null && submission==null);
+        c.set("#VerificationResults.Visible",show && teacher && submission.id().equals(verificationId) && verificationReport!=null);
+        c.set("#Verify.Visible",show && teacher);
         c.set("#Submission.Visible",show);c.set("#RevisionActions.Visible",show);c.set("#ReviewActions.Visible",show && teacher);c.set("#GradeEditor.Visible",show && teacher);
         if(show){
+            if(teacher && submission.id().equals(verificationId) && verificationReport!=null)c.set("#VerificationResults.TextSpans",LearningVerification.report(verificationReport,submission));
+            c.set("#SubmissionRules.Visible",submittedVersion!=null && submittedVersion.rules().configured());
+            if(submittedVersion!=null)c.set("#SubmissionRules.TextSpans",LearningVerification.deliveredCriteria(submittedVersion));
             c.set("#SubmissionMeta.TextSpans",text("learning.submissionMeta").param("revision",submission.revision()).param("version",submission.publication()).param("date",LearningViews.date(submission.at())).param("width",submission.width()).param("height",submission.height()).param("depth",submission.depth()).param("state",submissionLabel(submission)));
             boolean oldVersion=activity.published()!=null && submission.publication()!=activity.published().number();
             c.set("#VersionSnapshot.Visible",oldVersion);
@@ -178,6 +189,10 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private void renderActivity(UICommandBuilder c,boolean privateView) {
         var p=activity.published();var d=privateView?activity.editable():p==null?(context.teacher()?activity.editable():Draft.empty()):p.draft();
         boolean draft=p==null || privateView && activity.draft()!=null;
+        boolean delivered=!privateView && submission!=null;
+        c.set("#ReadRequirements.Visible",!delivered && d.rules().configured());
+        c.set("#ReadRequirements.TextSpans",LearningVerification.summary(d.rules()));
+        c.set("#ReadTable.Visible",!delivered && !d.rules().table().isEmpty());c.set("#ReadTable.TextSpans",LearningVerification.table(d.rules()));
         c.set("#ReadTitle.TextSpans",d.title().isBlank()?text("learning.untitled"):Message.raw(d.title()));
         c.set("#ReadDescription.TextSpans",Message.raw(d.description()));c.set("#ReadDescription.Visible",!d.description().isEmpty());
         c.set("#DeadlineState.Visible",d.deadline()!=null && d.deadline()<=System.currentTimeMillis());
@@ -244,9 +259,9 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                 }
                 case "SaveDraft","Publish"->{
                     if(!editingActivity()){acknowledge(ref,store);return;}
-                    var draft=new Draft(event.title,event.description,LearningDeadline.deadline(event.dateParts()),LearningViews.points(event.value));
+                    var draft=new Draft(event.title,event.description,LearningDeadline.deadline(event.dateParts()),LearningViews.points(event.value),LearningVerification.rules(event.quantities,event.truthTable));
                     UUID id=activity.id();long revision=editRevision;boolean publish="Publish".equals(event.action);
-                    mutate(ref,store,runtime.learn(s->{var a=s.save(playerRef.getUuid(),id,revision,draft);return publish?s.publish(playerRef.getUuid(),id,a.revision()):a;}),ignored->saved(publish),true,publish);
+                    mutate(ref,store,runtime.learn(s->publish?s.saveAndPublish(playerRef.getUuid(),id,revision,draft):s.save(playerRef.getUuid(),id,revision,draft)),ignored->saved(publish),true,publish);
                 }
                 case "Archive","Restore"->{if(context.teacher() && !students && activity!=null && !creating){var a=activity;long revision=editingActivity()?editRevision:a.revision();mutate(ref,store,runtime.learn(s->s.archive(playerRef.getUuid(),a.id(),revision,"Archive".equals(event.action))),ignored->{editing=false;},true,true);}}
                 case "Students"->{if(context.teacher() && activity!=null && !creating){editing=false;students=true;studentId=null;submissionId=null;page=0;clearPreview();refresh(ref,store,true,null);}}
@@ -258,11 +273,26 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
                     if(submission!=null){Long score=LearningViews.points(event.score);if(score==null)throw new LearningException(LearningException.Code.INVALID_SCORE);
                         UUID id=submission.id();int expected=gradeRevision;mutate(ref,store,runtime.learn(s->s.grade(playerRef.getUuid(),id,expected,score,event.feedback)),ignored->{});}
                 }
+                case "Verify"->{if(context.teacher() && students && submission!=null)verify(ref,store);else acknowledge(ref,store);}
                 case "Paste"->{if(submission!=null)mode(ref,store,areas.beginPaste(playerRef,world,submission.id()));}
                 case "Discard"->mutate(ref,store,areas.discard(playerRef,world),ignored->{},false);
                 default->acknowledge(ref,store);
             }
         } catch(RuntimeException failure){fail(ref,store,failure);}
+    }
+    private void verify(Ref<EntityStore> ref,Store<EntityStore> store){
+        UUID requested=submission.id();var stamp=access.current();busy=true;
+        publish(ref,store,operationState(true,text("learning.verifying")),new UIEventBuilder());
+        areas.verify(playerRef.getUuid(),requested).whenComplete((report,failure)->inWorld(ref,store,()->{
+            busy=false;
+            if(!access.current(stamp)){refresh(ref,store,false,null);return;}
+            if(!requested.equals(submissionId)){acknowledge(ref,store);return;}
+            if(failure!=null){fail(ref,store,failure);return;}
+            verificationId=requested;verificationReport=report;
+            var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,false);
+            c.set("#Status.TextSpans",text("learning.verificationReady"));publish(ref,store,c,e);
+            if(pending)refresh(ref,store,false,null);
+        }));
     }
     private void revision(Ref<EntityStore> ref,Store<EntityStore> store,boolean older) {
         if(submission==null){acknowledge(ref,store);return;}
@@ -305,7 +335,7 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
         busy=false;saving=false;var c=operationState(false,error(failure));
         var cause=unwrap(failure);
         if(cause instanceof sisso.logicsim.classroom.domain.ClassroomException ex && ex.reason()==sisso.logicsim.classroom.domain.ClassroomException.Reason.FORBIDDEN){
-            creating=false;editing=false;c.set("#Body.Visible",false);c.set("#New.Visible",false);c.set("#Filter.Visible",false);for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());clearPreview();context=null;
+            creating=false;editing=false;c.set("#Body.Visible",false);c.set("#New.Visible",false);c.set("#Filter.Visible",false);for(String f:FIELDS)c.set("#"+f+".Value","");LearningDeadline.render(c,null,currentYear());LearningVerification.render(c,VerificationRules.EMPTY);clearPreview();context=null;
         }
         c.set("#Previous.Disabled",page==0);c.set("#Next.Disabled",!rows.hasNext());
         publish(ref,store,c,new UIEventBuilder());
@@ -324,12 +354,13 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
     private static String shortText(String s){return shortText(s,28);}
     private static String shortText(String s,int limit){return s.codePointCount(0,s.length())<=limit?s:s.substring(0,s.offsetByCodePoints(0,limit-3))+"...";}
     private static int currentYear(){return java.time.LocalDate.now(LearningViews.BRASILIA).getYear();}
-    private void clearPreview(){previewId=null;if(!dismissed)try{playerRef.getPacketHandler().writeNoCache(new BuilderToolPrefabPreview());}catch(RuntimeException disconnected){ /* Connection already closed. */ }}
+    private void clearPreview(){verificationId=null;verificationReport=null;previewId=null;if(!dismissed)try{playerRef.getPacketHandler().writeNoCache(new BuilderToolPrefabPreview());}catch(RuntimeException disconnected){ /* Connection already closed. */ }}
     private static void close(AutoCloseable c){if(c!=null)try{c.close();}catch(Exception ignored){}}
     private void dispose(){if(dismissed)return;clearPreview();dismissed=true;close(dataSubscription);close(authSubscription);close(learningSubscription);}
     @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store){dispose();}
     public static final class Event {
-        public static final BuilderCodec<Event> CODEC=BuilderCodec.builder(Event.class,Event::new)
+        public static final BuilderCodec<Event> CODEC=codec();
+        private static BuilderCodec<Event> codec(){var builder=BuilderCodec.builder(Event.class,Event::new)
             .append(new KeyedCodec<>("Action",Codec.STRING),(e,v)->e.action=v,e->e.action).add()
             .append(new KeyedCodec<>("Target",Codec.STRING),(e,v)->e.target=v,e->e.target).add()
             .append(new KeyedCodec<>("@Title",Codec.STRING),(e,v)->e.title=v,e->e.title).add()
@@ -341,8 +372,14 @@ public final class LearningPage extends InteractiveCustomUIPage<LearningPage.Eve
             .append(new KeyedCodec<>("@Minute",Codec.STRING),(e,v)->e.minute=v,e->e.minute).add()
             .append(new KeyedCodec<>("@Value",Codec.STRING),(e,v)->e.value=v,e->e.value).add()
             .append(new KeyedCodec<>("@Score",Codec.STRING),(e,v)->e.score=v,e->e.score).add()
-            .append(new KeyedCodec<>("@Feedback",Codec.STRING),(e,v)->e.feedback=v,e->e.feedback).add().build();
-        public String action,target,title,description,day,month,year,hour,minute,value,score,feedback;
+            .append(new KeyedCodec<>("@Feedback",Codec.STRING),(e,v)->e.feedback=v,e->e.feedback).add()
+            .append(new KeyedCodec<>("@TruthTable",Codec.STRING),(e,v)->e.truthTable=v,e->e.truthTable).add();
+            var kinds=sisso.logicsim.circuit.CircuitNode.Kind.values();
+            for(int i=0;i<kinds.length;i++){final int index=i;builder.append(new KeyedCodec<>("@Required"+kinds[i],Codec.STRING),(e,v)->e.quantities[index]=v,e->e.quantities[index]).add();}
+            return builder.build();
+        }
+        public String action,target,title,description,day,month,year,hour,minute,value,score,feedback,truthTable;
+        public final String[] quantities=new String[sisso.logicsim.circuit.CircuitNode.Kind.values().length];
         LearningDeadline.Parts dateParts(){return new LearningDeadline.Parts(day,month,year,hour,minute);}
     }
 }

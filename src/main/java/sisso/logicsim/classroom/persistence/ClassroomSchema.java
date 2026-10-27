@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /** Transactional upgrades retain v1 identifiers; consistent pre-upgrade copies stay in plugin data. */
 final class ClassroomSchema {
-    static final int VERSION = 5;
+    static final int VERSION = 6;
     static final int APPLICATION = 0x4c47434c;
     private ClassroomSchema() { }
     static void initialize(Connection c, Path path) throws Exception {
@@ -53,6 +53,7 @@ final class ClassroomSchema {
             if (version < 3) execute(c, "ALTER TABLE classrooms ADD COLUMN message TEXT NOT NULL DEFAULT '' CHECK(length(message)<=2048)");
             if (version < 4) upgradeFour(c);
             if (version < 5) LearningSchema.create(c);
+            if (version < 6) LearningSchema.upgradeSix(c);
             execute(c, "PRAGMA application_id=" + APPLICATION);
             execute(c, "PRAGMA user_version=" + VERSION);
             verifyBase(c);

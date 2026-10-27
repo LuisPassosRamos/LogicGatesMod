@@ -197,6 +197,15 @@ public final class AreaRuntime implements AutoCloseable {
     public CompletableFuture<com.hypixel.hytale.protocol.packets.buildertools.BuilderToolPrefabPreview> preview(UUID actor,UUID submission) {
         return ready.thenCompose(ignored->queue.submit(actor,()->{var s=await(runtime.learn(store->store.submission(actor,submission)));return NativeAreaAdapter.preview(read(s));}));
     }
+    public CompletableFuture<SubmissionVerifier.Report> verify(UUID actor,UUID submission) {
+        return ready.thenCompose(ignored->queue.submit(actor,()->{
+            var ctx=await(runtime.learn(store->store.verification(actor,submission)));
+            var result=new SubmissionVerifier().verify(ctx.publication().rules(),NativeAreaAdapter.verificationNodes(read(ctx.submission())));
+            // Recheck effective authorization/membership after heavy work, including native APIs without events.
+            await(runtime.learn(store->store.verification(actor,submission)));
+            return result;
+        }));
+    }
     private AreaSnapshot read(Submission s) {
         var snapshot=runtime.submissionFiles().read(s.content(),s.checksum());
         if(snapshot.width()!=s.width() || snapshot.height()!=s.height() || snapshot.depth()!=s.depth())throw new LearningException(CORRUPT_CONTENT);

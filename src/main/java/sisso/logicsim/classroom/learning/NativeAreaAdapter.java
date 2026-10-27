@@ -14,7 +14,7 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.component.*;
 import sisso.logicsim.LogicSimPlugin;
-import sisso.logicsim.circuit.BlockPosition;
+import sisso.logicsim.circuit.*;
 import sisso.logicsim.util.*;
 import sisso.logicsim.classroom.learning.AreaSessions.Bounds;
 import org.joml.Vector3i;
@@ -78,6 +78,28 @@ public final class NativeAreaAdapter {
         var selection=selection(snapshot);var data=selection.toPacket();var packet=new BuilderToolPrefabPreview();
         packet.blocksChange=data.blocksChange;packet.bounds=selection.toEditorSelectionBounds();packet.tilt=23;packet.spinSpeed=0;packet.previewScale=100;
         return packet;
+    }
+    /** Resolves stable asset names/rotations off the world thread. No chunks or block entities are read. */
+    public static Map<BlockPosition,CircuitNode> verificationNodes(AreaSnapshot snapshot) {
+        var nodes=new HashMap<BlockPosition,CircuitNode>();
+        for(var b:snapshot.blocks()){
+            var type=BlockType.getAssetMap().getAsset(b.asset());supported(type);
+            if(b.filler()!=0)throw new LearningException(AREA_UNSUPPORTED).problem(b.asset());
+            var kind=LogicBlockTypes.kind(type);if(kind==null)continue;
+            CircuitNode node;
+            if(kind.isGate()){
+                var rotation=RotationTuple.get(b.rotation());var up=new Vector3i(0,1,0);var front=new Vector3i(1,0,0);
+                rotation.applyRotationTo(up);rotation.applyRotationTo(front);
+                var output=Arrays.stream(HorizontalDirection.values()).filter(d->front.equals(new Vector3i(d.dx(),0,d.dz()))).findFirst().orElse(null);
+                if(!up.equals(new Vector3i(0,1,0)) || output==null)throw new LearningException(AREA_UNSUPPORTED).problem(b.asset());
+                node=CircuitNode.gate(kind,output);
+            }else if(kind==CircuitNode.Kind.LEVER){
+                if(b.leverOn()==null)throw new LearningException(CORRUPT_CONTENT);
+                node=CircuitNode.lever(b.leverOn());
+            }else node=new CircuitNode(kind,false);
+            nodes.put(new BlockPosition(b.x(),b.y(),b.z()),node);
+        }
+        return Map.copyOf(nodes);
     }
     public static void requireEmpty(World world,Bounds b) {
         for(int y=0;y<b.height();y++)for(int z=0;z<b.depth();z++)for(int x=0;x<b.width();x++) {

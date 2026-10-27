@@ -94,6 +94,74 @@ $C.@Container {
             }
             Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.value; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
             $C.@TextField #ValueField { Anchor: (Width: 220, Bottom: 12, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 16; }
+            Label { Anchor: (Top: 8, Bottom: 6); Text: %server.logicgates.learning.requirements; Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
+            Label { Anchor: (Bottom: 10); Text: %server.logicgates.learning.requirementsHelp; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+            Group {
+              LayoutMode: LeftWrap;
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: %server.logicgates.learning.moduleLever; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredLEVER { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: %server.logicgates.learning.moduleCable; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredCABLE { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: %server.logicgates.learning.moduleLamp; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredLAMP { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "AND"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredAND { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "OR"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredOR { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "NOT"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredNOT { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "NAND"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredNAND { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "NOR"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredNOR { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "XOR"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredXOR { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+              Group {
+                LayoutMode: Top;
+                Anchor: (Width: 190, Right: 12, Bottom: 12);
+                Label { Text: "XNOR"; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
+                $C.@TextField #RequiredXNOR { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
+              }
+            }
+            Label { Anchor: (Top: 8, Bottom: 6); Text: %server.logicgates.learning.expectedTable; Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
+            Label { Anchor: (Bottom: 10); Text: %server.logicgates.learning.tableHelp; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+            $C.@MultilineTextField #TruthTableField { Anchor: (Height: 220, Bottom: 12); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 4096; }
           }
           Group #Read {
             Visible: false;
@@ -110,6 +178,8 @@ $C.@Container {
             Label #DraftNotice { Anchor: (Bottom: 12); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); Visible: false; }
             Label #DeadlineState { Anchor: (Bottom: 8); Text: %server.logicgates.learning.deadlineClosed; Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); Visible: false; }
             Label #ReadDescription { Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #c8d3e0); }
+            Label #ReadRequirements { Anchor: (Top: 8, Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
+            Label #ReadTable { Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #ActivityScore { Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #NoSubmission { Anchor: (Bottom: 8); Text: %server.logicgates.learning.notSubmitted; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); Visible: false; }
           }
@@ -117,6 +187,8 @@ $C.@Container {
             Visible: false;
             LayoutMode: Top;
             Label #VersionSnapshot { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
+            Label #SubmissionRules { Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
+            Label #VerificationResults { Anchor: (Bottom: 16); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #SubmissionMeta { Anchor: (Bottom: 6); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
             PrefabPreviewComponent #PrefabPreview { Anchor: (Height: 360, Bottom: 16); AllowDragYaw: true; AllowDragPitch: true; AllowZoom: true; AllowPan: true; ShowAnchor: true; }
             Label #Assessment { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
@@ -164,6 +236,7 @@ $C.@Container {
             Visible: false;
             LayoutMode: LeftWrap;
             Anchor: (Bottom: 6);
+            $C.@SecondaryTextButton #Verify { @Text = %server.logicgates.learning.verify; Anchor: (Width: 260, Right: 8, Bottom: 6, Height: 48); Visible: false; }
             $C.@TextButton #SaveGrade { @Text = %server.logicgates.learning.saveGrade; Anchor: (Width: 250, Right: 8, Bottom: 6, Height: 48); }
             $C.@SecondaryTextButton #Paste { @Text = %server.logicgates.learning.paste; Anchor: (Width: 240, Right: 8, Bottom: 6, Height: 48); }
           }

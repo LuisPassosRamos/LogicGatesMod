@@ -35,6 +35,27 @@ class LearningStoreTest {
     Activity published() { var a=store.create(teacher);a=store.save(teacher,a.id(),a.revision(),new Draft("A","Statement",clock.millis()+60000,1000L));return store.publish(teacher,a.id(),a.revision()); }
     AreaSnapshot snapshot() { return new AreaSnapshot(1,2,1,1,List.of(new AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null))); }
     Submission submit(Activity a) { return store.submit(student,a.id(),a.published().number(),membership,UUID.randomUUID(),files.write(snapshot())); }
+    @Test void verificationCriteriaArePrivateVersionedAndUseTheDeliveredPublicationAfterRestart(){
+        var rules=new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.AND,1,sisso.logicsim.circuit.CircuitNode.Kind.LEVER,2),SubmissionVerifierTest.AND);
+        var a=store.create(teacher);a=store.saveAndPublish(teacher,a.id(),a.revision(),new Draft("Logic","AND",clock.millis()+60000,1000L,rules));
+        var first=submit(a);var changed=new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.AND,0),"");
+        a=store.save(teacher,a.id(),a.revision(),new Draft("Changed","Private",clock.millis()+120000,1000L,changed));
+        assertEquals(rules,store.activity(student,a.id()).published().rules());assertNull(store.activity(student,a.id()).draft());
+        a=store.publish(teacher,a.id(),a.revision());var second=submit(a);
+        new SqliteClassroomRepository(dir.resolve("classroom.db"));
+        assertEquals(rules,store.verification(teacher,first.id()).publication().rules());assertEquals(changed,store.verification(teacher,second.id()).publication().rules());
+        assertNull(store.submission(student,first.id()).assessment());
+        assertThrows(ClassroomException.class,()->store.verification(student,first.id()));assertThrows(ClassroomException.class,()->store.verification(other,first.id()));
+        permission.set(false);assertThrows(ClassroomException.class,()->store.verification(teacher,first.id()));
+    }
+    @Test void invalidTablePublicationRollsBackSavedFieldsAndRevisionButIncompletePrivateDraftCanBeSaved(){
+        var a=published();var invalid=new Draft("New","Incomplete",clock.millis()+120000,2000L,new VerificationRules(Map.of(),"00 -> 0"));
+        final var before=a;
+        assertEquals(INVALID_RULES,assertThrows(LearningException.class,()->store.saveAndPublish(teacher,before.id(),before.revision(),invalid)).code());
+        assertEquals(before,store.activity(teacher,a.id()));
+        a=store.save(teacher,a.id(),a.revision(),invalid);assertEquals("00 -> 0",a.draft().rules().table());
+        assertEquals("",store.activity(student,a.id()).published().rules().table());
+    }
     @Test void draftsArePrivateAndPublishedVersionsAreImmutable() {
         var a=store.create(teacher); assertEquals(1000L,a.draft().value()); assertTrue(store.activities(student,LearningStore.Filter.ALL,0).items().isEmpty());
         assertThrows(ClassroomException.class,()->store.activity(student,a.id()));

@@ -21,7 +21,7 @@ public final class LearningStore {
     private final Clock clock;
     private static final String ACTIVITY="""
         SELECT a.*,v.number AS published_number,v.title AS published_title,v.description AS published_description,
-        v.deadline AS published_deadline,v.value AS published_value,v.published_at
+        v.deadline AS published_deadline,v.value AS published_value,v.published_at,v.rules AS published_rules
         FROM learning_activities a LEFT JOIN learning_versions v ON v.activity_id=a.id AND v.number=a.current_version
         """;
     private static final String REVIEWS="SELECT r.*,a.classroom_id FROM learning_reviews r JOIN learning_submissions s ON s.id=r.submission_id JOIN learning_activities a ON a.id=s.activity_id";
@@ -73,20 +73,30 @@ public final class LearningStore {
     }
     public Activity save(UUID actor,UUID id,long revision,Draft draft) {
         Objects.requireNonNull(draft);
-        return write(c->{ var ctx=context(c,actor); teacher(ctx); var current=activity(c,ctx,id); checkRevision(current,revision);
-            if(current.archived()) throw new LearningException(ARCHIVED);
-            execute(c,"UPDATE learning_activities SET has_draft=1,draft_title=?,draft_description=?,draft_deadline=?,draft_value=?,revision=revision+1 WHERE id=?",
-                    draft.title(),draft.description(),draft.deadline(),draft.value(),id); return activity(c,ctx,id); });
+        return write(c->{var ctx=context(c,actor);return save(c,ctx,id,revision,draft);});
+    }
+    private Activity save(Connection c,Context ctx,UUID id,long revision,Draft draft) throws SQLException {
+        teacher(ctx);var current=activity(c,ctx,id);checkRevision(current,revision);
+        if(current.archived())throw new LearningException(ARCHIVED);
+        execute(c,"UPDATE learning_activities SET has_draft=1,draft_title=?,draft_description=?,draft_deadline=?,draft_value=?,draft_rules=?,revision=revision+1 WHERE id=?",
+                draft.title(),draft.description(),draft.deadline(),draft.value(),draft.rules().encode(),id);return activity(c,ctx,id);
+    }
+    public Activity saveAndPublish(UUID actor,UUID id,long revision,Draft draft) {
+        Objects.requireNonNull(draft);
+        return write(c->{var ctx=context(c,actor);var saved=save(c,ctx,id,revision,draft);return publish(c,ctx,id,saved.revision());});
     }
     public Activity publish(UUID actor,UUID id,long revision) {
-        return write(c->{ var ctx=context(c,actor); teacher(ctx); var current=activity(c,ctx,id); checkRevision(current,revision);
+        return write(c->publish(c,context(c,actor),id,revision));
+    }
+    private Activity publish(Connection c,Context ctx,UUID id,long revision) throws SQLException {
+            teacher(ctx); var current=activity(c,ctx,id); checkRevision(current,revision);
             if(current.archived()) throw new LearningException(ARCHIVED);
             if(current.draft()==null) throw new LearningException(NO_DRAFT);
             long now=clock.millis(); current.draft().publishable(now); var d=current.draft();
             int number=current.published()==null?1:current.published().number()+1;
-            execute(c,"INSERT INTO learning_versions VALUES(?,?,?,?,?,?,?)",id,number,d.title(),d.description(),d.deadline(),d.value(),now);
+            execute(c,"INSERT INTO learning_versions(activity_id,number,title,description,deadline,value,published_at,rules) VALUES(?,?,?,?,?,?,?,?)",id,number,d.title(),d.description(),d.deadline(),d.value(),now,d.rules().encode());
             execute(c,"UPDATE learning_activities SET current_version=?,has_draft=0,revision=revision+1 WHERE id=?",number,id);
-            return activity(c,ctx,id); });
+            return activity(c,ctx,id);
     }
     public Activity archive(UUID actor,UUID id,long revision,boolean archived) {
         return write(c->{ var ctx=context(c,actor); teacher(ctx); checkRevision(activity(c,ctx,id),revision);
@@ -97,6 +107,13 @@ public final class LearningStore {
         return read(c->{ activity(c,context(c,actor),activity);
             return one(c,"SELECT * FROM learning_versions WHERE activity_id=? AND number=?",LearningStore::publication,activity,number)
                     .orElseThrow(()->new ClassroomException(NOT_FOUND)); });
+    }
+    /** One authorized read snapshot binds assistance to the delivered publication, never the latest draft. */
+    public VerificationContext verification(UUID actor,UUID id) {
+        return read(c->{var ctx=context(c,actor);teacher(ctx);var submitted=submission(c,id);activity(c,ctx,submitted.activity());
+            var version=one(c,"SELECT * FROM learning_versions WHERE activity_id=? AND number=?",LearningStore::publication,submitted.activity(),submitted.publication())
+                    .orElseThrow(()->new ClassroomException(NOT_FOUND));
+            return new VerificationContext(submitted,version);});
     }
     public Page<Student> students(UUID actor,UUID activity,int page) {
         ClassroomReadPolicy.page(page);
@@ -177,12 +194,12 @@ public final class LearningStore {
     public void removedReview(UUID id) { write(c->{execute(c,"DELETE FROM learning_reviews WHERE id=?",id); return null;}); }
 
     private static Activity activity(ResultSet r,boolean teacher) throws SQLException {
-        Publication publication=r.getObject("published_number")==null?null:new Publication(id(r,"id"),r.getInt("published_number"),r.getString("published_title"),r.getString("published_description"),r.getLong("published_deadline"),r.getLong("published_value"),r.getLong("published_at"));
-        Draft draft=teacher && r.getInt("has_draft")==1?new Draft(r.getString("draft_title"),r.getString("draft_description"),nullable(r,"draft_deadline"),nullable(r,"draft_value")):null;
+        Publication publication=r.getObject("published_number")==null?null:new Publication(id(r,"id"),r.getInt("published_number"),r.getString("published_title"),r.getString("published_description"),r.getLong("published_deadline"),r.getLong("published_value"),r.getLong("published_at"),VerificationRules.decode(r.getString("published_rules")));
+        Draft draft=teacher && r.getInt("has_draft")==1?new Draft(r.getString("draft_title"),r.getString("draft_description"),nullable(r,"draft_deadline"),nullable(r,"draft_value"),VerificationRules.decode(r.getString("draft_rules"))):null;
         return new Activity(id(r,"id"),id(r,"classroom_id"),r.getLong("revision"),r.getInt("archived")==1,draft,publication);
     }
     private static Publication publication(ResultSet r) throws SQLException {
-        return new Publication(id(r,"activity_id"),r.getInt("number"),r.getString("title"),r.getString("description"),r.getLong("deadline"),r.getLong("value"),r.getLong("published_at"));
+        return new Publication(id(r,"activity_id"),r.getInt("number"),r.getString("title"),r.getString("description"),r.getLong("deadline"),r.getLong("value"),r.getLong("published_at"),VerificationRules.decode(r.getString("rules")));
     }
     private static Submission submission(ResultSet r) throws SQLException {
         var grade=r.getObject("grade_revision")==null?null:new Assessment(r.getInt("grade_revision"),r.getLong("score"),r.getString("feedback"),r.getLong("graded_at"));

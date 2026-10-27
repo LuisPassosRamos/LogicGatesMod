@@ -27,13 +27,37 @@ class LearningPageTest {
         assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.contains(".Anchor.")));
         assertWidgetProperties(commands);
         var publish=Arrays.stream(events.getEvents()).filter(e->e.selector.equals("#Publish")).findFirst().orElseThrow();var fields=BsonDocument.parse(publish.data);
-        assertEquals(Set.of("Action","@Title","@Description","@Day","@Month","@Year","@Hour","@Minute","@Value"),fields.keySet());
+        var expected=new HashSet<>(Set.of("Action","@Title","@Description","@Day","@Month","@Year","@Hour","@Minute","@Value","@TruthTable"));
+        for(var kind:sisso.logicsim.circuit.CircuitNode.Kind.values())expected.add("@Required"+kind);
+        assertEquals(expected,fields.keySet());
         var grade=Arrays.stream(events.getEvents()).filter(e->e.selector.equals("#SaveGrade")).findFirst().orElseThrow();assertEquals(Set.of("Action","@Score","@Feedback"),BsonDocument.parse(grade.data).keySet());
     }
     @Test void codecAcceptsLiteralFieldsButNoClaimedStudentPublicationOrGradeRevision() throws Exception {
         var event=LearningPage.Event.CODEC.decodeJson(new RawJsonReader("{\"Action\":\"Publish\",\"@Title\":\"%server.fake\",\"@Description\":\"literal\\ntext\",\"Publication\":999,\"Student\":\"forged\"}".toCharArray()),new ExtraInfo());
         assertEquals("%server.fake",event.title);assertEquals("literal\ntext",event.description);assertNull(event.target);
         for(var code:LearningException.Code.values())assertEquals("server.logicgates.learning.error."+code,LearningPage.error(new LearningException(code)).getMessageId());
+    }
+    @Test void verificationFieldsRoundTripAndOnlyTeacherReviewOffersAssistanceWithoutChangingManualGrade() throws Exception {
+        var event=LearningPage.Event.CODEC.decodeJson(new RawJsonReader("{\"Action\":\"Publish\",\"@RequiredAND\":\"0\",\"@RequiredLEVER\":\"2\",\"@TruthTable\":\"00 -> 0\\n01 -> 0\\n10 -> 0\\n11 -> 1\"}".toCharArray()),new ExtraInfo());
+        var rules=LearningVerification.rules(event.quantities,event.truthTable);
+        assertEquals(0,rules.quantities().get(sisso.logicsim.circuit.CircuitNode.Kind.AND));assertEquals(4,rules.cases().size());
+        var published=new Publication(ACTIVITY,1,"Title","Statement",Long.MAX_VALUE,1000,1,rules);
+        var activity=new Activity(ACTIVITY,CLASSROOM,2,false,null,published);
+        var submission=new Submission(UUID.randomUUID(),ACTIVITY,1,STUDENT,UUID.randomUUID(),1,2,false,UUID.randomUUID(),"hash",10,3,1,3,1000,new Assessment(1,700,"Keep feedback",3));
+        for(boolean teacher:new boolean[]{false,true}){
+            var page=page(teacher,teacher,activity,submission);var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);assertWidgetProperties(c);
+            assertEquals(teacher,value(c,"#Verify.Visible").asBoolean().getValue());
+            if(teacher){
+                var report=new SubmissionVerifier().verify(rules,Map.of());set(page,"verificationId",submission.id());set(page,"verificationReport",report);
+                c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);assertWidgetProperties(c);
+                assertTrue(value(c,"#VerificationResults.Visible").asBoolean().getValue());
+                assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+                assertFalse(value(c,"#ReadTable.Visible").asBoolean().getValue());
+                assertTrue(value(c,"#SubmissionRules.TextSpans").toString().contains("11 -> 1"));
+                set(page,"verificationId",UUID.randomUUID());c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+                assertFalse(value(c,"#VerificationResults.Visible").asBoolean().getValue());
+            }
+        }
     }
 
     @Test void renderedTeacherStudentArchivedAndAssessmentUpdatesUseCompatibleWidgetProperties() throws Exception {
