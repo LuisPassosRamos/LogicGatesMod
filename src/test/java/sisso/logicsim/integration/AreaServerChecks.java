@@ -42,11 +42,23 @@ final class AreaServerChecks {
                 check(actual!=null && actual.outputDirection()==entry.getValue().outputDirection(),"offline gate orientation equals native topology");directional++;
             }
             check(directional==28,"seven gates in all four orientations decoded");
+            var tilted=RotationTuple.of(Rotation.None,Rotation.Ninety,Rotation.None);
+            var tiltedPosition=p(SOURCE,8,1,11);
+            gates.place(world,tiltedPosition,LogicBlockTypes.AND_ID,tilted.index());
+            var tiltedTopology=BlockComponentAccess.gateTopologyIfLoaded(world,tiltedPosition);
+            check(tiltedTopology!=null && tiltedTopology.outputDirection()==sisso.logicsim.circuit.HorizontalDirection.EAST
+                    && tiltedTopology.unavailableInputMask()==sisso.logicsim.circuit.CircuitNode.inputMask(
+                            sisso.logicsim.circuit.CircuitNode.Kind.AND,sisso.logicsim.circuit.HorizontalDirection.EAST),
+                    "unsupported live gate tilt remains pending with the safe fallback");
+            var tiltedSnapshot=new AreaSnapshot(1,1,1,1,List.of(
+                    new AreaSnapshot.Block(0,0,0,LogicBlockTypes.AND_ID,tilted.index(),0,null)));
+            expect(LearningException.Code.AREA_UNSUPPORTED,()->NativeAreaAdapter.verificationNodes(tiltedSnapshot));
+            gates.place(world,tiltedPosition,"Empty");
             var small=new AreaSnapshot(1,5,2,1,snapshot.blocks().stream().filter(b->b.z()==0 && b.x()<5).toList());
             var checked=new SubmissionVerifier().verify(new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.LEVER,1),"0 -> 0\n1 -> 1"),NativeAreaAdapter.verificationNodes(small));
             check(checked.cases().size()==2 && checked.cases().stream().allMatch(c->c.outcome()==SubmissionVerifier.Outcome.MATCH),"saved native lever-cable-lamp verifies both truth cases");
             check(snapshot.blocks().stream().anyMatch(b->Boolean.TRUE.equals(b.leverOn())),"assistance preserves submitted lever intent");
-            passed.add("assisted verification: native saved asset states, seven gates/four orientations and offline truth cases without world changes");
+            passed.add("assisted verification: native saved states, seven gates/four orientations, tilt rejection and offline truth cases");
             var nativeSelection=NativeAreaAdapter.selection(snapshot);
             var nativeDocument=SelectionPrefabSerializer.serialize(nativeSelection);
             var nativeRestored=SelectionPrefabSerializer.deserialize(nativeDocument);

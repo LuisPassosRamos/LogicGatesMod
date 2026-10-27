@@ -88,10 +88,8 @@ public final class NativeAreaAdapter {
             var kind=LogicBlockTypes.kind(type);if(kind==null)continue;
             CircuitNode node;
             if(kind.isGate()){
-                var rotation=RotationTuple.get(b.rotation());var up=new Vector3i(0,1,0);var front=new Vector3i(1,0,0);
-                rotation.applyRotationTo(up);rotation.applyRotationTo(front);
-                var output=Arrays.stream(HorizontalDirection.values()).filter(d->front.equals(new Vector3i(d.dx(),0,d.dz()))).findFirst().orElse(null);
-                if(!up.equals(new Vector3i(0,1,0)) || output==null)throw new LearningException(AREA_UNSUPPORTED).problem(b.asset());
+                var output=GateOrientation.horizontalOutput(RotationTuple.get(b.rotation()));
+                if(output==null)throw new LearningException(AREA_UNSUPPORTED).problem(b.asset());
                 node=CircuitNode.gate(kind,output);
             }else if(kind==CircuitNode.Kind.LEVER){
                 if(b.leverOn()==null)throw new LearningException(CORRUPT_CONTENT);

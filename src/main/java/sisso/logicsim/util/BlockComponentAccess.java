@@ -37,16 +37,7 @@ public final class BlockComponentAccess {
         if (kind == null || !kind.isGate()) return null;
         var rotation = rotationIfLoaded(world, position);
         if (rotation == null) return null;
-        var vector = new Vector3i(1, 0, 0); // The art's front/output is local +X.
-        rotation.applyRotationTo(vector);
-        HorizontalDirection output = null;
-        var up = new Vector3i(0, 1, 0);
-        rotation.applyRotationTo(up);
-        if (up.equals(new Vector3i(0, 1, 0))) {
-            for (var direction : HorizontalDirection.values()) {
-                if (vector.equals(new Vector3i(direction.dx(), 0, direction.dz()))) output = direction;
-            }
-        }
+        var output = GateOrientation.horizontalOutput(rotation);
         // Assets allow NESW only; imported unsupported rotations remain safely unpowered.
         if (output == null) return new GateTopology(kind, rotation.index(), HorizontalDirection.EAST,
                 CircuitNode.inputMask(kind, HorizontalDirection.EAST));
