@@ -162,9 +162,6 @@ public final class ClassroomRuntime implements AutoCloseable {
     public CompletableFuture<Void> remember(UUID actor, String name) {
         return mutation(service -> { service.remember(actor, name); return null; }, value -> new Change(null, actor, true));
     }
-    public CompletableFuture<Page<Summary>> browse(UUID actor, String query, int page) { return submit(service -> service.browse(actor, query, page)); }
-    public CompletableFuture<Page<Profile>> players(UUID actor, String query, int page) { return submit(service -> service.players(actor, query, page)); }
-    public CompletableFuture<Page<Member>> members(UUID actor, int page) { return submit(service -> service.members(actor, page)); }
     public CompletableFuture<Page<Intake>> intakes(UUID actor, boolean teacher, int page) { return submit(service -> service.intakes(actor, teacher, page)); }
     public CompletableFuture<Intake> request(UUID actor, UUID classroom, String enrollment) {
         return mutation(service -> service.request(actor, classroom, enrollment), ClassroomRuntime::change);

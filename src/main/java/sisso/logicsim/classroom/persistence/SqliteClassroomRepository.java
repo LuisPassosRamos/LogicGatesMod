@@ -7,34 +7,29 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import static sisso.logicsim.classroom.domain.ClassroomException.Reason.*;
+import static sisso.logicsim.classroom.persistence.SqliteAccess.*;
 
 /** Transactions protect invariants across independent connections/worlds, not only our I/O queue. */
 public final class SqliteClassroomRepository implements ClassroomRepository {
     public static final int SCHEMA_VERSION = ClassroomSchema.VERSION;
-    public static final int PAGE_SIZE = 20;
-    private final String url;
+    public static final int PAGE_SIZE = SqliteAccess.PAGE_SIZE;
+    private final SqliteAccess database;
     private static final String MEMBER = "SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name FROM classroom_memberships m LEFT JOIN classroom_players p ON p.uuid=m.player_uuid ";
     private static final String INTAKE = "SELECT i.*,c.name AS classroom_name,coalesce(p.name,i.student_uuid) AS student_name FROM classroom_intakes i JOIN classrooms c ON c.id=i.classroom_id LEFT JOIN classroom_players p ON p.uuid=i.student_uuid ";
     public SqliteClassroomRepository(Path path) {
         path = path.toAbsolutePath().normalize();
-        url = "jdbc:sqlite:" + path;
+        database = new SqliteAccess(path);
         try {
             Files.createDirectories(path.getParent());
             Class.forName("org.sqlite.JDBC");
-            try (var c = connect()) { ClassroomSchema.initialize(c, path); }
+            try (var c = database.connect()) { ClassroomSchema.initialize(c, path); }
         } catch (Exception failure) { throw new ClassroomException(UNAVAILABLE, failure); }
-    }
-    private Connection connect() throws SQLException {
-        var c = DriverManager.getConnection(url);
-        try (var s = c.createStatement()) { s.execute("PRAGMA foreign_keys=ON"); s.execute("PRAGMA busy_timeout=5000"); }
-        catch (SQLException failure) { c.close(); throw failure; }
-        return c;
     }
     @Override public Home readHome(UUID actor, boolean canTeach) {
         return read(c -> home(c,actor,canTeach));
     }
     @Override public Screen readScreen(UUID actor, Kind requested, String query, int number, boolean canTeach) {
-        return transaction("BEGIN DEFERRED",c -> {
+        return transaction(Transaction.READ,c -> {
             var home=home(c,actor,canTeach);
             Kind kind=ClassroomReadPolicy.kind(home,requested);
             boolean teacher=ClassroomReadPolicy.teacher(home);
@@ -286,32 +281,16 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
     private static Intake intake(ResultSet r) throws SQLException {
         return new Intake(uuid(r,"id"),uuid(r,"classroom_id"),r.getString("classroom_name"),uuid(r,"student_uuid"),r.getString("student_name"),Origin.valueOf(r.getString("origin")),State.valueOf(r.getString("state")),r.getString("enrollment"),r.getLong("revision"),r.getLong("created_at"));
     }
-    private static void bind(PreparedStatement s, Object... args) throws SQLException { for (int n=0;n<args.length;n++) s.setObject(n+1,args[n] instanceof UUID ? args[n].toString() : args[n]); }
-    private static void execute(Connection c, String sql, Object... args) throws SQLException {
-        try (var s = c.prepareStatement(sql)) { bind(s,args); s.executeUpdate(); }
-    }
-    private static <T> List<T> query(Connection c, String sql, Row<T> map, Object... args) throws SQLException {
-        try (var s=c.prepareStatement(sql)) { bind(s,args); try(var r=s.executeQuery()) { var rows=new ArrayList<T>(); while(r.next()) rows.add(map.read(r)); return rows; } }
-    }
-    private static <T> Optional<T> one(Connection c, String sql, Row<T> map, Object... args) throws SQLException { return query(c,sql,map,args).stream().findFirst(); }
-    private static <T> Page<T> page(Connection c, String sql, Row<T> map, int page, Object... args) throws SQLException {
-        var rows=query(c,sql,map,args); return new Page<>(rows.subList(0,Math.min(rows.size(),PAGE_SIZE)),page,rows.size()>PAGE_SIZE);
-    }
     private <T> T read(Action<T> action) {
-        try(var c=connect()) { return action.run(c); }
+        try(var c=database.connect()) { return action.run(c); }
         catch(ClassroomException expected) { throw expected; }
         catch(Exception failure) { throw new ClassroomException(UNAVAILABLE,failure); }
     }
-    private <T> T transaction(Action<T> action) { return transaction("BEGIN IMMEDIATE",action); }
-    private <T> T transaction(String begin,Action<T> action) {
-        return read(c -> {
-            try(var s=c.createStatement()) {
-                s.execute(begin);
-                try { T result=action.run(c); s.execute("COMMIT"); return result; }
-                catch(Exception failure) { try { s.execute("ROLLBACK"); } catch(SQLException rollback) { failure.addSuppressed(rollback); } throw failure; }
-            }
-        });
+    private <T> T transaction(Action<T> action) {
+        return transaction(Transaction.WRITE, action);
     }
-    @FunctionalInterface private interface Row<T> { T read(ResultSet r) throws SQLException; }
-    @FunctionalInterface private interface Action<T> { T run(Connection c) throws Exception; }
+
+    private <T> T transaction(Transaction mode, Action<T> action) {
+        return read(connection -> SqliteAccess.transaction(connection, mode, action));
+    }
 }

@@ -3,6 +3,8 @@ package sisso.logicsim.classroom.learning;
 import sisso.logicsim.classroom.domain.ClassroomException;
 import sisso.logicsim.classroom.domain.ClassroomReadPolicy;
 import sisso.logicsim.classroom.domain.ClassroomViews.Page;
+import sisso.logicsim.classroom.persistence.SqliteAccess;
+import static sisso.logicsim.classroom.persistence.SqliteAccess.*;
 import sisso.logicsim.classroom.learning.LearningViews.*;
 import java.nio.file.Path;
 import java.sql.*;
@@ -15,7 +17,7 @@ import static sisso.logicsim.classroom.learning.LearningException.Code.*;
 /** Pure Java learning application/persistence boundary. Native permission is a trusted server predicate. */
 public final class LearningStore {
     public enum Filter { ALL, PUBLISHED, DRAFT, ARCHIVED }
-    private final String url;
+    private final SqliteAccess database;
     private final Predicate<UUID> canTeach;
     private final LearningLimits limits;
     private final Clock clock;
@@ -32,20 +34,24 @@ public final class LearningStore {
         """;
     public LearningStore(Path database,Predicate<UUID> canTeach,LearningLimits limits) { this(database,canTeach,limits,Clock.systemUTC()); }
     public LearningStore(Path database,Predicate<UUID> canTeach,LearningLimits limits,Clock clock) {
-        url="jdbc:sqlite:"+database.toAbsolutePath().normalize(); this.canTeach=canTeach; this.limits=limits; this.clock=clock;
+        this.database=new SqliteAccess(database); this.canTeach=canTeach; this.limits=limits; this.clock=clock;
     }
-    public Context context(UUID actor) { return read(c->context(c,actor)); }
-    private Context context(Connection c,UUID actor) throws SQLException {
-        if(actor==null) throw new ClassroomException(FORBIDDEN);
-        var context=one(c,"""
+    public Context context(UUID actor) {
+        return read(c -> context(c, actor));
+    }
+
+    private Context context(Connection c, UUID actor) throws SQLException {
+        if (actor == null) throw new ClassroomException(FORBIDDEN);
+        var context = one(c, """
             SELECT m.id,m.classroom_id,m.role,c.teacher_uuid,c.name FROM classroom_memberships m
             JOIN classrooms c ON c.id=m.classroom_id WHERE m.player_uuid=? AND m.active=1 AND c.closed_at IS NULL
-            """,r->{
-                boolean teacher=r.getString("role").equals("TEACHER");
-                if(teacher && (!canTeach.test(actor) || !actor.toString().equals(r.getString("teacher_uuid")))) throw new ClassroomException(FORBIDDEN);
-                return new Context(id(r,"classroom_id"),id(r,"id"),teacher,r.getString("name"));
-            },actor);
-        return context.orElseThrow(()->new ClassroomException(FORBIDDEN));
+            """, r -> {
+                boolean teacher = r.getString("role").equals("TEACHER");
+                if (teacher && (!canTeach.test(actor) || !actor.toString().equals(r.getString("teacher_uuid"))))
+                    throw new ClassroomException(FORBIDDEN);
+                return new Context(id(r, "classroom_id"), id(r, "id"), teacher, r.getString("name"));
+            }, actor);
+        return context.orElseThrow(() -> new ClassroomException(FORBIDDEN));
     }
     private static void teacher(Context context) { if(!context.teacher()) throw new ClassroomException(FORBIDDEN); }
     public Page<Activity> activities(UUID actor,Filter filter,int page) {
@@ -57,63 +63,100 @@ public final class LearningStore {
                 case DRAFT->" AND a.archived=0 AND a.has_draft=1"; case ARCHIVED->" AND a.archived=1";
             };
             return page(c,ACTIVITY+" WHERE a.classroom_id=?"+state+" ORDER BY coalesce(v.title,a.draft_title),a.id LIMIT 21 OFFSET ?",
-                    r->activity(r,ctx.teacher()),page,ctx.classroom(),page*20);
+                    r->activity(r,ctx.teacher()),page,ctx.classroom(),page*PAGE_SIZE);
         });
     }
-    public Activity activity(UUID actor,UUID activity) { return read(c->activity(c,context(c,actor),activity)); }
-    private Activity activity(Connection c,Context ctx,UUID activity) throws SQLException {
-        var result=one(c,ACTIVITY+" WHERE a.id=? AND a.classroom_id=?",r->activity(r,ctx.teacher()),activity,ctx.classroom())
-                .orElseThrow(()->new ClassroomException(NOT_FOUND));
-        if(!ctx.teacher() && (result.archived() || result.published()==null)) throw new ClassroomException(FORBIDDEN);
+    public Activity activity(UUID actor, UUID activity) {
+        return read(c -> activity(c, context(c, actor), activity));
+    }
+
+    private Activity activity(Connection c, Context ctx, UUID activity) throws SQLException {
+        var result = one(c, ACTIVITY + " WHERE a.id=? AND a.classroom_id=?",
+                r -> activity(r, ctx.teacher()), activity, ctx.classroom())
+                .orElseThrow(() -> new ClassroomException(NOT_FOUND));
+        if (!ctx.teacher() && (result.archived() || result.published() == null)) throw new ClassroomException(FORBIDDEN);
         return result;
     }
+
     public Activity create(UUID actor) {
-        return write(c->{ var ctx=context(c,actor); teacher(ctx); UUID id=UUID.randomUUID();
-            execute(c,"INSERT INTO learning_activities(id,classroom_id,draft_value) VALUES(?,?,1000)",id,ctx.classroom()); return activity(c,ctx,id); });
+        return write(c -> {
+            var ctx = context(c, actor);
+            teacher(ctx);
+            UUID id = UUID.randomUUID();
+            execute(c, "INSERT INTO learning_activities(id,classroom_id,draft_value) VALUES(?,?,1000)", id, ctx.classroom());
+            return activity(c, ctx, id);
+        });
     }
-    public Activity save(UUID actor,UUID id,long revision,Draft draft) {
+
+    public Activity save(UUID actor, UUID id, long revision, Draft draft) {
         Objects.requireNonNull(draft);
-        return write(c->{var ctx=context(c,actor);return save(c,ctx,id,revision,draft);});
+        return write(c -> save(c, context(c, actor), id, revision, draft));
     }
-    private Activity save(Connection c,Context ctx,UUID id,long revision,Draft draft) throws SQLException {
-        teacher(ctx);var current=activity(c,ctx,id);checkRevision(current,revision);
-        if(current.archived())throw new LearningException(ARCHIVED);
-        execute(c,"UPDATE learning_activities SET has_draft=1,draft_title=?,draft_description=?,draft_deadline=?,draft_value=?,draft_rules=?,revision=revision+1 WHERE id=?",
-                draft.title(),draft.description(),draft.deadline(),draft.value(),draft.rules().encode(),id);return activity(c,ctx,id);
+
+    private Activity save(Connection c, Context ctx, UUID id, long revision, Draft draft) throws SQLException {
+        teacher(ctx);
+        var current = activity(c, ctx, id);
+        checkRevision(current, revision);
+        if (current.archived()) throw new LearningException(ARCHIVED);
+        execute(c, "UPDATE learning_activities SET has_draft=1,draft_title=?,draft_description=?,draft_deadline=?,draft_value=?,draft_rules=?,revision=revision+1 WHERE id=?",
+                draft.title(), draft.description(), draft.deadline(), draft.value(), draft.rules().encode(), id);
+        return activity(c, ctx, id);
     }
-    public Activity saveAndPublish(UUID actor,UUID id,long revision,Draft draft) {
+
+    public Activity saveAndPublish(UUID actor, UUID id, long revision, Draft draft) {
         Objects.requireNonNull(draft);
-        return write(c->{var ctx=context(c,actor);var saved=save(c,ctx,id,revision,draft);return publish(c,ctx,id,saved.revision());});
+        return write(c -> {
+            var ctx = context(c, actor);
+            var saved = save(c, ctx, id, revision, draft);
+            return publish(c, ctx, id, saved.revision());
+        });
     }
-    public Activity publish(UUID actor,UUID id,long revision) {
-        return write(c->publish(c,context(c,actor),id,revision));
+
+    public Activity publish(UUID actor, UUID id, long revision) {
+        return write(c -> publish(c, context(c, actor), id, revision));
     }
-    private Activity publish(Connection c,Context ctx,UUID id,long revision) throws SQLException {
-            teacher(ctx); var current=activity(c,ctx,id); checkRevision(current,revision);
-            if(current.archived()) throw new LearningException(ARCHIVED);
-            if(current.draft()==null) throw new LearningException(NO_DRAFT);
-            long now=clock.millis(); current.draft().publishable(now); var d=current.draft();
-            int number=current.published()==null?1:current.published().number()+1;
-            execute(c,"INSERT INTO learning_versions(activity_id,number,title,description,deadline,value,published_at,rules) VALUES(?,?,?,?,?,?,?,?)",id,number,d.title(),d.description(),d.deadline(),d.value(),now,d.rules().encode());
-            execute(c,"UPDATE learning_activities SET current_version=?,has_draft=0,revision=revision+1 WHERE id=?",number,id);
-            return activity(c,ctx,id);
+
+    private Activity publish(Connection c, Context ctx, UUID id, long revision) throws SQLException {
+        teacher(ctx);
+        var current = activity(c, ctx, id);
+        checkRevision(current, revision);
+        if (current.archived()) throw new LearningException(ARCHIVED);
+        if (current.draft() == null) throw new LearningException(NO_DRAFT);
+        long now = clock.millis();
+        var draft = current.draft();
+        draft.publishable(now);
+        int number = current.published() == null ? 1 : current.published().number() + 1;
+        execute(c, "INSERT INTO learning_versions(activity_id,number,title,description,deadline,value,published_at,rules) VALUES(?,?,?,?,?,?,?,?)",
+                id, number, draft.title(), draft.description(), draft.deadline(), draft.value(), now, draft.rules().encode());
+        execute(c, "UPDATE learning_activities SET current_version=?,has_draft=0,revision=revision+1 WHERE id=?", number, id);
+        return activity(c, ctx, id);
     }
     public Activity archive(UUID actor,UUID id,long revision,boolean archived) {
         return write(c->{ var ctx=context(c,actor); teacher(ctx); checkRevision(activity(c,ctx,id),revision);
             execute(c,"UPDATE learning_activities SET archived=?,revision=revision+1 WHERE id=?",archived?1:0,id); return activity(c,ctx,id); });
     }
     private static void checkRevision(Activity activity,long expected) { if(activity.revision()!=expected) throw new ClassroomException(STALE); }
-    public Publication publication(UUID actor,UUID activity,int number) {
-        return read(c->{ activity(c,context(c,actor),activity);
-            return one(c,"SELECT * FROM learning_versions WHERE activity_id=? AND number=?",LearningStore::publication,activity,number)
-                    .orElseThrow(()->new ClassroomException(NOT_FOUND)); });
+    public Publication publication(UUID actor, UUID activity, int number) {
+        return read(c -> {
+            activity(c, context(c, actor), activity);
+            return publication(c, activity, number);
+        });
     }
+
+    private Publication publication(Connection c, UUID activity, int number) throws SQLException {
+        return one(c, "SELECT * FROM learning_versions WHERE activity_id=? AND number=?", LearningStore::publication, activity, number)
+                .orElseThrow(() -> new ClassroomException(NOT_FOUND));
+    }
+
     /** One authorized read snapshot binds assistance to the delivered publication, never the latest draft. */
-    public VerificationContext verification(UUID actor,UUID id) {
-        return read(c->{var ctx=context(c,actor);teacher(ctx);var submitted=submission(c,id);activity(c,ctx,submitted.activity());
-            var version=one(c,"SELECT * FROM learning_versions WHERE activity_id=? AND number=?",LearningStore::publication,submitted.activity(),submitted.publication())
-                    .orElseThrow(()->new ClassroomException(NOT_FOUND));
-            return new VerificationContext(submitted,version);});
+    public VerificationContext verification(UUID actor, UUID id) {
+        return read(c -> {
+            var ctx = context(c, actor);
+            teacher(ctx);
+            var submitted = submission(c, id);
+            activity(c, ctx, submitted.activity());
+            return new VerificationContext(submitted, publication(c, submitted.activity(), submitted.publication()));
+        });
     }
     public Page<Student> students(UUID actor,UUID activity,int page) {
         ClassroomReadPolicy.page(page);
@@ -131,7 +174,7 @@ public final class LearningStore {
                   WHERE m2.classroom_id=m.classroom_id AND m2.player_uuid=m.player_uuid AND m2.role='STUDENT' ORDER BY m2.joined_at DESC,m2.id DESC LIMIT 1)
                 ORDER BY coalesce(p.search_name,m.player_uuid),m.player_uuid LIMIT 21 OFFSET ?
                 """,r->new Student(id(r,"player_uuid"),r.getString("name"),r.getString("enrollment"),r.getInt("active")==1,
-                    r.getString("id")==null?null:submission(r)),page,activity,ctx.classroom(),page*20);
+                    r.getString("id")==null?null:submission(r)),page,activity,ctx.classroom(),page*PAGE_SIZE);
         });
     }
     public Page<Submission> submissions(UUID actor,UUID activity,UUID student,int page) {
@@ -139,7 +182,7 @@ public final class LearningStore {
         return read(c->{ var ctx=context(c,actor); activity(c,ctx,activity);
             if(!ctx.teacher() && !actor.equals(student)) throw new ClassroomException(FORBIDDEN);
             return page(c,SUBMISSION+" WHERE s.activity_id=? AND s.student_id=? ORDER BY s.revision DESC LIMIT 21 OFFSET ?",
-                    LearningStore::submission,page,activity,student,page*20); });
+                    LearningStore::submission,page,activity,student,page*PAGE_SIZE); });
     }
     public Submission submission(UUID actor,UUID id) {
         return read(c->{ var ctx=context(c,actor); var result=submission(c,id); activity(c,ctx,result.activity());
@@ -193,10 +236,15 @@ public final class LearningStore {
     public Set<UUID> contentIds() { return read(c->Set.copyOf(query(c,"SELECT content_id FROM learning_submissions",r->id(r,"content_id")))); }
     public void removedReview(UUID id) { write(c->{execute(c,"DELETE FROM learning_reviews WHERE id=?",id); return null;}); }
 
-    private static Activity activity(ResultSet r,boolean teacher) throws SQLException {
-        Publication publication=r.getObject("published_number")==null?null:new Publication(id(r,"id"),r.getInt("published_number"),r.getString("published_title"),r.getString("published_description"),r.getLong("published_deadline"),r.getLong("published_value"),r.getLong("published_at"),VerificationRules.decode(r.getString("published_rules")));
-        Draft draft=teacher && r.getInt("has_draft")==1?new Draft(r.getString("draft_title"),r.getString("draft_description"),nullable(r,"draft_deadline"),nullable(r,"draft_value"),VerificationRules.decode(r.getString("draft_rules"))):null;
-        return new Activity(id(r,"id"),id(r,"classroom_id"),r.getLong("revision"),r.getInt("archived")==1,draft,publication);
+    private static Activity activity(ResultSet r, boolean teacher) throws SQLException {
+        Publication publication = r.getObject("published_number") == null ? null : new Publication(
+                id(r, "id"), r.getInt("published_number"), r.getString("published_title"),
+                r.getString("published_description"), r.getLong("published_deadline"),
+                r.getLong("published_value"), r.getLong("published_at"), VerificationRules.decode(r.getString("published_rules")));
+        Draft draft = teacher && r.getInt("has_draft") == 1 ? new Draft(
+                r.getString("draft_title"), r.getString("draft_description"), nullable(r, "draft_deadline"),
+                nullable(r, "draft_value"), VerificationRules.decode(r.getString("draft_rules"))) : null;
+        return new Activity(id(r, "id"), id(r, "classroom_id"), r.getLong("revision"), r.getInt("archived") == 1, draft, publication);
     }
     private static Publication publication(ResultSet r) throws SQLException {
         return new Publication(id(r,"activity_id"),r.getInt("number"),r.getString("title"),r.getString("description"),r.getLong("deadline"),r.getLong("value"),r.getLong("published_at"),VerificationRules.decode(r.getString("rules")));
@@ -208,25 +256,21 @@ public final class LearningStore {
     private static Review review(ResultSet r) throws SQLException { return new Review(id(r,"id"),id(r,"teacher_id"),id(r,"submission_id"),id(r,"classroom_id"),id(r,"world_id"),r.getInt("x"),r.getInt("y"),r.getInt("z"),r.getInt("width"),r.getInt("height"),r.getInt("depth")); }
     private static UUID id(ResultSet r,String name) throws SQLException { return UUID.fromString(r.getString(name)); }
     private static Long nullable(ResultSet r,String name) throws SQLException { return r.getObject(name)==null?null:r.getLong(name); }
-    @FunctionalInterface private interface Work<T> { T run(Connection c) throws Exception; }
-    @FunctionalInterface private interface Row<T> { T read(ResultSet r) throws SQLException; }
-    private <T> T read(Work<T> work) { return transaction("BEGIN DEFERRED",work); }
-    private <T> T write(Work<T> work) { return transaction("BEGIN IMMEDIATE",work); }
-    private <T> T transaction(String begin,Work<T> work) {
-        try(var c=DriverManager.getConnection(url);var s=c.createStatement()) {
-            s.execute("PRAGMA foreign_keys=ON"); s.execute("PRAGMA busy_timeout=5000"); s.execute(begin);
-            try { T result=work.run(c); s.execute("COMMIT"); return result; }
-            catch(Exception failure) { try{s.execute("ROLLBACK");}catch(SQLException rollback){failure.addSuppressed(rollback);} throw failure; }
-        } catch(ClassroomException|LearningException failure) { throw failure; }
-        catch(Exception failure) { throw new ClassroomException(UNAVAILABLE,failure); }
+    private <T> T read(Action<T> work) {
+        return transaction(Transaction.READ, work);
     }
-    private static void bind(PreparedStatement s,Object...args) throws SQLException { for(int i=0;i<args.length;i++) s.setObject(i+1,args[i] instanceof UUID id?id.toString():args[i]); }
-    private static void execute(Connection c,String sql,Object...args) throws SQLException { try(var s=c.prepareStatement(sql)){bind(s,args);s.executeUpdate();} }
-    private static <T> List<T> query(Connection c,String sql,Row<T> row,Object...args) throws SQLException {
-        try(var s=c.prepareStatement(sql)){bind(s,args);try(var r=s.executeQuery()){var result=new ArrayList<T>();while(r.next())result.add(row.read(r));return result;}}
+
+    private <T> T write(Action<T> work) {
+        return transaction(Transaction.WRITE, work);
     }
-    private static <T> Optional<T> one(Connection c,String sql,Row<T> row,Object...args) throws SQLException { return query(c,sql,row,args).stream().findFirst(); }
-    private static <T> Page<T> page(Connection c,String sql,Row<T> row,int page,Object...args) throws SQLException {
-        var result=query(c,sql,row,args);return new Page<>(result.subList(0,Math.min(20,result.size())),page,result.size()>20);
+
+    private <T> T transaction(Transaction mode, Action<T> work) {
+        try (var connection = database.connect()) {
+            return SqliteAccess.transaction(connection, mode, work);
+        } catch (ClassroomException | LearningException failure) {
+            throw failure;
+        } catch (Exception failure) {
+            throw new ClassroomException(UNAVAILABLE, failure);
+        }
     }
 }
