@@ -21,7 +21,7 @@ O [índice de fontes](sources.md) preserva os links úteis das referências atua
 - Componentes com codec salvam os dados autoritativos. Uma referência transitória de ECS não é um identificador persistente.
 - `IncludesAssetPack` precisa estar ativo. Os itens/estados/hitboxes são decodificados também na integração, não apenas tratados como JSON sintaticamente válido.
 
-Não reintroduzir `WorldChunk.setTicking` ou o acesso antigo a componentes de bloco por coluna. APIs preliminares com prefixo `dev_` não são uma base assumida para a futura UI.
+Não reintroduzir `WorldChunk.setTicking` ou o acesso antigo a componentes de bloco por coluna. APIs preliminares com prefixo `dev_` não são uma base para as páginas Custom UI atuais.
 
 ## Thread e ciclo de vida
 
@@ -31,15 +31,15 @@ Eventos tradicionais e eventos ECS usam registros distintos. O índice de entida
 
 Seção indisponível não é ar. Não carregar vizinhos para satisfazer uma avaliação elétrica. Após recarga, reconstruir índices e sinais em vez de confiar no visual salvo.
 
-## Custom UI — incremento 0
+## Custom UI — contratos utilizados
 
-A pré-versão 1.4.0-rc.1 implementa a primeira página Classroom com documentos `.ui`, `InteractiveCustomUIPage`, `UICommandBuilder`, `UIEventBuilder` e `PageManager.openCustomPage`. As assinaturas foram conferidas na dependência 0.7.4; layouts e estilos de referência foram inspecionados nos assets locais. `AbstractPlayerCommand` abre a página no contexto do mundo; `CustomPageLifetime.CanDismiss` permite dispensa e o botão usa `close()`.
+As páginas usam documentos `.ui`, `InteractiveCustomUIPage`, `UICommandBuilder`, `UIEventBuilder` e `PageManager.openCustomPage`. Assinaturas foram conferidas na dependência 0.7.4 e estilos/layouts nos assets locais. `AbstractPlayerCommand` abre a página no contexto do mundo; `CustomPageLifetime.CanDismiss` permite dispensa e o botão usa `close()`.
 
-O codec recebe somente a ação; o contador atualizado pelo servidor usa `TextSpans` e mensagem traduzida. Bindings bloqueiam a interação até a resposta; ações desconhecidas recebem atualização vazia. Páginas tratam interação; HUD serve à exibição. Os arquivos não são HTML/CSS/JSX.
+Bindings bloqueiam interação até a resposta; ações desconhecidas precisam de atualização vazia para liberar a entrada. Páginas tratam interação; HUD serve à exibição. Os arquivos não são HTML/CSS/JSX. Campos nativos TextField/MultilineTextField usam eventos/codecs e bindings como `@Name`/`@Description`; seletores de prazo usam dropdowns nativos com `Entries`, `Value` e `ValueChanged`.
 
-O usuário confirmou [abertura, dez cliques com atualização, fechamento e reabertura com reset](../classroom.md) em pt-BR no build `1.4.0-rc.1+43804c498938`, em 24/10/2026. A captura comprova apresentação do contador 10 e build ID; os demais casos permanecem separados no roteiro. Essa prova central libera o incremento de turma persistida. Builders/codecs exercitados em teste e servidor iniciado não substituem o teste das novas telas no cliente.
+Respostas de I/O retornam ao mundo e conferem a instância da página ativa antes de chamar `PageManager.updateLegacyCustomPage`, sem outra passagem assíncrona que possa atualizar uma página substituída. A prova de contador permanece em `/classroom --probe`; o [registro histórico](../validation.md) preserva sua primeira confirmação no cliente. Builders/codecs e servidor iniciado não substituem testes de interação e renderização.
 
-Na rc.2, `/classroom` abre o formulário e `/classroom --probe` mantém a prova original. Os campos usam os componentes nativos TextField/MultilineTextField e bindings `@Name`/`@Description`. A resposta do banco retorna ao mundo e confere a instância da página ativa antes de chamar `PageManager.updateLegacyCustomPage`, sem outra passagem assíncrona que pudesse atualizar uma página substituída. A sintaxe nativa de concessão de permissão é `perm user add <UUID> <permissão>`; a integração também verifica esse caminho.
+A sintaxe nativa de concessão de permissão é `perm user add <UUID> <permissão>`; remoção usa `perm user remove`. O guia [Classroom](../classroom.md) explica sua aplicação ao professor.
 
 ### Atualização de âncoras
 
@@ -49,14 +49,18 @@ Na rc.4, a regressão de transporte exercita todos os tipos de tela e seleção,
 
 ### Eventos de permissão
 
-PermissionsModule 0.7.4 altera o provedor e depois despacha os tipos concretos `PlayerPermissionChangeEvent.PermissionsAdded/PermissionsRemoved`, `PlayerGroupEvent.Added/Removed` e `GroupPermissionChangeEvent.Added/Removed`. Concessão/remoção de OP passa por vínculo com `hytale:Admin`. As classes homônimas `PlayerPermissionChangeEvent.GroupAdded/GroupRemoved` existem, mas não são os tipos despachados por esses métodos; registrar apenas a classe base não substitui conferir o despacho concreto. Classroom rc.5 registra os seis eventos usados e reavalia a permissão efetiva, incluindo permissões vindas de grupos e curingas. A integração nativa verifica o caminho real até o runtime; ainda não renderiza páginas.
-
-## Mudança de versão
-
-Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.
+PermissionsModule 0.7.4 altera o provedor e depois despacha os tipos concretos `PlayerPermissionChangeEvent.PermissionsAdded/PermissionsRemoved`, `PlayerGroupEvent.Added/Removed` e `GroupPermissionChangeEvent.Added/Removed`. Concessão/remoção de OP passa por vínculo com `hytale:Admin`. As classes homônimas `PlayerPermissionChangeEvent.GroupAdded/GroupRemoved` existem, mas não são os tipos despachados por esses métodos; registrar apenas a classe base não substitui conferir o despacho concreto. Classroom registra os seis eventos usados e reavalia a permissão efetiva, incluindo permissões vindas de grupos e curingas. A integração nativa verifica o caminho real até o runtime; ainda não renderiza páginas.
 
 ## Custom UI — ordem de parâmetros
 
 Na rc.5, o cliente informou `Classroom.ui (31:58) — Expected {, found =` ao entrar no mundo: `{ FlexWeight: 1; @Anchor = (Right: 8); }`. As declarações de parâmetros de template devem preceder propriedades/filhos do bloco. A forma nativa é `{ @Anchor = (Right: 8); FlexWeight: 1; }`; `@Text` obedece à mesma ordem.
 
 Conferido nos assets licenciados 0.7.4: `Common/UI/Custom/Pages/Point/PointInspectorPage.ui` usa `$C.@TextField #PosXField { @Anchor = (Right: 4); FlexWeight: 1; }`. `Common.ui` também declara parâmetros antes das propriedades dos templates. A rc.6 corrige Buscar e Próxima. `tools/verify_custom_ui.py` faz uma verificação estática direcionada dessa ordem, nas fontes e no JAR, com comentários e strings opacos. A regra foi conferida em 166 documentos nativos sem rejeições; isso não valida toda a gramática, os seletores ou a renderização no cliente.
+
+## Custom UI — propriedades dos campos
+
+O cliente recusou `#ScoreField.Disabled` na rc.11. TextField/MultilineTextField não aceitam essa propriedade como os botões utilizados no projeto. Ocultar grupos, proteger handlers e validar no serviço preserva o fluxo sem inventar propriedades de markup. Testes conferem os comandos emitidos e rejeitam seletores incompatíveis; continuam sem interpretar o documento no cliente. A rc.12 corrigiu o comando e teve o fluxo principal confirmado posteriormente.
+
+## Mudança de versão
+
+Atualizar manifest, conferir notas de migração/assinaturas/formatos, executar `fullCheck` e repetir o roteiro do cliente em cópia de teste do mundo. A atual exigência exata impede anunciar compatibilidade com outra versão apenas porque o Java compilou. Não há migração automática de mundos antigos nesta entrega.

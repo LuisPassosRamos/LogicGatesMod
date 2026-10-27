@@ -1,6 +1,6 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.15**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc15-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
+Implementação candidata em **1.4.0-rc.16**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc16-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
 
 ## Atividades
 
@@ -43,6 +43,29 @@ A reserva é persistida antes de alterar blocos. Interrupções conservam o regi
 
 Cada avaliação identifica explicitamente a revisão. Nota entre **zero e o valor daquela publicação**, até duas casas; feedback opcional de até 4096 caracteres. Antes da avaliação, aparece `—/10`, por exemplo; zero atribuído aparece `0/10`. Reenvio começa sem avaliação, e avaliar uma revisão antiga nunca preenche a mais recente. Correções de nota preservam o histórico no banco; a interface exibe a última avaliação de cada revisão. Versões anteriores do enunciado são apresentadas quando a entrega se refere a uma publicação anterior.
 
+## Critérios e verificação assistida — rc.15
+
+O professor define quantidades exatas das sete portas, alavancas, cabos e lâmpadas: vazio deixa livre; zero proíbe. Os critérios são privados no rascunho e imutáveis em cada publicação. Opcionalmente define tabela completa `entradas -> saídas`, uma combinação por linha, com alavancas I e lâmpadas O ordenadas por posição local X/Y/Z. Até seis entradas, quatro saídas e 64 combinações.
+
+Em uma entrega selecionada, **Verificar circuito** confere quantidades e simula a cópia fixa no avaliador existente, fora do contexto do mundo e pela fila pesada limitada. Não altera nota, feedback ou blocos; divergência não impede o envio. Circuito equivalente pode passar no comportamento sem satisfazer restrições de módulos. Quantidade de I/O incompatível não executa a tabela; I/O sem conexão física e realimentação não resolvida são inconclusivos. Somente componentes dentro da área entregue participam. A análise comportamental admite até 2048 componentes lógicos; volumes maiores continuam disponíveis para correção manual.
+
+O relatório pertence à revisão selecionada e não é persistido; verificação é explícita, sem varredura periódica ou atualização de outras telas. Nota e feedback continuam manuais. Cada revisão usa os critérios da publicação entregue mesmo após republicação. A [validação rc.15](classroom-rc15-acceptance.md) explica configuração, mapeamento e limites.
+
+### Exemplo: duas alavancas e uma lâmpada AND
+
+As quantidades verificam as peças usadas; a tabela verifica se foram conectadas para produzir o comportamento pedido. Para exigir uma porta AND, duas alavancas e uma lâmpada, preencha essas quantidades e deixe cabos livres. Se a lâmpada só pode acender quando ambas as alavancas estão ligadas, use uma linha por combinação:
+
+```text
+00 -> 0
+01 -> 0
+10 -> 0
+11 -> 1
+```
+
+`0` significa desligado/apagado e `1`, ligado/aceso. Antes de `->` ficam as entradas, depois ficam as saídas. Em `10 -> 0`, a primeira alavanca está ligada, a segunda desligada e a lâmpada deve ficar apagada. O primeiro dígito corresponde a I1/O1; o relatório identifica as posições locais de cada entrada/saída. Essa ordem é definida por X, depois Y, depois Z, não pela ordem de colocação: descreva a disposição exigida no enunciado quando trocar as entradas/saídas mudar o resultado.
+
+Tabela vazia verifica somente quantidades. Quando preenchida, precisa cobrir todas as combinações: uma alavanca tem duas, duas têm quatro e três têm oito. Um circuito pode passar nas quantidades e falhar no comportamento, ou vice-versa. O professor consulta o relatório e decide a nota no campo de avaliação manual.
+
 ## Limites e configuração
 
 Arquivo opcional `learning.properties`, ao lado de `classroom.db` no diretório de dados do plugin; alterar com o servidor parado. A ausência usa os padrões. Configuração inválida bloqueia Classroom sem interromper os circuitos.
@@ -63,20 +86,11 @@ Uma fila separada executa uma operação pesada por vez e admite oito aguardando
 
 ## Persistência e recuperação
 
-SQLite **v6**, com backup consistente automático antes da migração. As tabelas pedagógicas introduzidas na v5 guardam atividades/versões, metadados de revisões, avaliações e reservas; IDs e regras administrativas anteriores permanecem. Conteúdo privado em `submissions/<UUID>.json.gz`, com formato versionado e SHA-256 dos bytes comprimidos. A gravação força o arquivo temporário em disco, publica por movimento atômico e só depois confirma os metadados em transação. Leitura verifica checksum e limite de expansão.
+SQLite **v6**, com backup consistente automático antes da migração. A v6 acrescenta critérios (`draft_rules` e `rules`) ao rascunho/publicação; dados v5 recebem critérios livres, conservando versões, conteúdo, reservas e notas. As tabelas pedagógicas introduzidas na v5 guardam atividades/versões, metadados de revisões, avaliações e reservas; IDs e regras administrativas anteriores permanecem. Conteúdo privado em `submissions/<UUID>.json.gz`, com formato versionado e SHA-256 dos bytes comprimidos. A gravação força o arquivo temporário em disco, publica por movimento atômico e só depois confirma os metadados em transação. Leitura verifica checksum e limite de expansão.
 
 Falha anterior ao commit não oferece a revisão ao professor. No início, a recuperação remove apenas arquivos próprios reconhecidos sem referência e temporários, preservando arquivos referenciados, nomes desconhecidos e diretórios. Falha incerta durante encerramento conserva o arquivo para resolver a referência na próxima inicialização. Ausência/corrupção de conteúdo é erro explícito, sem substituir a entrega por uma área vazia.
 
 Faça backup **do banco e da pasta `submissions` juntos**, com servidor parado, e conserve a configuração. O backup automático pré-migração conserva o banco anterior; para voltar à rc.10, restaure esse banco v4. Não abra o banco v6 em versões antigas; para voltar à rc.14, restaure o banco v5 do backup. Mundos/circuitos não são migrados por esta entrega.
 
+
 Pontuação automática, proteção permanente das bancadas, logging ampliado e publicação estável permanecem posteriores.
-
-## Critérios e verificação assistida — rc.15
-
-Professor define quantidades exatas de módulos/alavancas/cabos/lâmpadas: vazio deixa livre; zero proíbe. Os critérios são privados no rascunho e imutáveis em cada publicação. Opcionalmente define tabela completa `entradas -> saídas`, uma combinação por linha, com alavancas I e lâmpadas O ordenadas por posição local X/Y/Z. Até seis entradas, quatro saídas e 64 combinações.
-
-Em uma entrega selecionada, **Verificar circuito** confere quantidades e simula a cópia fixa no avaliador existente, fora do contexto do mundo e pela fila pesada limitada. Não altera nota, feedback ou blocos; divergência não impede o envio. Circuito equivalente pode passar no comportamento sem satisfazer restrições de módulos. Quantidade de I/O incompatível não executa a tabela; I/O sem conexão física e realimentação não resolvida são inconclusivos. Somente componentes dentro da área entregue participam. A análise comportamental admite até 2048 componentes lógicos; volumes maiores continuam disponíveis para correção manual.
-
-O relatório pertence à revisão selecionada e não é persistido; verificação é explícita, sem varredura periódica ou atualização de outras telas. Nota e feedback continuam manuais. Cada revisão usa os critérios da publicação entregue mesmo após republicação. A [validação rc.15](classroom-rc15-acceptance.md) explica configuração, mapeamento e limites.
-
-SQLite **v6** acrescenta `draft_rules` e `rules`, com backup transacional pré-migração. Dados v5 anteriores recebem critérios livres, mantendo versões, conteúdo, reservas e notas. Para downgrade, restaurar banco v5 compatível junto dos arquivos privados. Pontuação automática, logging ampliado e proteção permanente continuam posteriores.

@@ -1,5 +1,25 @@
 # Validação e relato de testes
 
+## Estado atual e como interpretar os registros
+
+A candidata de manutenção é **1.4.0-rc.16**, Hytale **0.7.4**, SQLite **v6**. A seção própria da candidata identifica a execução automatizada e a identidade do arquivo testado. O [roteiro rc.16](classroom-rc16-acceptance.md) concentra a regressão atual; este arquivo conserva também os registros das candidatas anteriores.
+
+| Área | Evidência disponível | O que continua separado |
+| --- | --- | --- |
+| Circuitos e fabricação | Consolidação 1.3.3, automação e relatos de multiplayer/crafts | Coleta de drops, cancelamento/reembolso e Blockbench sem confirmação manual discriminada |
+| Classroom administrativo | Fluxos rc.4, multiplayer/permissões e cinco cenários breves rc.10 | Cenários complementares identificados nos roteiros originais |
+| Atividades, áreas e avaliação manual | [Capturas e relato rc.12](evidence/classroom/2026-10-26-rc12-client.md) com professor/aluno, preview/cópia, revisão, nota e limpeza | Matriz completa de idiomas/resoluções e situações não discriminadas |
+| Polimento e edição explícita | [Aceite rc.14 por relato](evidence/classroom/2026-10-26-rc14-client.md) | O relato não identifica individualmente toda a matriz de escalas/idiomas |
+| Critérios e verificação assistida | [Automação rc.15](evidence/classroom/2026-10-26-rc15-server.json); captura do campo de tabela e pedido de explicação | [Interação rc.15](classroom-rc15-acceptance.md), quantidades, relatório e critérios por publicação ainda sem aceite específico |
+
+Uma aprovação histórica conserva sua versão e escopo. “Pendente” nas seções antigas descreve o estado daquela rodada; confirmações posteriores estão nas próprias seções de atualização e no resumo acima. Automação de servidor não comprova renderização; uma captura do formulário não comprova o resultado da verificação. Tags, merge e publicação estável permanecem marcos explícitos.
+
+Para alterações novas, use as [verificações proporcionais](development.md#verificação-proporcional-à-alteração), conserve logs completos em disco e registre build ID/checksum do arquivo efetivamente testado. Não há nova execução implícita por atualizar esta documentação.
+
+## Registros por candidata e roteiros históricos
+
+Os registros abaixo são preservados para rastrear falhas, correções e arquivos exatos; não constituem uma lista cumulativa de pendências atuais. Os títulos/âncoras originais permanecem para os links de evidências e roteiros antigos.
+
 ## Classroom — 1.4.0-rc.2
 
 O incremento 1 acrescenta autorização docente, criação/edição de uma turma por professor e SQLite compartilhado entre mundos. A suíte inclui autorização/revogação, responsabilidade, vínculo entre papéis, limites de texto, concorrência, revisão, rollback e esquema incompatível. Um teste isolado carrega o driver a partir do JAR de produção; a integração usa o serviço e as permissões nativas e confere a mesma turma após reinício.

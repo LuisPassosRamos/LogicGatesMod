@@ -1,6 +1,6 @@
 # Atividades — contrato aprovado e etapas pedagógicas
 
-Contrato inicial aprovado em 24/10/2026, ampliado pelo plano de áreas e correção em 26/10/2026. **Implementado como candidata rc.11**, com SQLite v5 e arquivos privados. O [uso atual](../classroom-learning.md) e o [roteiro de aceite](../classroom-rc11-acceptance.md) distinguem o que a automação comprova da seleção/renderização que exige cliente. O texto abaixo conserva as decisões de publicação; entregas e avaliação agora têm implementação.
+Contrato inicial aprovado em 24/10/2026, ampliado para áreas/correção e verificação assistida em 26/10/2026. Publicação, entregas e avaliação manual estão implementadas desde a rc.11; a rc.15 acrescentou critérios versionados e verificação de circuito, mantendo nota manual. A candidata atual é **rc.16**, com SQLite **v6**. Consulte [uso atual](../classroom-learning.md), [validação por build](../validation.md) e [roteiro da candidata](../classroom-rc16-acceptance.md). Este documento registra contratos, sem atribuir aceite automático às implementações.
 
 ## Primeiro incremento: publicar e consultar atividades
 
@@ -12,9 +12,9 @@ Somente o professor responsável administra atividades da própria turma, com pe
 | Conteúdo publicado | Título, enunciado, prazo e valor, associados à versão publicada |
 | Prazo | Obrigatório ao publicar; data/hora informada em `America/Sao_Paulo` (Brasília), com fuso identificado na interface; armazenar o instante em UTC |
 | Valor | Positivo, padrão 10 para nova atividade; até duas casas decimais, sem arredondamento silencioso; editável no rascunho |
-| Nota apresentada | `—/valor` enquanto não houver avaliação; por exemplo, `—/10`. Futuramente `7/10` indica nota 7 de valor 10, e `0/10` indica zero atribuído |
+| Nota apresentada | `—/valor` enquanto não houver avaliação; por exemplo, `—/10`. `7/10` indica nota 7 de valor 10, e `0/10` indica zero atribuído |
 
-Rascunhos são privados e podem ficar incompletos. Publicar exige título e enunciado preenchidos, prazo estritamente posterior ao instante atual do servidor e valor válido. Texto de usuário permanece literal; rótulos, erros e estados terão en-US/pt-BR. Não criar nota inicial zero para representar ausência de avaliação. A ficha geral do professor mostra o valor da atividade; nota/valor se refere a um aluno, sem inventar média da turma.
+Rascunhos são privados e podem ficar incompletos. Publicar exige título e enunciado preenchidos, prazo estritamente posterior ao instante atual do servidor e valor válido. Texto de usuário permanece literal; rótulos, erros e estados usam en-US/pt-BR. Não criar nota inicial zero para representar ausência de avaliação. A ficha geral do professor mostra o valor da atividade; nota/valor se refere a um aluno, sem inventar média da turma.
 
 ## Publicação, versões e arquivamento
 
@@ -24,11 +24,11 @@ Rascunhos são privados e podem ficar incompletos. Publicar exige título e enun
 - A consulta inicial do aluno usa a última versão publicada de atividades não arquivadas da turma atual. A data de ingresso não elimina publicações atuais da lista.
 - O vencimento indica **Prazo encerrado** e mantém a consulta disponível. Não arquiva automaticamente. **Envio inicial e reenvios atrasados são aceitos e identificados como atrasados**, conforme a decisão posterior.
 - Arquivar oculta a atividade dos alunos e conserva rascunho e versões para o professor. Restaurar reapresenta a última versão publicada sem criar uma versão; se vencida, continua indicando prazo encerrado. Uma atividade que só possuía rascunho continua privada após restaurar.
-- Futuras entregas e avaliações devem referenciar a versão correspondente. Publicar outra versão não altera silenciosamente enunciado, prazo ou valor usados por uma entrega/avaliação anterior.
+- Entregas e avaliações referenciam a versão correspondente. Publicar outra versão não altera silenciosamente enunciado, prazo ou valor usados por uma entrega/avaliação anterior.
 
 Arquivamento/restauração de atividade é distinto do encerramento administrativo de turma implementado na rc.9. Restaurar ou excluir definitivamente uma turma continua fora do MVP. O contrato foi documentado na rc.7 (v3); rc.9/rc.10 usavam v4. A implementação rc.11 acrescenta v5 com backup, sem alterar IDs ou vínculos anteriores.
 
-## Cenários de aceite da implementação posterior
+## Cenários de aceite do contrato
 
 Estes casos orientam regressões automatizadas e aceite no cliente; execução por cenário fica registrada no roteiro da candidata:
 
@@ -54,7 +54,7 @@ Estes casos orientam regressões automatizadas e aceite no cliente; execução p
 - Nota entre zero e valor **daquela publicação**, feedback e revisão explícitos. Corrigir uma revisão antiga não avalia a mais recente. Histórico de alterações da avaliação é preservado.
 - Limites padrão: 32 × 16 × 32 incluindo ar, 8 MiB descomprimidos por revisão, 1 GiB por turma, uma operação pesada + oito aguardando. Listas apenas de metadados; conteúdo só da revisão selecionada. Esses valores não certificam capacidade de jogadores.
 
-A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva exigem contratos futuros. Logging seletivo e avaliação automática continuam no backlog.
+A prova no servidor isolado é complementada pelo teste no cliente de seleção, preview, edição e descarte. A seleção atribui o envio a uma conta, sem provar autoria. Transferência docente, múltiplos responsáveis, proteção permanente das bancadas e retenção/exclusão definitiva exigem contratos futuros. Logging seletivo e pontuação automática continuam no backlog. A verificação assistida implementada é descrita abaixo.
 
 ## Verificação assistida — contrato rc.15
 

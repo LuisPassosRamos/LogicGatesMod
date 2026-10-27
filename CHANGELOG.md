@@ -4,7 +4,16 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.15.
+Nenhuma alteração registrada após 1.4.0-rc.16.
+
+## [1.4.0-rc.16] - 2026-10-27
+
+### Polimento técnico e documentação
+- Ciclo de conexão/transação SQLite, parâmetros, consultas e paginação compartilhados por turmas e atividades. Mantidos esquema v6, autorização, revisões, transações de leitura/gravação e orçamento das telas.
+- Removidos somente os wrappers internos sem consumidores `ClassroomRuntime.browse/players/members`; os serviços e repositórios utilizados continuam disponíveis.
+- Orientação horizontal de portas compartilhada entre topologia do mundo e análise das entregas, preservando fallback seguro e recusa de rotações não suportadas.
+- Controlador de atividades organizado por responsabilidades, reutilizando bindings, renderização, atualização e limpeza de campos após revogação; layout, fluxos e codecs preservados.
+- Documentação atual separada de evidências históricas, com índice e guias coerentes, exemplo simples de tabela verdade, critérios de validação e comandos de manutenção. Testes importantes e diagnósticos intencionais mantidos.
 
 ## [1.4.0-rc.15] - 2026-10-26
 

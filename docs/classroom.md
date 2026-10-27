@@ -1,12 +1,12 @@
-# Classroom — MVP administrativo e validação
+# Classroom — turmas e administração
 
-Disponível em **1.4.0-rc.15**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros, mensagem do dia e encerramento de turma estão implementados. **Os fluxos centrais da rc.4 foram confirmados em pt-BR**, incluindo bloqueio de gravação após revogação docente. Veja [capturas, relatos e pendências](evidence/classroom/2026-10-24-rc4-client.md); en-US e cenários complementares ainda não foram aprovados no cliente. **A rc.5 falhou ao interpretar o markup na entrada do mundo; a rc.6 corrige a sintaxe. A [abertura e a visão geral docente em pt-BR foram capturadas na rc.6](evidence/classroom/2026-10-24-rc6-client.md); multiplayer e revogação automática foram confirmados por [relato após a rc.7](evidence/classroom/2026-10-24-rc7-multiplayer-report.md). A rc.8 reduz notificações e pacotes redundantes; suas mudanças de transporte e os demais cenários de interação continuam pendentes de aceite.**
+Disponível na candidata **1.4.0-rc.16**, Hytale **0.7.4**. Turmas, solicitações, convites, matrícula, membros, mensagem do dia, permissões automáticas e encerramento estão implementados. Este guia descreve o comportamento atual; [atividades, entregas e correção](classroom-learning.md) têm guia próprio.
 
-A rc.11 acrescenta [atividades, entregas de áreas e avaliação manual](classroom-learning.md). A confirmação administrativa anterior não aprova estas telas. A rc.12 corrige a desconexão ao abrir Atividades por um comando de campo incompatível. O [fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado em multiplayer. A rc.13 amplia os painéis e refina administração, criação, prazo e contagem; a rc.14 ajusta proporções e edição explícita. O [roteiro atual](classroom-rc14-acceptance.md) separa o aceite desta interface das evidências históricas.
+Os fluxos administrativos centrais e o funcionamento em multiplayer foram confirmados nos relatos anteriores. O polimento rc.14 foi aprovado por relato, sem discriminar toda a matriz de idiomas/escalas. O [estado de validação](validation.md) preserva os resultados por build; o [roteiro da candidata](classroom-rc16-acceptance.md) orienta a regressão atual. Critérios e verificação assistida da rc.15 ainda exigem aceite específico de interação.
 
 ## Instalar e autorizar
 
-Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.15.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.15.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A rc.15 migra para o esquema v6 com backup automático antes da alteração; não apague os dados. Para voltar à rc.14, restaure o banco v5 compatível do backup. Entregas precisam de backup conjunto de `classroom.db` e `submissions`. Para retornar à rc.10, restaure o banco v4 do backup. Para voltar à rc.8 ou anterior, restaure também o banco compatível do backup, com o servidor parado.
+Compile com `.\gradlew.bat build`. Com o mundo/servidor parado, instale apenas `build/libs/LogicGates-1.4.0-rc.16.jar` na pasta `mods`, substituindo a versão anterior, e reinicie para recarregar assets. O ZIP em `build/releases/LogicGates-1.4.0-rc.16.zip` inclui o mesmo JAR, checksum, identificação da compilação, documentação e fontes de arte; guarde-o fora de `mods`. Se recebeu somente o ZIP, extraia apenas o JAR de produção para instalar. Preserve os mundos e faça backup antes de atualizar o banco. A rc.15 migra para o esquema v6 com backup automático antes da alteração; não apague os dados. Para voltar à rc.14, restaure o banco v5 compatível do backup. Entregas precisam de backup conjunto de `classroom.db` e `submissions`. Para retornar à rc.10, restaure o banco v4 do backup. Para voltar à rc.8 ou anterior, restaure também o banco compatível do backup, com o servidor parado.
 
 Qualquer jogador no mundo pode abrir `/classroom`. O servidor verifica a permissão nativa em cada operação docente, junto da responsabilidade pela turma. No console:
 
@@ -58,9 +58,9 @@ O idioma usa i18n nativa en-US/pt-BR. Textos de usuários são literais. `/class
 
 O log informa `Classroom database: <caminho absoluto>`. Há um `classroom.db` por servidor em `getDataDirectory()`, compartilhado entre mundos. SQLite JDBC 3.53.4.0 e recursos nativos/licenças já estão no JAR. Em execução direta Java 25, use `--enable-native-access=ALL-UNNAMED` antes de `-jar`.
 
-Esquema v1: turma e vínculo docente; v2: diretório, processos, matrícula e histórico; v3: mensagem; v4: encerramento de turma e unicidade do professor limitada a turmas abertas. A atualização preserva IDs, nome, descrição e revisões existentes. Antes de migrar um banco identificado, guarda uma cópia consistente em `backups/classroom-v<versão>-<UUID>.db` no diretório do plugin, por VACUUM INTO. As alterações de esquema são transacionais. Estruturas incompatíveis ou incompletas tornam Classroom indisponível sem substituir o arquivo; circuitos continuam registrados.
+O esquema atual é **v6**: v1 introduziu turma e vínculo docente; v2, diretório, processos, matrícula e histórico; v3, mensagem; v4, encerramento e unicidade do professor limitada a turmas abertas; v5, atividades, entregas, avaliações e reservas; v6, critérios versionados de verificação assistida. A atualização preserva IDs, nome, descrição e revisões existentes. Antes de migrar um banco identificado, guarda uma cópia consistente em `backups/classroom-v<versão>-<UUID>.db` no diretório do plugin, por VACUUM INTO. As alterações de esquema são transacionais. Estruturas incompatíveis ou incompletas tornam Classroom indisponível sem substituir o arquivo; circuitos continuam registrados.
 
-Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um backup v1 aberto na rc.3 será migrado novamente, preservando identidades.
+Antes de instalar uma atualização, encerre o servidor normalmente e copie o diretório completo do plugin para uma pasta externa a `build/`. Para restaurar, mantenha o servidor parado, preserve o estado atual e restaure o backup completo. Não copie somente o arquivo principal de um banco ativo. Uma versão antiga do plugin pode recusar o esquema novo; para rollback, restaure o banco da versão correspondente. Um banco de versão anterior compatível é migrado novamente ao abrir na versão atual, preservando identidades. Entregas exigem restaurar banco e arquivos privados conjuntamente; veja [persistência pedagógica](classroom-learning.md#persistência-e-recuperação).
 
 ## Encerrar uma turma
 
@@ -70,17 +70,15 @@ O servidor revalida permissão docente, responsabilidade, UUID e revisão da tur
 
 O histórico é mantido no banco: conteúdo da turma, matrículas, datas, vínculos encerrados e processos anteriores. O histórico pessoal de ingressos continua mostrando aprovações passadas como processos, sem indicar vínculo ativo. Não há botão para restaurar uma turma encerrada nem exclusão definitiva. A decisão de encerrar uma turma real deve ser tomada pelo seu professor; para validar o recurso, use uma turma de teste.
 
-## Roteiro de cliente — rc.10
+## Roteiro de regressão administrativa
 
-**Atualização em 26/10/2026:** os cinco testes breves da rc.10 foram confirmados: abas instantâneas, ingresso e saída com atualização automática, filtros positivos/negativos e descrição preservada/salva durante atualização. As [duas capturas e o relato](evidence/classroom/2026-10-26-rc10-client.md) identificam o build; idioma/resoluções complementares, paginação extensa e demais pendências continuam no roteiro. O parágrafo seguinte preserva o contexto histórico anterior a essa rodada.
-
-**Estado rc.9: aceite parcial por relato em 25/10/2026.** O usuário confirmou o funcionamento do encerramento; o [registro do relato](evidence/classroom/2026-10-25-rc9-client-report.md) preserva as limitações. Os demais cenários não foram confirmados individualmente, inclusive a demora inicial após as otimizações da rc.8. A rc.6 permanece com aceite parcial histórico. A [captura da visão geral docente](evidence/classroom/2026-10-24-rc6-client.md) confirma abertura em pt-BR e rótulos Anterior/Próxima completos. Fechar/Esc/reabrir e os testes detalhados continuam pendentes. As [evidências da rc.4](evidence/classroom/2026-10-24-rc4-client.md) aprovam somente os cenários históricos descritos. Use duas contas, pt-BR/en-US e resoluções 1280×720 e 1920×1080 com escala padrão. Registre build ID, data, idioma, resolução/escala e resultado por caso. A rc.10 altera somente as leituras do banco e exige a [regressão curta da candidata](classroom-rc10-acceptance.md); o roteiro rc.9 conserva as pendências anteriores.
+Use duas contas e uma turma descartável. Escolha os casos afetados pela mudança e registre build ID, idioma, resolução/escala e resultado. O [roteiro atual](classroom-rc16-acceptance.md) indica a regressão da candidata; os roteiros rc.1–rc.15 e os registros abaixo conservam o contexto histórico. Não repetir toda a campanha de circuitos/fabricação para uma alteração apenas administrativa.
 
 | Cenário | Resultado esperado |
 | --- | --- |
-| Reabrir após a falha rc.3; navegar por turma, ingressos, convite e administração | Sem desconexão por seletor; títulos, descrição e mensagem legíveis; fechar/Esc e reabrir funcionam |
+| Abrir e navegar por turma, ingressos, convite e administração | Sem desconexão por seletor; títulos, descrição e mensagem legíveis; fechar/Esc e reabrir funcionam |
 | Abrir sem OP/permissão docente | Descoberta e próprios ingressos acessíveis; criação/administração indisponíveis |
-| Atualizar instalação rc.2 com turma salva | Mesma turma/UUID/conteúdo; backup anterior à migração disponível |
+| Atualizar instalação anterior com turma salva | Mesma turma/UUID/conteúdo; backup anterior à migração disponível |
 | Professor criar/editar e reconectar | Uma turma, conteúdo salvo e painel correto |
 | Solicitação com `00123` | Aguarda conferência; professor aprova e aluno passa à própria turma |
 | Matrícula vazia/duplicada | Erro traduzido, sem vínculo parcial; professor pode corrigir e tentar novamente |
@@ -97,7 +95,7 @@ O histórico é mantido no banco: conteúdo da turma, matrículas, datas, víncu
 | Listas com mais de 20 registros e textos longos | Paginação, rolagem, ficha e formulários legíveis nos dois idiomas |
 | `/classroom --probe` | Contagem, fechamento e reset continuam funcionando |
 
-A rc.7 documenta o [contrato aprovado de atividades](roadmap/classroom-learning-contracts.md): rascunho, publicação, prazo, valor e arquivamento. Atividades, entregas de áreas e avaliação manual foram implementadas na rc.11, com o fluxo principal confirmado na rc.12. Avaliação automática permanece posterior. Não repetir a campanha manual de circuitos/fabricação/multiplayer já consolidada para aprovar estas telas.
+Atividades, entregas, notas e verificação assistida seguem o [contrato pedagógico](roadmap/classroom-learning-contracts.md). A verificação apresenta resultados ao professor; nota e feedback permanecem manuais.
 
 ## Evidências históricas
 
@@ -119,8 +117,6 @@ JUnit exercita serviços, SQLite, rollback, concorrência entre conexões, migra
 
 As ferramentas conferem traduções, parâmetros, recursos, assets e conteúdo de JAR/ZIP. A integração nativa usa o serviço de produção e permissões Hytale para conferir matrícula, convite e mensagem após reinício, além das regressões consolidadas. Ela não abre páginas nem recebe cliques de um cliente. A CI portável Windows/Linux precisa aprovar a revisão enviada; execução local no Windows não equivale a resultado Linux.
 
-Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos futuros](roadmap/classroom-learning-contracts.md).
+Veja [arquitetura](architecture.md), [plano](roadmap/classroom.md), [referência PartyPro](reference/partypro.md) e [contratos pedagógicos](roadmap/classroom-learning-contracts.md).
 
 As rodadas locais e os checksums estão no [registro de validação](validation.md), com [evidência nativa da rc.9](evidence/classroom/2026-10-24-rc9-server.json). A [falha de markup da rc.5](evidence/classroom/2026-10-24-rc5-client.md) permanece documentada. O [registro histórico de rc.3](validation.md#classroom-administrativo--rc3) separa sua aprovação automatizada da falha no cliente. Nenhuma evidência nativa substitui o roteiro de cliente.
-
-A rc.15 acrescenta [critérios de componentes e verificação assistida](classroom-learning.md#critérios-e-verificação-assistida--rc15). Consulte o [aceite atual](classroom-rc15-acceptance.md); nota continua manual e critérios seguem a versão entregue.
