@@ -16,6 +16,50 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Transport/codec regression, not a substitute for testing the native client. */
 class LearningPageTest {
     private static final UUID CLASSROOM=UUID.randomUUID(),ACTIVITY=UUID.randomUUID(),STUDENT=UUID.randomUUID();
+    @Test void eachEditorSectionKeepsItsActiveNavigationAndContextWithoutResettingDraftFields() throws Exception {
+        var page=page(true,false,null,null);var start=LearningPage.class.getDeclaredMethod("startCreating");start.setAccessible(true);start.invoke(page);
+        page.render(new UICommandBuilder(),new UIEventBuilder(),true,null,false);
+        String[] sections={"Basics","Components","Table"},hints={"basicsHelp","componentsHelp","tableHelp"};
+        for(int selected=0;selected<3;selected++){
+            set(page,"editorSection",selected);var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+            assertTrue(value(c,"#EditorTabs.Visible").asBoolean().getValue());
+            assertEquals("server.logicgates.editor."+hints[selected],page.guidance().getMessageId());
+            for(int i=0;i<3;i++){
+                assertEquals(i==selected,value(c,"#Section"+sections[i]+"Active.Visible").asBoolean().getValue());
+                assertEquals(i!=selected,value(c,"#Section"+sections[i]+".Visible").asBoolean().getValue());
+            }
+            assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->Set.of("#TitleField.Value","#DescriptionField.Value","#ValueField.Value").contains(x.selector)));
+        }
+        var bindings=new UIEventBuilder();page.build(null,new UICommandBuilder(),bindings,null);
+        for(String section:sections){
+            var binding=Arrays.stream(bindings.getEvents()).filter(x->("#Section"+section+"Active").equals(x.selector)).findFirst().orElseThrow();
+            assertEquals("Section"+section,BsonDocument.parse(binding.data).getString("Action").getValue());
+        }
+    }
+
+    @Test void leaveDecisionIdentifiesTheUnsavedActivityAndKeepsFieldsWhileHidingOtherActions() throws Exception {
+        var page=page(true,false,null,null);set(page,"creating",true);
+        var leave=new LearningPage.Event();leave.action="Close";leave.title="Literal %server.fake title";leave.description="Unsaved statement";
+        set(page,"pendingNavigation",leave);
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertTrue(value(c,"#UnsavedPrompt.Visible").asBoolean().getValue());
+        for(String panel:List.of("EditorTabs","DetailsScroll","ActionDock"))assertFalse(value(c,"#"+panel+".Visible").asBoolean().getValue());
+        assertTrue(value(c,"#UnsavedContext.TextSpans").toString().contains(leave.title));
+        assertEquals("server.logicgates.editor.leaveHelp",page.guidance().getMessageId());
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
+        assertEquals("Unsaved statement",leave.description);
+    }
+
+    @Test void untitledDraftsHaveStableDistinctReferencesInListConsultationAndBreadcrumb() throws Exception {
+        var first=new Activity(UUID.fromString("11111111-1111-1111-1111-111111111111"),CLASSROOM,1,false,Draft.empty(),null);
+        var second=new Activity(UUID.fromString("22222222-2222-2222-2222-222222222222"),CLASSROOM,1,false,Draft.empty(),null);
+        var page=page(true,false,first,null);set(page,"rows",new Page<>(List.of(first,second),0,false));
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
+        assertTrue(value(c,"#Rows[0] #RowName.TextSpans").toString().contains("11111111"));
+        assertTrue(value(c,"#Rows[1] #RowName.TextSpans").toString().contains("22222222"));
+        assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("11111111"));
+        assertTrue(value(c,"#Breadcrumb.TextSpans").toString().contains("11111111"));
+    }
     @Test void directStudentOutsideVisiblePageKeepsIdentityAndDeliveredStudentsStillSeeCurrentCriteria() throws Exception {
         var rules=new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.AND,1),"");
         var publication=new Publication(ACTIVITY,1,"Activity","Statement",System.currentTimeMillis()+86_400_000,1000,1,rules);
@@ -246,7 +290,7 @@ class LearningPageTest {
                 case "Value"->assertTrue(Set.of("TextField","MultilineTextField","DropdownBox").contains(type),command.selector);
                 case "Entries"->assertEquals("DropdownBox",type,command.selector);
                 case "Text"->assertTrue(type.endsWith("Button"),command.selector);
-                case "TextSpans"->assertTrue(type.equals("Label") || type.endsWith("Button"),command.selector);
+                case "TextSpans"->assertTrue(type.equals("Label") || type.equals("Title") || type.endsWith("Button"),command.selector);
                 case "Visible","Anchor"->{ }
                 default->fail("Unreviewed native widget property: "+command.selector);
             }

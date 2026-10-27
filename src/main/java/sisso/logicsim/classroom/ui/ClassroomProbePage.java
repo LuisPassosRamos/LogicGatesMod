@@ -30,6 +30,7 @@ public class ClassroomProbePage extends InteractiveCustomUIPage<ClassroomProbePa
     public void build(Ref<EntityStore> ref, UICommandBuilder commands, UIEventBuilder events,
                       Store<EntityStore> store) {
         commands.append(LAYOUT);
+        ClassroomText.probe(commands);
         updateCounter(commands);
         commands.set("#Build.TextSpans", text("build").param("build", BuildInfo.BUILD_ID)
                 .param("hytale", BuildInfo.HYTALE_VERSION));

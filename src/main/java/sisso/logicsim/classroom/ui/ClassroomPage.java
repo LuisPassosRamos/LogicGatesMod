@@ -49,6 +49,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     }
     @Override public void build(Ref<EntityStore> ref, UICommandBuilder c, UIEventBuilder e, Store<EntityStore> store) {
         c.append(LAYOUT);
+        ClassroomText.classroom(c);
         c.set("#Build.TextSpans", text("build").param("build", BuildInfo.BUILD_ID).param("hytale", BuildInfo.HYTALE_VERSION));
         bind(e,"#Disband","Danger"); bind(e,"#ConfirmDisband","Danger"); bind(e,"#CancelDisband","CancelConfirm");
         for (String action : new String[]{"Close","Reload","Activities","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm","ManageMember","Technical","ActivityPrevious","ActivityNext"}) bind(e,"#"+action,action);

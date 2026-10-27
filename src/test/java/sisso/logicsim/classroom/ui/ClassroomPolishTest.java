@@ -21,6 +21,29 @@ import static sisso.logicsim.util.LogicMessages.text;
 /** Transport and resource topology only; no native client renderer is emulated here. */
 class ClassroomPolishTest {
     @TempDir Path directory;
+    @Test void overviewGuidanceMatchesTheSectionAndTechnicalDetailsRequireARecord() {
+        UUID teacher=UUID.randomUUID(),id=UUID.randomUUID();
+        var classroom=new Classroom(id,teacher,"Class","",0,"");
+        var member=new Member(UUID.randomUUID(),id,teacher,"Teacher",Role.TEACHER,null,true,1,null,0);
+        var home=new Home(classroom,member,"Teacher",true);
+        for(var kind:List.of(Kind.MEMBERS,Kind.INTAKES,Kind.PLAYERS)){
+            var page=new ClassroomPage(null,null,null);page.model.apply(new Screen(home,kind,new Page<>(List.of(),0,false),0),true);
+            var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true);
+            String hint=switch(kind){case INTAKES->"emptyPendingHint";case PLAYERS->"emptyPlayersHint";default->"emptyMembersHint";};
+            assertTrue(value(c,"#OverviewHint.TextSpans").toString().contains("server.logicgates.classroom."+hint));
+            assertEquals(kind==Kind.MEMBERS,value(c,"#OverviewCards.Visible").asBoolean().getValue());
+            assertFalse(value(c,"#Technical.Visible").asBoolean().getValue());
+            assertFalse(value(c,"#ContextActions.Visible").asBoolean().getValue());
+        }
+        var page=new ClassroomPage(null,null,null);
+        var student=new Member(UUID.randomUUID(),id,UUID.randomUUID(),"Student",Role.STUDENT,"00123",true,1,null,0);
+        page.model.apply(new Screen(home,Kind.MEMBERS,new Page<>(List.of(student),0,false),1),true);page.model.select(student.id().toString());
+        var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true);
+        assertTrue(value(c,"#Technical.Visible").asBoolean().getValue());
+        ClassroomScreenRenderer.denied(c);
+        assertFalse(value(c,"#ContextActions.Visible").asBoolean().getValue());
+        assertTrue(value(c,"#Status.TextSpans").toString().contains("classroom.accessRecovery"));
+    }
     private static BsonValue value(UICommandBuilder c,String selector) {
         CustomUICommand command=Arrays.stream(c.getCommands()).filter(v->selector.equals(v.selector)).reduce((a,b)->b).orElseThrow();
         return BsonDocument.parse(command.data).get("0");

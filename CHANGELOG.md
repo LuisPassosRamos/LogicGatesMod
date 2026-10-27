@@ -4,7 +4,17 @@ As versões seguem `MAJOR.MINOR.PATCH`: quebra de compatibilidade, incremento co
 
 ## [Unreleased]
 
-Nenhuma alteração registrada após 1.4.0-rc.18.
+Nenhuma alteração registrada após 1.4.0-rc.19.
+
+## [1.4.0-rc.19] - 2026-10-27
+
+### Ajustes de localização e apresentação do Classroom
+- Textos de todas as páginas Classroom enviados como mensagens traduzíveis em execução, incluindo títulos, botões, rótulos, ajuda e confirmações. O markup deixa de resolver traduções estáticas em um caminho diferente dos dados dinâmicos; conteúdo escrito pelo usuário permanece literal.
+- Seletores de prazo com painel inferior de quatro itens visíveis e rolagem; prazo e valor antes do enunciado longo, com mais espaço para abrir os menus.
+- Navegação de seções fora da rolagem, seção ativa em estilo primário e grade de portas alinhada à esquerda. Cartões podem crescer para acomodar texto.
+- Orientações conforme seção, aba e estado vazio; confirmação de saída no topo do detalhe, identificando a atividade e preservando as três decisões existentes.
+- Dados do vínculo junto à ficha, ocultos quando não há detalhe a consultar; recuperação de acesso sem repetir a explicação de bloqueio. Rascunhos sem título recebem referência curta estável na lista, consulta e caminho.
+- Mantidos SQLite v6, dados, critérios/publicações, nota manual e arquivos entregues. O documento único de aceite registra implementação e retestes ainda necessários no cliente.
 
 ## [1.4.0-rc.18] - 2026-10-27
 

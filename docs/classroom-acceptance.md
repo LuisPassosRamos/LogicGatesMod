@@ -19,20 +19,20 @@ Capturas, relatos e resultados automatizados permanecem como evidências datadas
 
 ## Estado atual
 
-**Candidata 1.4.0-rc.18; aceite parcial, com correções e testes pendentes.** Hytale **0.7.4**, SQLite **v6**. Build **1.4.0-rc.18+2e27a7893893**, revisão de produção `0ac666f4ab40a01d3960cebefaeeb0fd53aac834`.
+**Candidata 1.4.0-rc.19 em preparação; 11 ajustes implementados, reteste de cliente pendente.** Hytale **0.7.4**, SQLite **v6**. Identidade final e resultados completos serão registrados após a rodada final; a evidência visual disponível ainda pertence à rc.18.
 
 | Arquivo testado | SHA-256 preservado |
 | --- | --- |
-| `build/libs/LogicGates-1.4.0-rc.18.jar` | `2ddb1af75d6b9c27d64ec0ed892ca50ada9857cede976cd3141b9832889d4630` |
-| `build/releases/LogicGates-1.4.0-rc.18.zip` | `c281791b2f4473d1d93849bb95f98e3bdc6b178c7a71ba68770c30cab8f1317f` |
+| `build/libs/LogicGates-1.4.0-rc.19.jar` | A registrar após a rodada final |
+| `build/releases/LogicGates-1.4.0-rc.19.zip` | A registrar após o empacotamento final |
 
-Os hashes identificam estes arquivos existentes; a consolidação documental não os recompila nem reempacota. Uma futura alteração de produção exige registrar sua própria identidade e os resultados correspondentes.
+A rc.19 preserva os artefatos rc.18 e o esquema/dados existentes. Não atribuir à nova candidata os resultados de cliente da anterior. A instalação de teste usa o JAR final identificado aqui, sem misturar versões em mods.
 
 | Área | Evidência disponível | Estado vigente / o que falta |
 | --- | --- | --- |
 | Entrada após falha da rc.17 | [Log da falha](evidence/classroom/2026-10-27-rc17-client.md); rc.18 substitui HorizontalAlignment Right por End; novas telas renderizam | Carregamento confirmado na sessão capturada. Reabertura, reconexão e reinício controlados continuam no roteiro. |
-| Apresentação docente pt-BR | [19 capturas](evidence/classroom/2026-10-27-rc18-ptbr-client.md) | Visual parcial confirmado, com UI-01–UI-10 abertos. Não constitui aceite de ações/persistência. |
-| Jogo em inglês | [13 capturas](evidence/classroom/2026-10-27-rc18-en-client.md) | **Localização reprovada por mistura de idiomas: I18N-01.** Traduções existem; causa e correção pendentes. |
+| Apresentação docente pt-BR | [19 capturas](evidence/classroom/2026-10-27-rc18-ptbr-client.md) | Visual parcial confirmado na rc.18; UI-01–UI-10 implementados na rc.19, aguardando reteste visual e funcional. |
+| Jogo em inglês | [13 capturas](evidence/classroom/2026-10-27-rc18-en-client.md) | **Mistura de idiomas comprovada na rc.18.** I18N-01 implementado na rc.19 com rota única de mensagens; reteste de início/troca de idioma pendente. |
 | Tabela e confirmações | Consulta mostra AND completa; visual/texto mostram uma combinação preenchida e contador 1/4; ajuda e aviso de substituição visíveis | Apresentação confirmada nesses estados. Efeitos dos botões, preservação completa e publicação ainda exigem teste. |
 | Fluxos administrativos | [rc.4](evidence/classroom/2026-10-24-rc4-client.md), [rc.9](evidence/classroom/2026-10-25-rc9-client-report.md), [rc.10](evidence/classroom/2026-10-26-rc10-client.md) | Confirmações históricas discriminadas abaixo; complementos e regressão proporcional da candidata atual pendentes. |
 | Atividade, entrega e correção com duas contas | [Fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md); [polimento rc.14 por relato](evidence/classroom/2026-10-26-rc14-client.md) | Histórico confirmado no escopo descrito. Novos critérios/progresso e casos complementares não são aprovados por esses relatos. |
@@ -44,29 +44,31 @@ Os 32 originais e seus hashes estão nos manifestos [pt-BR](evidence/classroom/2
 
 ## Correções e melhorias abertas
 
-Prioridades propostas para triagem; nenhum destes 11 ajustes foi implementado durante a coleta ou a consolidação. Preservar os IDs ao desenvolver, registrar a revisão que corrigiu e retestar os casos relacionados antes de encerrar o item.
+Os **11 ajustes estão implementados na rc.19**. Permanecem abertos para aceite até o reteste dos casos indicados no cliente. A suíte direcionada de UI passou com 67 testes; a rodada completa e a identidade final serão registradas abaixo. IDs e evidências rc.18 são preservados.
 
-| ID / prioridade | Trabalho registrado | Critério para encerrar / casos |
-| --- | --- | --- |
-| **I18N-01 / alta** | Diagnosticar e corrigir português/inglês misturados em navegação, títulos, formulários, rodapé, ajuda e confirmações | Textos do sistema seguem o idioma nos caminhos de início e troca de língua; conteúdo do usuário e fuso preservados. V01. |
-| **UI-01 / alta** | Conferir o corte do menu de dias na borda inferior e o alcance dos demais seletores | Todos os valores, inclusive o último, acessíveis em captura completa; menu e ações alcançáveis em 720p. V03, P01. Mês/hora/minuto eram recortes: não presumir o mesmo defeito neles. |
-| UI-02 / média | Alinhar grupo de portas com alavancas/cabos/lâmpadas | Grade alinhada à esquerda, com quebra de linha adequada nas dimensões testadas. V02, C01. |
-| UI-03 / média | Trocar a orientação de selecionar atividade durante criação/saída por orientação do contexto atual | Próxima ação coerente nas três seções e na confirmação. V04, E01–E04. |
-| UI-04 / média | Adaptar resumo/orientação à aba e à ausência de alunos | Turma, Ingressos e Convite não pedem selecionar algo inexistente. V04, A01. |
-| UI-05 / média | Manter as seções Dados/Componentes/Resultados acessíveis durante a rolagem | Botões íntegros e alcançáveis em todas as seções; sem corte parcial do topo. V02, E03, T02. |
-| UI-06 / média | Apresentar confirmação de saída próxima do contexto da atividade | Decisão clara, com identificação da atividade e três opções; salvar/descartar/continuar preservam o estado correto, inclusive em erro. E04. |
-| UI-07 / baixa | Diferenciar foco de teclado e contexto/seção ativa | Seção atual identificável sem depender só do breadcrumb; foco não sugere outra tela ativa. V05. |
-| UI-08 / baixa | Aproximar Dados do vínculo das informações relacionadas | Ação agrupada com seu contexto, sem grande distância vazia na coluna. V04. |
-| UI-09 / baixa | Reduzir repetição do aviso de falta de autorização | Explicação e orientação suficientes, mantendo restrição efetiva e ações de recuperação. V04, X01. |
-| UI-10 / baixa | Distinguir rascunhos sem título e conferir textos longos dos cartões | Metadado útil diferencia rascunhos sem exigir título para salvar; texto legível nos dois idiomas/escalas. V02, E07. |
+| ID / prioridade | Trabalho registrado | Critério para encerrar / casos | Implementação rc.19 / reteste |
+| --- | --- | --- | --- |
+| **I18N-01 / alta** | Diagnosticar e corrigir português/inglês misturados em navegação, títulos, formulários, rodapé, ajuda e confirmações | Textos do sistema seguem o idioma nos caminhos de início e troca de língua; conteúdo do usuário e fuso preservados. V01. | 116 textos de três páginas enviados como Message.translation em execução, incluindo títulos e grupos ocultos; markup sem referências de tradução estática. Reteste V01 pendente. |
+| **UI-01 / alta** | Conferir o corte do menu de dias na borda inferior e o alcance dos demais seletores | Todos os valores, inclusive o último, acessíveis em captura completa; menu e ações alcançáveis em 720p. V03, P01. Mês/hora/minuto eram recortes: não presumir o mesmo defeito neles. | PanelAlign Bottom, quatro itens visíveis com rolagem nativa; prazo/valor antes do enunciado longo. Reteste de limites no viewport pendente. |
+| UI-02 / média | Alinhar grupo de portas com alavancas/cabos/lâmpadas | Grade alinhada à esquerda, com quebra de linha adequada nas dimensões testadas. V02, C01. | Grade de portas ancorada à esquerda, preservando quebra de linha. Reteste visual pendente. |
+| UI-03 / média | Trocar a orientação de selecionar atividade durante criação/saída por orientação do contexto atual | Próxima ação coerente nas três seções e na confirmação. V04, E01–E04. | Orientação própria de Dados/Componentes/Resultados e da decisão de saída. Contextos cobertos por testes; reteste no cliente pendente. |
+| UI-04 / média | Adaptar resumo/orientação à aba e à ausência de alunos | Turma, Ingressos e Convite não pedem selecionar algo inexistente. V04, A01. | Título/ajuda por aba e estado vazio; cartões do resumo somente na visão de turma/ficha própria. Testes de estados passaram; reteste no cliente pendente. |
+| UI-05 / média | Manter as seções Dados/Componentes/Resultados acessíveis durante a rolagem | Botões íntegros e alcançáveis em todas as seções; sem corte parcial do topo. V02, E03, T02. | Seções movidas para fora do conteúdo TopScrolling, preservando campos. Reteste de rolagem/escala pendente. |
+| UI-06 / média | Apresentar confirmação de saída próxima do contexto da atividade | Decisão clara, com identificação da atividade e três opções; salvar/descartar/continuar preservam o estado correto, inclusive em erro. E04. | Confirmação no topo do detalhe, com título atual da atividade; conteúdo/ações restantes ocultos sem limpar os campos. Testes de transporte/snapshot passaram; decisões reais pendentes. |
+| UI-07 / baixa | Diferenciar foco de teclado e contexto/seção ativa | Seção atual identificável sem depender só do breadcrumb; foco não sugere outra tela ativa. V05. | Seção ativa usa botão primário, demais usam secundário; bindings mantêm as mesmas ações. Estado/bindings testados; foco visual pendente. |
+| UI-08 / baixa | Aproximar Dados do vínculo das informações relacionadas | Ação agrupada com seu contexto, sem grande distância vazia na coluna. V04. | Dados do vínculo junto ao detalhe, visível somente quando há registro/ficha própria. Estados de visibilidade testados; reteste visual pendente. |
+| UI-09 / baixa | Reduzir repetição do aviso de falta de autorização | Explicação e orientação suficientes, mantendo restrição efetiva e ações de recuperação. V04, X01. | Explicação de bloqueio no corpo e orientação de recuperação distinta no rodapé. Bloqueio preservado/testado; reteste no cliente pendente. |
+| UI-10 / baixa | Distinguir rascunhos sem título e conferir textos longos dos cartões | Metadado útil diferencia rascunhos sem exigir título para salvar; texto legível nos dois idiomas/escalas. V02, E07. | Referência curta estável de rascunho sem título na lista, consulta e caminho; cartões com altura mínima e crescimento por texto. Referências testadas; textos longos/escala pendentes. |
 
-I18N-01: os documentos `.ui` usam chaves que têm valores em inglês no catálogo en-US; diversos textos atualizados em execução aparecem em inglês ao lado de referências do documento ainda em português. Diferença de resolução/cache após a troca de língua é **hipótese**, não causa demonstrada. Diagnosticar com V01 antes de duplicar traduções ou substituir referências em massa. O [relatório inglês](evidence/classroom/2026-10-27-rc18-en-client.md) conserva exemplos por tela e contexto técnico.
+I18N-01: as capturas mostram diferença entre referências estáticas e mensagens atualizadas em execução. A rc.19 elimina esse caminho divergente nas páginas Classroom: o markup define estrutura/estilo e os textos são enviados pelo builder como mensagens traduzíveis nativas, preservando dados literais do usuário. A origem interna da divergência de idioma/cache no cliente não foi demonstrada; o reteste V01 continua necessário. A regressão verifica os comandos realmente construídos para todos os textos declarados nos layouts, seus IDs e chaves nos dois catálogos.
+
+UI-01/UI-07: os contratos usados foram conferidos em `Common/UI/Custom/Common.ui` e páginas nativas do Assets.zip 0.7.4: EntriesInViewport/PanelAlign Bottom e estilos primário/secundário. O painel do prazo usa quatro entradas de 32 unidades, com rolagem. Essa conferência não substitui medir corte/escala no cliente.
 
 ## Preparar o teste
 
-1. Registrar build ID, revisão quando conhecida e SHA-256 do JAR efetivamente instalado. Para repetir a coleta atual, usar a rc.18 identificada acima; após correção, identificar a nova build e não atribuir a ela os resultados da antiga.
+1. Registrar build ID, revisão quando conhecida e SHA-256 do JAR efetivamente instalado. Para o novo reteste, usar o JAR final rc.19 identificado acima; as coletas anteriores pertencem à rc.18.
 2. Com mundo/servidor parado, preservar **banco, pasta `submissions`, configuração e mundos juntos**, fora de `build/`. Instalar somente uma versão do JAR do mod em `mods`; manter o ZIP fora dessa pasta.
-3. SQLite v6 não muda entre rc.15–rc.18. Atualização de v5 tem backup pré-migração consistente; rollback para rc.14 exige banco v5 correspondente, e para versões mais antigas exige esquema compatível. Não abrir v6 no mod antigo nem apagar dados para contornar erro de UI. Consultar [recuperação](classroom-learning.md#persistência-e-recuperação).
+3. SQLite v6 não muda entre rc.15–rc.19. Atualização de v5 tem backup pré-migração consistente; rollback para rc.14 exige banco v5 correspondente, e para versões mais antigas exige esquema compatível. Não abrir v6 no mod antigo nem apagar dados para contornar erro de UI. Consultar [recuperação](classroom-learning.md#persistência-e-recuperação).
 4. Usar turma descartável e contas separadas: professor autorizado e aluno **sem OP**. Outra conta/professor é necessária só para concorrência entre turmas e alguns processos simultâneos. Na falta de conta, marcar os casos dependentes como não executados e continuar os independentes.
 5. Obter UUIDs com `/uuid`. No console, conceder/remover a permissão específica conforme o cenário:
 
@@ -80,7 +82,7 @@ perm user remove <UUID> sisso.logicgates.classroom.teach
 
 ## Ordem de execução
 
-1. **Disponível agora sem aluno:** S01–S03, V01–V05, E01–E07, P01–P05, C01–C03 e T01–T06, nos casos que não dependem de outra conta/rascunho legado. Corrigir e retestar I18N-01/UI-01 primeiro, seguido dos demais achados.
+1. **Disponível agora sem aluno:** S01–S03, V01–V05, E01–E07, P01–P05, C01–C03 e T01–T06, nos casos que não dependem de outra conta/rascunho legado. Retestar I18N-01/UI-01 primeiro, seguido dos demais ajustes implementados; se falhar, registrar e corrigir antes de fechar o item.
 2. **Com professor e aluno:** executar a [prova curta](#roteiro-com-professor-e-aluno), depois os complementos A, G, D, N e X afetados pela mudança. Não repetir como campanha nova tudo que já foi confirmado historicamente quando o código correspondente não mudou.
 3. **Com massa/ambiente isolado:** paginação, textos longos, contas concorrentes, limite de tabela/área e recuperação após interrupção. Não fabricar o caso de ano antigo alterando o banco real.
 4. **Matriz visual:** conferir os dois idiomas e as combinações de resolução/escala disponíveis, começando por 1280×720; registrar explicitamente cada combinação.
@@ -88,7 +90,7 @@ perm user remove <UUID> sisso.logicgates.classroom.teach
 
 ## Roteiros e critérios
 
-Estados iniciais abaixo conciliam as evidências recebidas até 27/10/2026. **Visual parcial** confirma o que a imagem mostra; **histórico confirmado** conserva o resultado naquela build; ambos podem exigir execução funcional na candidata atual. **Pendente** significa que o cenário não foi demonstrado no escopo atual. Uma alteração apenas documental não executa nenhum caso de cliente.
+Os estados abaixo conciliam evidências recebidas e implementação até 27/10/2026; testes de cliente ainda referem-se às builds discriminadas, com reteste rc.19 pendente. **Visual parcial** confirma o que a imagem mostra; **histórico confirmado** conserva o resultado naquela build; ambos podem exigir execução funcional na candidata atual. **Pendente** significa que o cenário não foi demonstrado no escopo atual. Uma alteração apenas documental não executa nenhum caso de cliente.
 
 ### Abertura e sessão
 
@@ -102,11 +104,11 @@ Estados iniciais abaixo conciliam as evidências recebidas até 27/10/2026. **Vi
 
 | ID | Procedimento e resultado esperado | Estado atual |
 | --- | --- | --- |
-| V01 | Iniciar cliente com en-US selecionado e testar também pt-BR→inglês e caminho inverso. Comparar reabrir página, reconectar e reiniciar. Conferir navegação, rótulos, filtros/dropdowns abertos, estados vazios, erros, ajuda, confirmações, professor/aluno e falta de autorização. Textos do sistema seguem a língua; nomes/enunciado do usuário permanecem literais, assim como identificação do fuso pedagógico. | **Reprovado: I18N-01** na troca para inglês; início em inglês e causa pendentes. Reinício é variável de diagnóstico, não correção comprovada. |
+| V01 | Iniciar cliente com en-US selecionado e testar também pt-BR→inglês e caminho inverso. Comparar reabrir página, reconectar e reiniciar. Conferir navegação, rótulos, filtros/dropdowns abertos, estados vazios, erros, ajuda, confirmações, professor/aluno e falta de autorização. Textos do sistema seguem a língua; nomes/enunciado do usuário permanecem literais, assim como identificação do fuso pedagógico. | Falha comprovada na rc.18; implementação de I18N-01 na rc.19 com cobertura de mensagens no build. Reteste de cliente pendente, inclusive início em inglês; reinício continua variável de diagnóstico. |
 | V02 | Em pt-BR/en-US, conferir Turma/Ingressos/Convite/Administração, lista/consulta/edição/criação, ficha do aluno e correção. Usar 1280×720 e 1920×1080 nas escalas padrão e máxima disponível; complementar com 1366×768 e 2560×1440, registrando combinações indisponíveis. Painel deve ocupar ao menos **90% da largura e 90% da altura úteis** (81% da área), medidos no viewport conhecido. Sem rótulos sobrepostos/cortados; listas/textos rolam; navegação/paginação/ações quebram linha e continuam alcançáveis. | Parcial visual em 1280×720 relatados, escala desconhecida. Ocupação e demais combinações não medidas. UI-02/UI-05/UI-10 abertos. |
-| V03 | Abrir cada seletor de prazo próximo à borda; rolar até último dia/mês/ano/hora/minuto e selecionar. Painel/menu e ações acessíveis no viewport completo, sem depender de recorte da captura. | Corte observado no dia: UI-01; demais limites pendentes. |
+| V03 | Abrir cada seletor de prazo próximo à borda; rolar até último dia/mês/ano/hora/minuto e selecionar. Painel/menu e ações acessíveis no viewport completo, sem depender de recorte da captura. | Corte observado no dia na rc.18; painel inferior/reduzido implementado rc.19. Todos os limites no cliente pendentes. |
 | V04 | Conferir estados vazios, página posterior esvaziada, mensagens de operação e falta de autorização. Texto indica próxima ação possível na aba; Anterior permite voltar; confirmação/erro/gravação não são substituídos por ajuda genérica. Conferir Dados do vínculo e ausência de avisos redundantes. | Visual parcial; UI-03/UI-04/UI-08/UI-09 abertos. Prioridade de mensagens/página esvaziada pendentes. |
-| V05 | Navegar por teclado e trocar seções/telas. Seleção, breadcrumb e ficha correspondem ao contexto; foco e seção ativa distinguíveis; títulos/bordas dos botões íntegros. | UI-07 aberto; interação pendente. |
+| V05 | Navegar por teclado e trocar seções/telas. Seleção, breadcrumb e ficha correspondem ao contexto; foco e seção ativa distinguíveis; títulos/bordas dos botões íntegros. | Destaque ativo e bindings implementados/testados na rc.19; foco/interação no cliente pendentes. |
 
 ### Roteiro administrativo
 
@@ -234,7 +236,9 @@ A massa serve para UI/paginação, não estimativa de jogadores suportados nem p
 
 ## Verificação automatizada
 
-Última rodada de produção, **rc.18**: `fullCheck` aprovado em **2 min 48 s**, **922 testes Java**, **41 Python**, **90 verificações nativas** (63 criação + 27 após reinício real), **361 chaves por idioma e seis documentos UI**. [Registro integral](evidence/classroom/2026-10-27-rc18-server.json); log local `build/tmp/rc18-fullCheck.log`; relatório `build/reports/server-integration/20261027-084831-8be856/summary.json`. CI Windows/Linux aprovada na revisão de produção acima: [run 40498835944](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944).
+**rc.19:** 67 testes direcionados de UI passaram, sem falhas/erros; log `build/tmp/rc19-ui.log`. Verificador de projeto passou com 370 chaves em cada idioma e seis documentos UI. Rodada final completa ainda pendente; não é aceite do cliente.
+
+Base histórica de produção, **rc.18**: `fullCheck` aprovado em **2 min 48 s**, **922 testes Java**, **41 Python**, **90 verificações nativas** (63 criação + 27 após reinício real), **361 chaves por idioma e seis documentos UI**. [Registro integral](evidence/classroom/2026-10-27-rc18-server.json); log local `build/tmp/rc18-fullCheck.log`; relatório `build/reports/server-integration/20261027-084831-8be856/summary.json`. CI Windows/Linux aprovada na revisão de produção acima: [run 40498835944](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944).
 
 O novo guard recusou o alinhamento Right no JAR rc.17 preservado e aprovou End na fonte/JAR rc.18; aceita literais Start/Center/End. As regressões também verificam propriedades compatíveis, codecs/bindings, privacidade, contagem distinta, nota zero/ausente/revisão, criação com rollback, tabelas incompletas/legadas, até oito linhas/32 células visuais e preservação de controles. Não há parser completo de Custom UI: fonte/transporte/chaves não validam renderização ou tradução resolvida no cliente, como demonstra I18N-01.
 
@@ -242,7 +246,7 @@ Orçamentos preservados por testes: lista docente de membros com uma conexão/at
 
 O fingerprint empacotado rc.18 confere com as fontes de produção commitadas. `dirty=true` nos metadados da compilação foi estado transitório do índice do manifest, sem diferença do conteúdo; os bytes do JAR testado foram conservados. A evidência JSON é histórica: seu campo client pendente antecede as capturas posteriores, já conciliadas neste documento.
 
-Para futuras correções, executar testes proporcionais ao código alterado e os casos de cliente atingidos. Rodada final de `fullCheck` quando a candidata de produção estiver pronta, conforme [desenvolvimento](development.md#verificação-proporcional-à-alteração), sem repetir baterias por atualização apenas documental. Atualizar este bloco com a nova identidade/resultado; manter evidências anteriores datadas. Esta consolidação não executou testes de runtime.
+Para futuras correções, executar testes proporcionais ao código alterado e os casos de cliente atingidos. Rodada final de `fullCheck` quando a candidata de produção estiver pronta, conforme [desenvolvimento](development.md#verificação-proporcional-à-alteração), sem repetir baterias por atualização apenas documental. Atualizar este bloco com a nova identidade/resultado; manter evidências anteriores datadas. A consolidação anterior foi documental; a rodada rc.19 executa os testes identificados neste bloco, sem inferir renderização do cliente.
 
 ## Registro de resultados e fechamento
 
@@ -260,7 +264,7 @@ Não converter screenshot de botão em teste da ação, consulta de AND em execu
 
 Critérios para fechar a candidata:
 
-- [ ] Corrigir/retestar I18N-01 e UI-01 e tratar os demais achados, registrando decisão explícita para qualquer adiamento; todos seguem abertos nesta consolidação.
+- [ ] Retestar I18N-01/UI-01 e os demais ajustes implementados na rc.19; registrar evidência por caso e decisão explícita para qualquer adiamento. Implementação não fecha o aceite visual.
 - [ ] Completar os novos fluxos de criação/saída, tabela, progresso e verificação assistida; executar regressão breve com professor/aluno, revisão/nota correta e dados preservados.
 - [ ] Registrar cada combinação visual executada e os complementos de autorização/concorrência/persistência; identificar claramente o que não pôde ser testado, sem declarar matriz completa.
 - [ ] Associar resultados à build/JAR exatos, rodar verificações proporcionais e preservar evidências/checksums do arquivo entregue.
@@ -277,7 +281,7 @@ Propostas já registradas, sem implementação ou prazo assumido por este checkl
 | Pontuação automática | Definir como converter critérios em nota, aceitar equivalência comportamental sem ignorar quantidades e distinguir falha de contexto de resposta errada. Hoje verificação assistida não atribui nota. [Contratos](roadmap/classroom-learning-contracts.md). |
 | Extensões administrativas | Transferência de professor, múltiplos responsáveis, restauração de turma encerrada e retenção/exclusão definitiva exigem contratos próprios. [Plano Classroom](roadmap/classroom.md#fora-do-escopo-atual). |
 | Bancadas/autoria e materiais | Propriedade/proteção permanente, prova de autoria, compatibilidade adicional de materiais e identificação personalizada de I/O exigem regras próprias; reserva temporária de correção já existe. [Contratos](roadmap/classroom-learning-contracts.md). |
-| Outros idiomas e desempenho | Novos locales conforme contrato, após corrigir a resolução atual de en-US; otimizações como invalidação por região dependem de medição. [Roadmap](roadmap/README.md). |
+| Outros idiomas e desempenho | Novos locales conforme contrato, após validar a resolução atual de en-US; otimizações como invalidação por região dependem de medição. [Roadmap](roadmap/README.md). |
 
 Fora da campanha Classroom, o roadmap também conserva verificações manuais de drops, cancelamento/reembolso de fabricação e abertura dos projetos no Blockbench. São validações complementares do projeto, não funcionalidades novas nem motivo para repetir toda a campanha de circuitos por uma alteração documental/administrativa.
 
@@ -297,4 +301,4 @@ Os antigos `classroom-rc6-acceptance.md` a `classroom-rc18-acceptance.md` foram 
 | [rc.17 automatizada](evidence/classroom/2026-10-27-rc17-server.json), [falha de cliente](evidence/classroom/2026-10-27-rc17-client.md) | Progresso/editor/tabela implementados; log comprovou alinhamento Right inválido | Automação aprovada não evitou bloqueio de carregamento. |
 | [rc.18 automatizada](evidence/classroom/2026-10-27-rc18-server.json), [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr-client.md), [jogo em inglês](evidence/classroom/2026-10-27-rc18-en-client.md) | End corrigiu bloqueio nesta sessão; 32 capturas documentam apresentação e novos estados da tabela | Inglês reprovado por mistura, onze achados abertos; sem aluno ou outra resolução/escala registrada. |
 
-Esta consolidação foi documental: não altera produção, banco, JAR ou ZIP e não promove uma confirmação histórica a aprovação da candidata atual.
+A coleta e a consolidação anteriores foram documentais. A rc.19 implementa os 11 ajustes acima, mantendo o banco e os artefatos anteriores; confirmações históricas não aprovam sua renderização.

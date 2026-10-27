@@ -1,6 +1,6 @@
 # Documentação do LogicGates
 
-Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.18**, com Classroom em **SQLite v6**. Circuitos, administração de turmas, atividades versionadas, entregas de áreas e avaliação manual estão implementados. A verificação assistida compara quantidades e tabela verdade sobre a entrega salva; **não atribui nota automaticamente**.
+Mod para **Hytale 0.7.4**, candidata **1.4.0-rc.19**, com Classroom em **SQLite v6**. Circuitos, administração de turmas, atividades versionadas, entregas de áreas e avaliação manual estão implementados. A verificação assistida compara quantidades e tabela verdade sobre a entrega salva; **não atribui nota automaticamente**.
 
 ## Por onde começar
 

@@ -6,8 +6,8 @@ $C.@Container {
   Anchor: (Width: 620, Height: 350);
 
   #Title {
-    $C.@Title {
-      @Text = %server.logicgates.classroom.probe.title;
+    $C.@Title #PageTitle {
+      @Text = "";
     }
   }
 
@@ -17,7 +17,7 @@ $C.@Container {
 
     Label #Description {
       Anchor: (Height: 56, Bottom: 14);
-      Text: %server.logicgates.classroom.probe.description;
+      Text: "";
       Style: (FontSize: 16, Wrap: true, TextColor: #c8d3e0);
     }
 
@@ -32,12 +32,12 @@ $C.@Container {
 
       $C.@TextButton #Increment {
         @Anchor = (Width: 340, Right: 12);
-        @Text = %server.logicgates.classroom.probe.increment;
+        @Text = "";
       }
 
       $C.@CancelTextButton #Close {
         @Anchor = (Width: 180);
-        @Text = %server.logicgates.classroom.probe.close;
+        @Text = "";
       }
     }
 

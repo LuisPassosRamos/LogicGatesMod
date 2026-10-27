@@ -1,6 +1,6 @@
 # LogicGates
 
-Mod educacional de circuitos para **Hytale 0.7.4**, candidata **1.4.0-rc.18**. Inclui alavanca, cabo, lâmpada, portas AND, OR, NOT, NAND, NOR, XOR e XNOR, bancada de fabricação e Classroom para turmas e atividades.
+Mod educacional de circuitos para **Hytale 0.7.4**, candidata **1.4.0-rc.19**. Inclui alavanca, cabo, lâmpada, portas AND, OR, NOT, NAND, NOR, XOR e XNOR, bancada de fabricação e Classroom para turmas e atividades.
 
 ## Recursos
 
@@ -25,8 +25,8 @@ No Linux/macOS: `bash ./gradlew build`.
 
 O comando compila, executa testes e confere versões, documentação, traduções, assets gerados e conteúdo do pacote. Produz:
 
-- `build/libs/LogicGates-1.4.0-rc.18.jar`: mod para instalar.
-- `build/releases/LogicGates-1.4.0-rc.18.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
+- `build/libs/LogicGates-1.4.0-rc.19.jar`: mod para instalar.
+- `build/releases/LogicGates-1.4.0-rc.19.zip`: JAR, SHA-256, identificação da compilação, documentação e fontes de arte.
 - `build/reports/tests/test/index.html`: relatório JUnit.
 
 Com o mundo/servidor parado, instale **somente o JAR de produção** em `mods`, substituindo o anterior para evitar duas cópias do plugin. Guarde o ZIP fora de `mods`; se recebeu apenas o ZIP, extraia dele o JAR. Reinicie para recarregar os assets. O JAR de fontes e o plugin de integração não são necessários para jogar.

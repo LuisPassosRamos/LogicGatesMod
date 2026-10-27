@@ -4,7 +4,7 @@ Plano inicial confirmado em **24/10/2026**, a partir de `v1.3.3` (`d33a2b5`), am
 
 ## Estado atual
 
-A candidata **1.4.0-rc.18** mantém o núcleo de circuitos, o MVP administrativo, atividades versionadas, entregas de áreas, revisões, preview/cópias temporárias, avaliação manual e verificação assistida. SQLite **v6**, arquivos privados imutáveis e leituras agregadas permanecem. A rc.16 é manutenção do código/documentação, sem novo contrato pedagógico ou mudança de esquema.
+A candidata **1.4.0-rc.19** mantém o núcleo de circuitos, o MVP administrativo, atividades versionadas, entregas de áreas, revisões, preview/cópias temporárias, avaliação manual e verificação assistida. SQLite **v6**, arquivos privados imutáveis e leituras agregadas permanecem. A rc.16 é manutenção do código/documentação, sem novo contrato pedagógico ou mudança de esquema.
 
 | Incremento | Implementação e evidência |
 | --- | --- |

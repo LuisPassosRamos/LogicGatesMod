@@ -1,6 +1,6 @@
 # Atividades — contrato aprovado e etapas pedagógicas
 
-Contrato inicial aprovado em 24/10/2026, ampliado para áreas/correção e verificação assistida em 26/10/2026. Publicação, entregas e avaliação manual estão implementadas desde a rc.11; a rc.15 acrescentou critérios versionados e verificação de circuito, mantendo nota manual. A candidata atual é **rc.18**, com SQLite **v6**. Consulte [uso atual](../classroom-learning.md), [validação por build](../validation.md) e [roteiro da candidata](../classroom-acceptance.md). Este documento registra contratos, sem atribuir aceite automático às implementações.
+Contrato inicial aprovado em 24/10/2026, ampliado para áreas/correção e verificação assistida em 26/10/2026. Publicação, entregas e avaliação manual estão implementadas desde a rc.11; a rc.15 acrescentou critérios versionados e verificação de circuito, mantendo nota manual. A candidata atual é **rc.19**, com SQLite **v6**. Consulte [uso atual](../classroom-learning.md), [validação por build](../validation.md) e [roteiro da candidata](../classroom-acceptance.md). Este documento registra contratos, sem atribuir aceite automático às implementações.
 
 ## Primeiro incremento: publicar e consultar atividades
 

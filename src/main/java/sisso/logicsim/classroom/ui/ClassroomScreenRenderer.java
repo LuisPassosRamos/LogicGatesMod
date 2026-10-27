@@ -74,7 +74,8 @@ final class ClassroomScreenRenderer {
         c.set("#EnrollmentForm.Visible",false);
         c.set("#ManageMember.Visible",teacher && model.selected instanceof Member);
         c.set("#ManageMember.Text",text(model.managing?"progress.backToProgress":"progress.manageStudent"));
-        c.set("#Technical.Visible",linked && !settings);
+        boolean details=linked && !settings && (model.selected!=null || model.kind==Kind.DETAIL);
+        c.set("#Technical.Visible",details);c.set("#ContextActions.Visible",details);
         c.set("#ProfileProgress.Visible",teacher && model.selected instanceof Member);
         c.set("#StudentActivities.Visible",teacher && model.selected instanceof Member && !model.managing);
         c.set("#StudentPages.Visible",false);
@@ -144,7 +145,16 @@ final class ClassroomScreenRenderer {
         c.set("#SummaryPublished.TextSpans",text("progress.publishedCard").param("count",overview.published()));
         c.set("#SummaryDelivered.TextSpans",text(teacher?"progress.studentsCard":"progress.deliveredCard").param("count",teacher?model.screen.studentCount():overview.delivered()));
         c.set("#SummaryPending.TextSpans",text(teacher?"progress.assessmentCard":"progress.pendingCard").param("count",teacher?overview.awaitingAssessment():Math.max(0,overview.published()-overview.delivered())));
-        c.set("#OverviewHint.TextSpans",text(teacher?"progress.teacherHint":"progress.studentHint"));
+        c.set("#OverviewCards.Visible",model.kind==Kind.MEMBERS || model.kind==Kind.DETAIL);
+        c.set("#OverviewTitle.TextSpans",text(switch(model.kind){
+            case INTAKES->"classroom.nav.intakes";case PLAYERS->"classroom.invite";default->"progress.overview";
+        }));
+        String hint=!teacher?"progress.studentHint":switch(model.kind){
+            case INTAKES->model.screen.rows().items().isEmpty()?"classroom.emptyPendingHint":"progress.intakesHint";
+            case PLAYERS->model.screen.rows().items().isEmpty()?"classroom.emptyPlayersHint":"progress.inviteHint";
+            default->model.screen.studentCount()==0?"classroom.emptyMembersHint":"progress.teacherHint";
+        };
+        c.set("#OverviewHint.TextSpans",text(hint));
     }
     private static void studentActivities(ClassroomPageModel model,UICommandBuilder c,UIEventBuilder e) {
         c.clear("#StudentActivityRows");var detail=model.screen.studentDetail();
@@ -183,9 +193,9 @@ final class ClassroomScreenRenderer {
     static void denied(UICommandBuilder c) {
         c.set("#Activities.Visible",false);
         c.clear("#Rows"); c.set("#Navigation.Visible",false); c.set("#ListPanel.Visible",false); c.set("#Details.Visible",true);
-        for(String panel:new String[]{"View","Form","ActionDock","Overview","StudentActivities"}) c.set("#"+panel+".Visible",false);
+        for(String panel:new String[]{"View","Form","ActionDock","Overview","StudentActivities","ContextActions"}) c.set("#"+panel+".Visible",false);
         c.set("#NoAccess.Visible",true); c.set("#HeaderTitle.TextSpans",text("classroom.title"));
-        c.set("#HeaderInfo.TextSpans",text("classroom.oneClass")); c.set("#Status.TextSpans",text("classroom.error.forbidden"));
+        c.set("#HeaderInfo.TextSpans",text("classroom.oneClass")); c.set("#Status.TextSpans",text("classroom.accessRecovery"));
         for (String field:FIELDS) c.set("#"+field+".Value","");
     }
     private static void member(UICommandBuilder c,Member m) {

@@ -375,3 +375,13 @@ logicgates.review.newSelection = Nova seleção em andamento. Ao confirmar, ser�
 logicgates.review.gradeMaximum = de {value} pontos
 
 logicgates.review.copyContext = Cópia de {activity} · {student} · revisão {revision}. Descartar remove somente a cópia no mundo.
+
+logicgates.editor.basicsHelp = Defina título, enunciado, prazo de Brasília e valor. Salve um rascunho incompleto ou publique quando estiver pronto.
+logicgates.editor.componentsHelp = Defina quantidades exatas de componentes. Deixe vazio para uso livre; zero proíbe o componente.
+logicgates.editor.tableHelp = Opcionalmente configure as saídas esperadas. Rascunhos podem ter respostas indefinidas; publicar exige todas as combinações.
+logicgates.editor.leaveHelp = Escolha uma das opções acima para salvar, descartar estas alterações ou continuar editando.
+logicgates.editor.unsavedContext = Alterações em: {activity}
+logicgates.progress.intakesHint = Selecione um ingresso para conferir a matrícula e as ações disponíveis.
+logicgates.progress.inviteHint = Busque um jogador e selecione um resultado para enviar um convite.
+logicgates.classroom.accessRecovery = Recarregue após receber acesso de professor ou feche esta página.
+logicgates.learning.untitledReference = Atividade sem título · {reference}

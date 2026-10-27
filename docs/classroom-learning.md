@@ -1,6 +1,6 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.18**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
+Implementação candidata em **1.4.0-rc.19**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
 
 ## Atividades
 

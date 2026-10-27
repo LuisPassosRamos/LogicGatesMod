@@ -384,3 +384,13 @@ logicgates.review.newSelection = New selection in progress. Confirming creates a
 logicgates.review.gradeMaximum = of {value} points
 
 logicgates.review.copyContext = Copy of {activity} · {student} · revision {revision}. Discarding removes only the world copy.
+
+logicgates.editor.basicsHelp = Set the title, instructions, Brasília deadline and points. Save an incomplete draft or publish when ready.
+logicgates.editor.componentsHelp = Set exact component quantities. Leave a field empty for unrestricted use; zero forbids that component.
+logicgates.editor.tableHelp = Optionally configure the expected outputs. Drafts may keep undefined answers; publishing requires every combination.
+logicgates.editor.leaveHelp = Choose one of the options above to save, discard these changes or keep editing.
+logicgates.editor.unsavedContext = Changes to: {activity}
+logicgates.progress.intakesHint = Select an admission to review its enrollment and available actions.
+logicgates.progress.inviteHint = Search for a player and select a result to send an invitation.
+logicgates.classroom.accessRecovery = Reload after receiving teacher access, or close this page.
+logicgates.learning.untitledReference = Untitled activity · {reference}
