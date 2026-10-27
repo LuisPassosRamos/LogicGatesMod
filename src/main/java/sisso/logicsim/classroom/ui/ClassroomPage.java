@@ -41,7 +41,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
     private final ClassroomPageChanges dataChanges=new ClassroomPageChanges();
     private volatile boolean dismissed;
     private AutoCloseable subscription, authorizationSubscription, catalogSubscription;
-    private static final String[] OPERATIONS = {"#Save","#Disband","#ConfirmDisband","#CancelDisband","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings","#Activities"};
+    private static final String[] OPERATIONS = {"#Save","#Disband","#ConfirmDisband","#CancelDisband","#Primary","#Secondary","#Danger","#CancelConfirm","#Previous","#Next","#Find","#NavClass","#NavIntakes","#NavInvite","#NavSettings","#Activities","#ManageMember","#Technical","#ActivityPrevious","#ActivityNext"};
 
     public ClassroomPage(PlayerRef playerRef, ClassroomRuntime runtime, World world) {
         super(playerRef, CustomPageLifetime.CanDismiss, ActionEvent.CODEC);
@@ -51,7 +51,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         c.append(LAYOUT);
         c.set("#Build.TextSpans", text("build").param("build", BuildInfo.BUILD_ID).param("hytale", BuildInfo.HYTALE_VERSION));
         bind(e,"#Disband","Danger"); bind(e,"#ConfirmDisband","Danger"); bind(e,"#CancelDisband","CancelConfirm");
-        for (String action : new String[]{"Close","Reload","Activities","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm"}) bind(e,"#"+action,action);
+        for (String action : new String[]{"Close","Reload","Activities","NavClass","NavIntakes","NavInvite","NavSettings","Previous","Next","Secondary","Danger","CancelConfirm","ManageMember","Technical","ActivityPrevious","ActivityNext"}) bind(e,"#"+action,action);
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Save",EventData.of("Action","Save")
                 .append("@Name","#Name.Value").append("@Description","#Description.Value").append("@Message","#Message.Value"));
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Primary",EventData.of("Action","Primary").append("@Enrollment","#Enrollment.Value"));
@@ -59,7 +59,7 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         controls(c,true);
     }
     public void load(Ref<EntityStore> ref, Store<EntityStore> store) {
-        if(catalogSubscription==null) catalogSubscription=runtime.listenActivityCatalog(playerRef.getUuid(),
+        if(catalogSubscription==null) catalogSubscription=runtime.listenProgress(playerRef.getUuid(),
                 classroom->busy || notificationInterest.test(new ClassroomRuntime.Change(classroom,null,false)),classroom->{
             dataChanges.add(new ClassroomRuntime.Change(classroom,null,false));
             try { dataRefresh.schedule(world::execute,()->{if(!active(ref,store)){dispose();return;}if(!busy)refreshIfPending(ref,store);}); }
@@ -100,7 +100,8 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
         var waiting = new UICommandBuilder(); discardRevokedDraft(waiting); controls(waiting,true); publish(ref,store,waiting,new UIEventBuilder());
         notificationInterest=model.interest(playerRef.getUuid());
         var stamp = access.current();
-        runtime.screen(playerRef.getUuid(),model.kind,model.query,model.page).whenComplete((screen,failure) -> {
+        runtime.screen(playerRef.getUuid(),model.kind,model.query,model.page,
+                model.selected instanceof Member m?m.id():null,model.activityPage).whenComplete((screen,failure) -> {
             try { world.execute(() -> {
                 if (!active(ref,store)) return;
                 if (!access.current(stamp)) { busy=false; refresh(ref,store,false,null); return; }
@@ -138,7 +139,25 @@ public class ClassroomPage extends InteractiveCustomUIPage<ClassroomPage.ActionE
             case "Find" -> { model.query = event.query == null ? "" : event.query; model.page=0; model.selected=null; refresh(ref,store,true,null); }
             case "Select" -> {
                 if (!model.select(event.target)) { acknowledge(ref,store); return; }
+                if(model.selected instanceof Member){refresh(ref,store,true,null);return;}
                 var c=new UICommandBuilder(); var e=new UIEventBuilder(); render(c,e,true); publish(ref,store,c,e);
+            }
+            case "ManageMember" -> {
+                if(!(model.selected instanceof Member) || !model.teacher()){acknowledge(ref,store);return;}
+                model.managing=!model.managing;model.confirming=false;
+                var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,model.managing);publish(ref,store,c,e);
+            }
+            case "Technical" -> {model.technical=!model.technical;var c=new UICommandBuilder();var e=new UIEventBuilder();render(c,e,false);publish(ref,store,c,e);}
+            case "ActivityPrevious","ActivityNext" -> {
+                var detail=model.screen.studentDetail();if(detail==null){acknowledge(ref,store);return;}
+                boolean next="ActivityNext".equals(event.action);
+                if(next?detail.activities().hasNext():model.activityPage>0){model.activityPage+=next?1:-1;refresh(ref,store,false,null);}else acknowledge(ref,store);
+            }
+            case "OpenActivity" -> {
+                var detail=model.screen.studentDetail();
+                var activity=detail==null?null:detail.activities().items().stream().filter(a->a.activity().toString().equals(event.target)).findFirst().orElse(null);
+                if(activity==null || !model.teacher()){acknowledge(ref,store);return;}
+                dispose();LearningPage.openForStudent(ref,store,playerRef,runtime,world,activity.activity(),detail.member().playerId(),activity.submission());
             }
             case "Save" -> {
                 if (model.kind != Kind.SETTINGS || model.confirming) { acknowledge(ref,store); return; }

@@ -18,10 +18,20 @@ $C.@Container {
       Anchor: (Bottom: 8);
       $C.@SecondaryTextButton #Back { @Text = %server.logicgates.learning.classroom; Anchor: (Width: 180, Right: 8, Height: 48); }
       $C.@SecondaryTextButton #Activities { @Text = %server.logicgates.learning.activities; Anchor: (Width: 260, Right: 8, Height: 48); }
-      $C.@SecondaryTextButton #Filter { @Text = %server.logicgates.learning.filter.ALL; Anchor: (Width: 240, Right: 8, Height: 48); Visible: false; }
+      DropdownBox #Filter { Anchor: (Width: 240, Right: 8, Height: 48); Style: @DeadlineStyle; Visible: false; }
       $C.@TextButton #New { @Text = %server.logicgates.learning.newActivity; Anchor: (Width: 240, Height: 48); Visible: false; }
     }
     Label #Heading { Anchor: (Bottom: 12); Style: (FontSize: 24, TextColor: #ffffff, Wrap: true); }
+    Label #Breadcrumb { Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+    Group #CopyBanner { Visible: false; LayoutMode: LeftWrap; Anchor: (Bottom: 12);
+      Label #CopyContext { FlexWeight: 1; Anchor: (MinWidth: 260, Right: 12, Bottom: 6); Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); }
+      $C.@CancelTextButton #Discard { @Text = %server.logicgates.learning.discard; Anchor: (Width: 320, Height: 48, Bottom: 6); }
+    }
+    Group #CopyConfirm { Visible: false; LayoutMode: LeftWrap; Anchor: (Bottom: 12);
+      Label { Text: %server.logicgates.review.discardHelp; FlexWeight: 1; Anchor: (MinWidth: 240, Right: 12); Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); }
+      $C.@CancelTextButton #ConfirmCopy { @Text = %server.logicgates.review.confirmDiscard; Anchor: (Width: 260, Height: 48, Right: 8); }
+      $C.@SecondaryTextButton #CancelCopy { @Text = %server.logicgates.classroom.cancel; Anchor: (Width: 160, Height: 48); }
+    }
     Group #Body {
       FlexWeight: 1;
       LayoutMode: Left;
@@ -36,11 +46,13 @@ $C.@Container {
           Label #Empty { Anchor: (Height: 70); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
           Group #Rows { LayoutMode: Top; }
         }
+        Group #Pagination { LayoutMode: Top;
         Label #Page { Anchor: (Height: 24); Style: (FontSize: 16, HorizontalAlignment: Center, TextColor: #9daec2); }
         Group {
           LayoutMode: LeftWrap;
           $C.@SecondaryTextButton #Previous { @Text = %server.logicgates.classroom.previous; Anchor: (Width: 152, Right: 8, Bottom: 6, Height: 48); }
           $C.@SecondaryTextButton #Next { @Text = %server.logicgates.classroom.next; Anchor: (Width: 152, Bottom: 6, Height: 48); }
+        }
         }
       }
       Group #Details {
@@ -51,9 +63,25 @@ $C.@Container {
           FlexWeight: 1;
           LayoutMode: TopScrolling;
           ScrollbarStyle: $C.@DefaultScrollbarStyle;
+          Group #CatalogOverview { Visible: false; LayoutMode: Top; Anchor: (Bottom: 16);
+            Label { Text: %server.logicgates.progress.overview; Anchor: (Bottom: 12); Style: (FontSize: 24, TextColor: #ffffff); }
+            Group { LayoutMode: LeftWrap;
+              Label #CatalogPublished { Anchor: (Width: 260, Height: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #CatalogDrafts { Anchor: (Width: 260, Height: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #CatalogPending { Anchor: (Width: 260, Height: 76, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+            }
+            Label #CatalogHint { Anchor: (Bottom: 12); Style: (FontSize: 19, Wrap: true, TextColor: #9daec2); }
+          }
           Group #Editor {
             Visible: false;
             LayoutMode: Top;
+            Group { LayoutMode: LeftWrap; Anchor: (Bottom: 14);
+              $C.@SecondaryTextButton #SectionBasics { @Text = %server.logicgates.editor.basics; Anchor: (Width: 230, Right: 8, Bottom: 6, Height: 48); }
+              $C.@SecondaryTextButton #SectionComponents { @Text = %server.logicgates.editor.components; Anchor: (Width: 230, Right: 8, Bottom: 6, Height: 48); }
+              $C.@SecondaryTextButton #SectionTable { @Text = %server.logicgates.editor.table; Anchor: (Width: 250, Bottom: 6, Height: 48); }
+            }
+            Label #EditorError { Visible: false; Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); }
+            Group #BasicsPanel { LayoutMode: Top;
             Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.title; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
             $C.@TextField #TitleField { Anchor: (Bottom: 8, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 128; }
             Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.description; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
@@ -92,8 +120,14 @@ $C.@Container {
                 DropdownBox #DeadlineMinute { Anchor: (Height: 44); Style: @DeadlineStyle; }
               }
             }
-            Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.value; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
-            $C.@TextField #ValueField { Anchor: (Width: 220, Bottom: 12, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 16; }
+            Group { LayoutMode: Left; Anchor: (Bottom: 12);
+              Group { LayoutMode: Top; Anchor: (Width: 220);
+                Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.value; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
+                $C.@TextField #ValueField { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 16; }
+              }
+            }
+            }
+            Group #ComponentsPanel { Visible: false; LayoutMode: Top;
             Label { Anchor: (Top: 8, Bottom: 6); Text: %server.logicgates.learning.requirements; Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
             Label { Anchor: (Bottom: 10); Text: %server.logicgates.learning.requirementsHelp; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
             Group {
@@ -116,6 +150,8 @@ $C.@Container {
                 Label { Text: %server.logicgates.learning.moduleLamp; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #c8d3e0); }
                 $C.@TextField #RequiredLAMP { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
               }
+            }
+            Group { LayoutMode: LeftWrap; Anchor: (MaxWidth: 1000);
               Group {
                 LayoutMode: Top;
                 Anchor: (Width: 190, Right: 12, Bottom: 12);
@@ -159,9 +195,51 @@ $C.@Container {
                 $C.@TextField #RequiredXNOR { Anchor: (Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 5; }
               }
             }
-            Label { Anchor: (Top: 8, Bottom: 6); Text: %server.logicgates.learning.expectedTable; Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
-            Label { Anchor: (Bottom: 10); Text: %server.logicgates.learning.tableHelp; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
-            $C.@MultilineTextField #TruthTableField { Anchor: (Height: 220, Bottom: 12); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 4096; }
+            }
+            Group #TablePanel { Visible: false; LayoutMode: Top;
+              Label { Text: %server.logicgates.learning.expectedTable; Anchor: (Bottom: 8); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
+              Label { Text: %server.logicgates.table.intro; Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+              Group { LayoutMode: LeftWrap; Anchor: (Bottom: 10);
+                $C.@SecondaryTextButton #TruthToggle { @Text = %server.logicgates.table.enable; Anchor: (Width: 290, Right: 8, Bottom: 6, Height: 48); }
+                $C.@SecondaryTextButton #TruthHelp { @Text = %server.logicgates.table.help; Anchor: (Width: 200, Bottom: 6, Height: 48); }
+              }
+              Label #TruthHelpText { Visible: false; Text: %server.logicgates.table.helpText; Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
+              Group #TruthConfig { Visible: false; LayoutMode: Top;
+                Group { LayoutMode: LeftWrap; Anchor: (Bottom: 10);
+                  Group { LayoutMode: Top; Anchor: (Width: 180, Right: 12, Bottom: 6);
+                    Label { Text: %server.logicgates.table.inputs; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #ffffff); }
+                    DropdownBox #TruthInputs { Anchor: (Height: 42); Style: @DeadlineStyle; }
+                  }
+                  Group { LayoutMode: Top; Anchor: (Width: 180, Right: 12, Bottom: 6);
+                    Label { Text: %server.logicgates.table.outputs; Anchor: (Bottom: 4); Style: (FontSize: 18, TextColor: #ffffff); }
+                    DropdownBox #TruthOutputs { Anchor: (Height: 42); Style: @DeadlineStyle; }
+                  }
+                  $C.@SecondaryTextButton #TruthAnd { @Text = %server.logicgates.table.andExample; Anchor: (Width: 210, Right: 8, Bottom: 6, Height: 48); }
+                  $C.@SecondaryTextButton #TruthMode { @Text = %server.logicgates.table.advanced; Anchor: (Width: 230, Bottom: 6, Height: 48); }
+                }
+                Label #TruthCompletion { Anchor: (Bottom: 10); Style: (FontSize: 18, Wrap: true, TextColor: #7cb7ee); }
+                Group #TruthGrid { LayoutMode: Top;
+                  Label { Text: %server.logicgates.table.legend; Anchor: (Bottom: 10); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
+                  Group #TruthRows { LayoutMode: Top; }
+                  Group #TruthPages { LayoutMode: LeftWrap; Anchor: (Top: 8);
+                    $C.@SecondaryTextButton #TruthPrevious { @Text = %server.logicgates.classroom.previous; Anchor: (Width: 152, Right: 8, Bottom: 6, Height: 48); }
+                    Label #TruthPage { Anchor: (Width: 140, Height: 48, Right: 8); Style: (FontSize: 16, VerticalAlignment: Center, TextColor: #9daec2); }
+                    $C.@SecondaryTextButton #TruthNext { @Text = %server.logicgates.classroom.next; Anchor: (Width: 152, Bottom: 6, Height: 48); }
+                  }
+                }
+                Group #TruthAdvanced { Visible: false; LayoutMode: Top;
+                  Label { Text: %server.logicgates.learning.tableHelp; Anchor: (Bottom: 10); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+                  $C.@MultilineTextField #TruthTableField { Anchor: (Height: 220, Bottom: 12); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 4096; }
+                }
+              }
+              Group #TruthConfirm { Visible: false; LayoutMode: Top; Anchor: (Top: 12);
+                Label { Text: %server.logicgates.table.replaceHelp; Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); }
+                Group { LayoutMode: LeftWrap;
+                  $C.@CancelTextButton #TruthConfirmChange { @Text = %server.logicgates.table.replace; Anchor: (Width: 260, Right: 8, Height: 48); }
+                  $C.@SecondaryTextButton #TruthCancelChange { @Text = %server.logicgates.classroom.cancel; Anchor: (Width: 180, Height: 48); }
+                }
+              }
+            }
           }
           Group #Read {
             Visible: false;
@@ -177,9 +255,11 @@ $C.@Container {
             Label #ReadMeta { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
             Label #DraftNotice { Anchor: (Bottom: 12); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); Visible: false; }
             Label #DeadlineState { Anchor: (Bottom: 8); Text: %server.logicgates.learning.deadlineClosed; Style: (FontSize: 18, Wrap: true, TextColor: #efbb73); Visible: false; }
+            Group #Statement { LayoutMode: Top;
             Label #ReadDescription { Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #c8d3e0); }
             Label #ReadRequirements { Anchor: (Top: 8, Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #ReadTable { Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
+            }
             Label #ActivityScore { Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #NoSubmission { Anchor: (Bottom: 8); Text: %server.logicgates.learning.notSubmitted; Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); Visible: false; }
           }
@@ -190,22 +270,36 @@ $C.@Container {
             Label #SubmissionRules { Anchor: (Bottom: 12); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #VerificationResults { Anchor: (Bottom: 16); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); Visible: false; }
             Label #SubmissionMeta { Anchor: (Bottom: 6); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
+            Group #ReviewColumns { LayoutMode: LeftWrap;
+            Group #PreviewPanel { LayoutMode: Top; FlexWeight: 2; Anchor: (MinWidth: 300, Right: 16);
             PrefabPreviewComponent #PrefabPreview { Anchor: (Height: 360, Bottom: 16); AllowDragYaw: true; AllowDragPitch: true; AllowZoom: true; AllowPan: true; ShowAnchor: true; }
+            }
+            Group #AssessmentPanel { LayoutMode: Top; FlexWeight: 1; Anchor: (MinWidth: 260, MaxWidth: 480);
             Label #Assessment { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
             Label #FeedbackText { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }
             Group #GradeEditor {
               Visible: false;
               LayoutMode: Top;
               Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.score; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
-              $C.@TextField #ScoreField { Anchor: (Width: 220, Bottom: 12, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 16; }
+              Group { LayoutMode: Left; Anchor: (Bottom: 12);
+                $C.@TextField #ScoreField { Anchor: (Width: 180, Right: 8, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 16; }
+                Label #GradeMaximum { Anchor: (Width: 110, Height: 46); Style: (FontSize: 19, VerticalAlignment: Center, TextColor: #9daec2); }
+              }
               Label { Anchor: (Bottom: 4); Text: %server.logicgates.learning.feedback; Style: (FontSize: 19, Wrap: true, TextColor: #ffffff); }
               $C.@MultilineTextField #FeedbackField { Anchor: (Height: 160, Bottom: 8); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 4096; }
+            }
+            }
             }
           }
         }
         Group #ActionDock {
           LayoutMode: Top;
           Anchor: (Top: 8);
+          Group { LayoutMode: LeftWrap;
+            $C.@SecondaryTextButton #ShowStatement { @Text = %server.logicgates.review.statement; Anchor: (Width: 270, Right: 8, Bottom: 6, Height: 48); Visible: false; }
+            $C.@SecondaryTextButton #ShowSubmission { @Text = %server.logicgates.review.mySubmission; Anchor: (Width: 240, Bottom: 6, Height: 48); Visible: false; }
+          }
+          Label #SelectionNotice { Visible: false; Anchor: (Bottom: 10); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); }
           Group #ActivityActions {
             LayoutMode: LeftWrap;
             Anchor: (Bottom: 6);
@@ -240,8 +334,16 @@ $C.@Container {
             $C.@TextButton #SaveGrade { @Text = %server.logicgates.learning.saveGrade; Anchor: (Width: 250, Right: 8, Bottom: 6, Height: 48); }
             $C.@SecondaryTextButton #Paste { @Text = %server.logicgates.learning.paste; Anchor: (Width: 240, Right: 8, Bottom: 6, Height: 48); }
           }
-          $C.@CancelTextButton #Discard { @Text = %server.logicgates.learning.discard; Anchor: (Top: 6, Height: 48); Visible: false; }
+
         }
+      }
+    }
+    Group #UnsavedPrompt { Visible: false; LayoutMode: Top; Anchor: (Top: 10, Bottom: 12);
+      Label { Text: %server.logicgates.editor.unsaved; Anchor: (Bottom: 8); Style: (FontSize: 19, Wrap: true, TextColor: #efbb73); }
+      Group { LayoutMode: LeftWrap;
+        $C.@TextButton #SaveAndLeave { @Text = %server.logicgates.editor.saveAndLeave; Anchor: (Width: 260, Right: 8, Bottom: 6, Height: 48); }
+        $C.@CancelTextButton #DiscardChanges { @Text = %server.logicgates.editor.discardChanges; Anchor: (Width: 260, Right: 8, Bottom: 6, Height: 48); }
+        $C.@SecondaryTextButton #KeepEditing { @Text = %server.logicgates.editor.keepEditing; Anchor: (Width: 270, Bottom: 6, Height: 48); }
       }
     }
     Label #Status { Anchor: (Top: 12, Bottom: 12); Text: %server.logicgates.learning.loading; Style: (FontSize: 18, Wrap: true, TextColor: #c8d3e0); }

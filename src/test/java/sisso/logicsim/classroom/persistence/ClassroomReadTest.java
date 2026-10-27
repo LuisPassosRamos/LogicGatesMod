@@ -34,6 +34,49 @@ class ClassroomReadTest {
         pending=service.request(observer,classroom.id(),"002"); probe.reset();
     }
     @AfterEach void restoreDriver() throws Exception { if(probe!=null) probe.close(); }
+    @Test void progressUsesDistinctPublishedActivitiesAndLatestAssessmentAcrossRevisionsAndReentry() {
+        var clock=java.time.Clock.fixed(java.time.Instant.parse("2026-10-27T12:00:00Z"),java.time.ZoneOffset.UTC);
+        var learning=new sisso.logicsim.classroom.learning.LearningStore(dir.resolve("classroom.db"),id->allowed.get(),sisso.logicsim.classroom.learning.LearningLimits.DEFAULT,clock);
+        var draft=new sisso.logicsim.classroom.learning.LearningViews.Draft("Activity","Statement",clock.millis()+60000,1000L);
+        var a=learning.create(teacher,draft,true); learning.create(teacher,draft,true);learning.create(teacher);
+        var files=new sisso.logicsim.classroom.learning.SubmissionFiles(dir.resolve("submissions"),sisso.logicsim.classroom.learning.LearningLimits.DEFAULT);
+        var content=files.write(new sisso.logicsim.classroom.learning.AreaSnapshot(1,1,1,1,List.of(new sisso.logicsim.classroom.learning.AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null))));
+        var first=learning.submit(student,a.id(),1,joined.id(),UUID.randomUUID(),content);
+        learning.grade(teacher,first.id(),0,0,"");
+        probe.reset();var screen=service.screen(teacher,Kind.MEMBERS,"",0,joined.id(),0);
+        assertEquals(new Progress(1,2),screen.progress().get(student));assertEquals(0,screen.overview().awaitingAssessment());
+        assertEquals(1,screen.overview().drafts());assertEquals(1,probe.connections.get());assertEquals(4,probe.selects.get());
+        var status=screen.studentDetail().activities().items().stream().filter(r->r.activity().equals(first.activity())).findFirst().orElseThrow();
+        assertEquals(0L,status.score());assertEquals(1000,status.submittedValue());
+        a=learning.saveAndPublish(teacher,a.id(),a.revision(),new sisso.logicsim.classroom.learning.LearningViews.Draft("New version","Changed",clock.millis()+120000,2000L));
+        assertEquals(new Progress(1,2),service.screen(teacher,Kind.MEMBERS,"",0).progress().get(student));
+        learning.submit(student,a.id(),2,joined.id(),UUID.randomUUID(),files.write(new sisso.logicsim.classroom.learning.AreaSnapshot(1,1,1,1,List.of(new sisso.logicsim.classroom.learning.AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null)))));
+        screen=service.screen(teacher,Kind.MEMBERS,"",0,joined.id(),0);
+        assertEquals(1,screen.overview().awaitingAssessment());
+        status=screen.studentDetail().activities().items().stream().filter(r->r.activity().equals(first.activity())).findFirst().orElseThrow();
+        assertNull(status.score());assertEquals(2,status.revision());assertEquals(2000,status.submittedValue());
+        learning.archive(teacher,a.id(),a.revision(),true);
+        assertEquals(new Progress(0,1),service.screen(teacher,Kind.MEMBERS,"",0).progress().get(student));
+        a=learning.activity(teacher,a.id());learning.archive(teacher,a.id(),a.revision(),false);
+        service.end(student,joined.id(),joined.revision(),false);
+        assertNull(service.screen(teacher,Kind.MEMBERS,"",0,joined.id(),0).studentDetail());
+        var request=service.request(student,classroom.id(),"00123");var rejoined=service.approve(teacher,request.id(),request.revision(),"00123");
+        assertEquals(new Progress(1,2),service.screen(teacher,Kind.MEMBERS,"",0).progress().get(student));
+        assertEquals(1,service.screen(student,Kind.DETAIL,"",0).overview().delivered());
+        assertEquals(0,service.screen(student,Kind.DETAIL,"",0).overview().drafts());
+        assertNotNull(service.screen(teacher,Kind.MEMBERS,"",0,rejoined.id(),0).studentDetail());
+    }
+    @Test void detailedActivityPagesAreBoundedAndForeignOrStudentSelectedIdsExposeNoOtherMember() {
+        var learning=new sisso.logicsim.classroom.learning.LearningStore(dir.resolve("classroom.db"),id->true,sisso.logicsim.classroom.learning.LearningLimits.DEFAULT);
+        for(int n=0;n<23;n++)learning.create(teacher,new sisso.logicsim.classroom.learning.LearningViews.Draft("A"+n,"D",System.currentTimeMillis()+86400000,1000L),true);
+        probe.reset();var first=service.screen(teacher,Kind.MEMBERS,"",0,joined.id(),0);
+        assertEquals(20,first.studentDetail().activities().items().size());assertTrue(first.studentDetail().activities().hasNext());
+        assertEquals(4,probe.selects.get());assertEquals(1,probe.connections.get());assertEquals(0,probe.active.get());
+        var last=service.screen(teacher,Kind.MEMBERS,"",0,joined.id(),1);
+        assertEquals(3,last.studentDetail().activities().items().size());assertFalse(last.studentDetail().activities().hasNext());
+        assertNull(service.screen(student,Kind.DETAIL,"",0,joined.id(),0).studentDetail());
+        assertNull(service.screen(teacher,Kind.MEMBERS,"",0,UUID.randomUUID(),0).studentDetail());
+    }
     // Frozen composition of the rc.9 API: comparison must not reuse the new aggregate read policy.
     Home previousHome(UUID actor,boolean canTeach) {
         var member=repository.member(actor).orElse(null);

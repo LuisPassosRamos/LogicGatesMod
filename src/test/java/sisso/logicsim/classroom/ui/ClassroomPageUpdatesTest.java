@@ -62,4 +62,14 @@ class ClassroomPageUpdatesTest {
         assertTrue(interest.test(new Change(id,UUID.randomUUID(),false)));
         assertTrue(interest.test(new Change(null,actor,false)));
     }
+    @Test void rebuildingSecondaryRowsRestoresTheirPropertiesWithoutResettingRosterOrPreview() {
+        var updates=new ClassroomPageUpdates();packet(updates,rows().set("#Preview.Visible",true),bindings(),List.of("one"));
+        for(int i=0;i<2;i++) {
+            var commands=rows().set("#Preview.Visible",true).clear("#TruthRows").append("#TruthRows","Pages/LogicGates/TruthRow.ui")
+                    .set("#TruthRows[0] #InputBits.Text","00");
+            var result=packet(updates,commands,bindings(),List.of("one"));
+            assertEquals(3,result.commands.length);assertEquals(0,result.eventBindings.length);
+            assertTrue(Arrays.stream(result.commands).noneMatch(c->c.selector.startsWith("#Rows") || c.selector.equals("#Preview.Visible")));
+        }
+    }
 }

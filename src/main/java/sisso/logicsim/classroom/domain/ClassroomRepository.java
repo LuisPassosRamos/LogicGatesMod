@@ -7,6 +7,7 @@ import sisso.logicsim.classroom.domain.ClassroomViews.*;
 public interface ClassroomRepository {
     Home readHome(UUID actor, boolean canTeach);
     Screen readScreen(UUID actor, Kind kind, String query, int page, boolean canTeach);
+    Screen readScreen(UUID actor, Kind kind, String query, int page, boolean canTeach, UUID selectedMember, int activityPage);
     Optional<Classroom> findByMember(UUID playerId);
     Classroom create(UUID teacherId, String name, String description);
     Classroom update(UUID teacherId, UUID classroomId, long revision, String name, String description);

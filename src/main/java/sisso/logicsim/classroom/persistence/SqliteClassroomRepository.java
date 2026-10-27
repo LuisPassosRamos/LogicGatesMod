@@ -29,33 +29,58 @@ public final class SqliteClassroomRepository implements ClassroomRepository {
         return read(c -> home(c,actor,canTeach));
     }
     @Override public Screen readScreen(UUID actor, Kind requested, String query, int number, boolean canTeach) {
+        return readScreen(actor,requested,query,number,canTeach,null,0);
+    }
+    @Override public Screen readScreen(UUID actor, Kind requested, String query, int number, boolean canTeach,UUID selectedMember,int activityPage) {
         return transaction(Transaction.READ,c -> {
             var home=home(c,actor,canTeach);
             Kind kind=ClassroomReadPolicy.kind(home,requested);
             boolean teacher=ClassroomReadPolicy.teacher(home);
             int page=kind==Kind.SETTINGS || kind==Kind.DETAIL ? 0 : ClassroomReadPolicy.page(number);
             UUID scope=teacher ? home.classroom().id() : actor;
+            var delivered=new HashMap<UUID,Integer>();
             Page<?> rows=switch(kind) {
                 case BROWSE -> browse(c,ClassroomReadPolicy.query(query),page);
-                case MEMBERS -> members(c,scope,page);
+                case MEMBERS -> page(c,"SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name,"+LearningProgress.DELIVERED+" AS delivered_activities FROM classroom_memberships m LEFT JOIN classroom_players p ON p.uuid=m.player_uuid WHERE m.classroom_id=? AND m.active=1 AND m.role='STUDENT' ORDER BY coalesce(p.search_name,m.player_uuid),m.id LIMIT 21 OFFSET ?",
+                    r->{var member=membership(r);delivered.put(member.playerId(),r.getInt("delivered_activities"));return member;},page,scope,page*PAGE_SIZE);
                 case INTAKES -> intakes(c,scope,teacher,page);
                 case PLAYERS -> players(c,actor,ClassroomReadPolicy.query(query),page);
                 case SETTINGS, DETAIL -> new Page<>(List.of(),0,false);
             };
-            var counts=home.classroom()==null ? new Counts(0,0) : counts(c,home.classroom().id(),teacher);
-            return new Screen(home,kind,rows,counts.students(),counts.activities());
+            var counts=home.classroom()==null ? new LearningProgress.Counts(0,0,Overview.EMPTY)
+                    : LearningProgress.counts(c,home.classroom().id(),actor,teacher);
+            var progress=new HashMap<UUID,Progress>();
+            if(counts.overview().published()>0) delivered.forEach((id,count)->progress.put(id,new Progress(count,counts.overview().published())));
+            var detail=teacher && kind==Kind.MEMBERS && selectedMember!=null
+                    ? studentDetail(c,scope,selectedMember,ClassroomReadPolicy.page(activityPage),counts.overview().published(),progress) : null;
+            return new Screen(home,kind,rows,counts.students(),counts.activities(),counts.overview(),progress,detail);
         });
     }
-    private record Counts(int students,int activities) { }
-    private Counts counts(Connection c,UUID classroom,boolean teacher) throws SQLException {
-        // Separate aggregates avoid multiplying activities by memberships; share the screen's read snapshot.
-        return one(c,"""
-            SELECT count(*) AS students,
-              (SELECT count(*) FROM learning_activities a WHERE a.classroom_id=? AND a.archived=0
-                AND (?=1 OR a.current_version IS NOT NULL)) AS activities
-            FROM classroom_memberships WHERE classroom_id=? AND active=1 AND role='STUDENT' AND ?=1
-            """,r->new Counts(r.getInt("students"),r.getInt("activities")),classroom,teacher?1:0,classroom,teacher?1:0).orElseThrow();
+    private StudentDetail studentDetail(Connection c,UUID classroom,UUID membership,int number,int total,Map<UUID,Progress> progress) throws SQLException {
+        // The active membership is validated in the same query, including an empty activity page.
+        var result=query(c,"""
+            SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name,
+            """+LearningProgress.DELIVERED+" AS delivered_activities,"+"""
+              a.id AS progress_activity,a.title AS progress_title,a.deadline AS progress_deadline,a.value AS progress_value,
+              s.id AS progress_submission,s.revision AS progress_revision,s.late AS progress_late,
+              g.score AS progress_score,sv.value AS progress_submitted_value
+            FROM classroom_memberships m LEFT JOIN classroom_players p ON p.uuid=m.player_uuid
+            LEFT JOIN (SELECT a.id,a.classroom_id,v.title,v.deadline,v.value FROM learning_activities a
+              JOIN learning_versions v ON v.activity_id=a.id AND v.number=a.current_version
+              WHERE a.classroom_id=? AND a.archived=0 ORDER BY v.deadline,v.title,a.id LIMIT 21 OFFSET ?) a ON a.classroom_id=m.classroom_id
+            LEFT JOIN learning_submissions s ON s.activity_id=a.id AND s.student_id=m.player_uuid AND
+            """+LearningProgress.LATEST+"\n"+"""
+            LEFT JOIN learning_versions sv ON sv.activity_id=s.activity_id AND sv.number=s.publication
+            LEFT JOIN learning_grades g ON g.submission_id=s.id AND g.revision=(SELECT max(g2.revision) FROM learning_grades g2 WHERE g2.submission_id=s.id)
+            WHERE m.id=? AND m.classroom_id=? AND m.active=1 AND m.role='STUDENT'
+            ORDER BY a.deadline,a.title,a.id
+            """,r->new DetailRow(membership(r),LearningProgress.activity(r),r.getInt("delivered_activities")),classroom,number*PAGE_SIZE,membership,classroom);
+        if(result.isEmpty())return null;
+        if(total>0)progress.put(result.getFirst().member().playerId(),new Progress(result.getFirst().delivered(),total));
+        var activities=result.stream().map(DetailRow::activity).filter(Objects::nonNull).toList();
+        return new StudentDetail(result.getFirst().member(),new Page<>(activities.subList(0,Math.min(PAGE_SIZE,activities.size())),number,activities.size()>PAGE_SIZE));
     }
+    private record DetailRow(Member member,ActivityProgress activity,int delivered) { }
     private Home home(Connection c,UUID actor,boolean canTeach) throws SQLException {
         var home=one(c,"""
             SELECT m.*,coalesce(p.name,m.player_uuid) AS player_name,

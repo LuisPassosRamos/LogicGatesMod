@@ -187,7 +187,7 @@ public final class AreaRuntime implements AutoCloseable {
             persisted.whenComplete((result,failure)->{
                 if(failure==null) {
                     if(!result.content().equals(content.id()))runtime.submissionFiles().discardUncommitted(content.id());
-                    sessions.complete(session);runtime.learningChanged(ctx.classroom());
+                    sessions.complete(session);runtime.submissionsChanged(ctx.classroom());
                     onWorld(world,()->{if(player.getReference()!=null && player.getReference().isValid()) {removeTools(player,world);clearOutline(player);}return null;});
                 } else if(!closed)runtime.submissionFiles().discardUncommitted(content.id());
             });

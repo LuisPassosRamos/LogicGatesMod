@@ -12,7 +12,12 @@ Button {
   Group {
     FlexWeight: 1;
     LayoutMode: Top;
-    Label #RowName { Anchor: (Height: 46); Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
+    Group {
+      LayoutMode: Left;
+      Anchor: (Height: 44);
+      Label #RowName { FlexWeight: 1; Anchor: (Right: 8); Style: (FontSize: 20, Wrap: true, TextColor: #ffffff); }
+      Label #RowProgress { Visible: false; Anchor: (Width: 110); Style: (FontSize: 16, Wrap: true, TextColor: #7cb7ee, HorizontalAlignment: Right); }
+    }
     Label #RowInfo { Anchor: (Height: 40); Style: (FontSize: 16, Wrap: true, TextColor: #b4c4d8); }
     Label #RowStamp { Visible: false; Anchor: (Height: 22); Style: (FontSize: 13, TextColor: #9daec2); }
   }

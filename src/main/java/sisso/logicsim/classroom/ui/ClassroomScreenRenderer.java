@@ -35,6 +35,8 @@ final class ClassroomScreenRenderer {
                 ? text("classroom.classInfo").param("teacher",home.teacherName()).param("count",model.screen.studentCount()).param("activities",model.screen.activityCount())
                 : text("classroom.studentInfo").param("teacher",home.teacherName()).param("enrollment",home.member().enrollment()).param("activities",model.screen.activityCount()));
         c.set("#ListPanel.Visible",list); c.set("#SearchBar.Visible",model.kind==Kind.BROWSE || model.kind==Kind.PLAYERS);
+        c.set("#Pagination.Visible",model.page>0 || model.screen.rows().hasNext());
+        overview(model,c);
         c.set("#Empty.Visible",model.screen.rows().items().isEmpty());
         c.set("#Empty.TextSpans",model.page>0 ? text("classroom.emptyList") : switch(model.kind) {
             case MEMBERS -> text("classroom.emptyMembers"); case INTAKES -> teacher ? text("classroom.emptyPending") : text("classroom.emptyHistory");
@@ -52,6 +54,9 @@ final class ClassroomScreenRenderer {
                 case Intake i -> stateText(i.state()); default -> Message.raw("");
             };
             c.set(selector+" #RowName.TextSpans",Message.raw(shortText(name,28))); c.set(selector+" #RowInfo.TextSpans",info);
+            c.set(selector+" #RowProgress.Visible",row instanceof Member);
+            if(row instanceof Member m){var p=model.screen.progress().getOrDefault(m.playerId(),new Progress(0,model.screen.overview().published()));
+                c.set(selector+" #RowProgress.TextSpans",p.total()==0?text("progress.noneShort"):text("progress.badge").param("delivered",p.delivered()).param("total",p.total()));}
             c.set(selector+" #SelectionMark.Visible",model.selected!=null && ClassroomPageModel.id(row).equals(ClassroomPageModel.id(model.selected)));
             c.set(selector+" #RowStamp.Visible",row instanceof Intake);
             if (row instanceof Intake i) c.set(selector+" #RowStamp.TextSpans",text("classroom.rowStamp").param("type",originText(i.origin())).param("date",DATE.format(Instant.ofEpochMilli(i.createdAt()))));
@@ -67,6 +72,12 @@ final class ClassroomScreenRenderer {
         c.set("#CancelDisband.Visible",settings && teacher && classroom!=null && model.confirming);
         c.set("#Save.Text",classroom==null ? text("classroom.create") : text("classroom.save"));
         c.set("#EnrollmentForm.Visible",false);
+        c.set("#ManageMember.Visible",teacher && model.selected instanceof Member);
+        c.set("#ManageMember.Text",text(model.managing?"progress.backToProgress":"progress.manageStudent"));
+        c.set("#Technical.Visible",linked && !settings);
+        c.set("#ProfileProgress.Visible",teacher && model.selected instanceof Member);
+        c.set("#StudentActivities.Visible",teacher && model.selected instanceof Member && !model.managing);
+        c.set("#StudentPages.Visible",false);
         for (String field:META) c.set("#Meta"+field+".Visible",false);
         for (String action:new String[]{"Primary","Secondary","Danger","CancelConfirm"}) c.set("#"+action+".Visible",false);
         String enrollment="";
@@ -87,8 +98,12 @@ final class ClassroomScreenRenderer {
                 }
                 case Member m -> {
                     title=Message.raw(m.name()); description=""; enrollment=m.enrollment();
-                    member(c,m); c.set("#EnrollmentForm.Visible",true);
-                    action(c,"Primary",text("classroom.correct")); action(c,"Danger",model.confirming?text("classroom.confirmRemove"):text("classroom.remove"));
+                      member(c,m); c.set("#EnrollmentForm.Visible",model.managing);
+                      c.set("#MetaTeacher.Visible",false);
+                      if(model.managing){action(c,"Primary",text("classroom.correct"));action(c,"Danger",model.confirming?text("classroom.confirmRemove"):text("classroom.remove"));}
+                      var p=model.screen.progress().getOrDefault(m.playerId(),new Progress(0,model.screen.overview().published()));
+                      c.set("#ProfileProgress.TextSpans",text("progress.studentSummary").param("delivered",p.delivered()).param("total",p.total()).param("pending",p.pending()));
+                      studentActivities(model,c,e);
                 }
                 case Intake i -> {
                     title=Message.raw(teacher?i.studentName():i.classroomName()); description=""; enrollment=i.enrollment()==null?"":i.enrollment();
@@ -105,16 +120,47 @@ final class ClassroomScreenRenderer {
             }
             if (model.kind==Kind.DETAIL) { member(c,home.member()); action(c,"Danger",model.confirming?text("classroom.confirmLeave"):text("classroom.leave")); }
             c.set("#DetailTitle.TextSpans",title);
+              c.set("#DetailTitle.Visible",model.selected!=null);
+              if(model.selected==null)c.set("#MetaTeacher.Visible",false);
+              if(linked && !model.technical){c.set("#MetaDate.Visible",false);c.set("#MetaUuid.Visible",false);}
+              if(model.kind==Kind.DETAIL)c.set("#MetaEnrollment.Visible",model.technical);
             c.set("#DescriptionDisplay.Visible",!description.isEmpty()); literal(c,"#DescriptionText",description);
-            c.set("#MessageDisplay.Visible",classroom!=null && !classroom.message().isEmpty());
+              c.set("#MessageDisplay.Visible",model.selected==null && classroom!=null && !classroom.message().isEmpty());
             literal(c,"#MessageText",classroom==null?"":classroom.message());
             c.set("#CancelConfirm.Visible",model.confirming);
         }
+
         if (resetFields) {
             c.set("#Name.Value",classroom==null?"":classroom.name()); c.set("#Description.Value",classroom==null?"":classroom.description());
             c.set("#Message.Value",classroom==null?"":classroom.message()); c.set("#Enrollment.Value",enrollment); c.set("#Search.Value",model.query);
         }
         c.set("#Previous.Disabled",model.page==0); c.set("#Next.Disabled",!model.screen.rows().hasNext());
+    }
+
+    private static void overview(ClassroomPageModel model,UICommandBuilder c) {
+        boolean show=model.screen.home().classroom()!=null && model.kind!=Kind.SETTINGS && model.selected==null;
+        c.set("#Overview.Visible",show);
+        var overview=model.screen.overview();boolean teacher=model.teacher();
+        c.set("#SummaryPublished.TextSpans",text("progress.publishedCard").param("count",overview.published()));
+        c.set("#SummaryDelivered.TextSpans",text(teacher?"progress.studentsCard":"progress.deliveredCard").param("count",teacher?model.screen.studentCount():overview.delivered()));
+        c.set("#SummaryPending.TextSpans",text(teacher?"progress.assessmentCard":"progress.pendingCard").param("count",teacher?overview.awaitingAssessment():Math.max(0,overview.published()-overview.delivered())));
+        c.set("#OverviewHint.TextSpans",text(teacher?"progress.teacherHint":"progress.studentHint"));
+    }
+    private static void studentActivities(ClassroomPageModel model,UICommandBuilder c,UIEventBuilder e) {
+        c.clear("#StudentActivityRows");var detail=model.screen.studentDetail();
+        c.set("#StudentActivitiesEmpty.Visible",detail==null || detail.activities().items().isEmpty());
+        if(detail==null || model.managing)return;
+        int n=0;
+        for(var a:detail.activities().items()){
+            String id="#StudentActivityRows["+n+++"]";c.append("#StudentActivityRows",ClassroomPage.ROW_LAYOUT);
+            c.set(id+" #RowName.TextSpans",Message.raw(shortText(a.title(),64)));
+            c.set(id+" #RowInfo.TextSpans",text("progress.activityStatus").param("state",ProgressMessages.state(a)).param("date",sisso.logicsim.classroom.learning.LearningViews.date(a.deadline())).param("score",ProgressMessages.score(a)));
+            c.set(id+" #RowStamp.Visible",false);c.set(id+" #RowProgress.Visible",false);height(c,id,104,6);
+            e.addEventBinding(CustomUIEventBindingType.Activating,id,EventData.of("Action","OpenActivity").append("Target",a.activity().toString()));
+        }
+        c.set("#StudentPages.Visible",model.activityPage>0 || detail.activities().hasNext());
+        c.set("#ActivityPage.TextSpans",text("classroom.page").param("page",model.activityPage+1));
+        c.set("#ActivityPrevious.Disabled",model.activityPage==0);c.set("#ActivityNext.Disabled",!detail.activities().hasNext());
     }
 
     static Message status(ClassroomPageModel model,boolean refreshed) {
@@ -137,7 +183,7 @@ final class ClassroomScreenRenderer {
     static void denied(UICommandBuilder c) {
         c.set("#Activities.Visible",false);
         c.clear("#Rows"); c.set("#Navigation.Visible",false); c.set("#ListPanel.Visible",false); c.set("#Details.Visible",true);
-        for(String panel:new String[]{"View","Form","ActionDock"}) c.set("#"+panel+".Visible",false);
+        for(String panel:new String[]{"View","Form","ActionDock","Overview","StudentActivities"}) c.set("#"+panel+".Visible",false);
         c.set("#NoAccess.Visible",true); c.set("#HeaderTitle.TextSpans",text("classroom.title"));
         c.set("#HeaderInfo.TextSpans",text("classroom.oneClass")); c.set("#Status.TextSpans",text("classroom.error.forbidden"));
         for (String field:FIELDS) c.set("#"+field+".Value","");

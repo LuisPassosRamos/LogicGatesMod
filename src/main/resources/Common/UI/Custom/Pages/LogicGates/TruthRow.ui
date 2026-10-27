@@ -1,0 +1,8 @@
+Group {
+  LayoutMode: LeftWrap;
+  Anchor: (Bottom: 8);
+  Padding: (Full: 10);
+  Background: (Color: #233047);
+  Label #InputBits { Anchor: (Width: 170, Height: 64, Right: 10); Style: (FontSize: 20, VerticalAlignment: Center, TextColor: #c8d3e0); }
+  Group #Outputs { LayoutMode: LeftWrap; FlexWeight: 1; Anchor: (MinWidth: 110); }
+}

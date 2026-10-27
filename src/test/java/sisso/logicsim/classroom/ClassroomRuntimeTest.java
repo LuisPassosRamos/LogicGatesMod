@@ -10,6 +10,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClassroomRuntimeTest {
     @TempDir Path dir;
+    @Test void progressListenersOnlyReceiveScopedCatalogSubmissionAndAssessmentChanges() throws Exception {
+        UUID actor=UUID.randomUUID(),classroom=UUID.randomUUID();var progress=new ArrayList<UUID>();var catalog=new ArrayList<UUID>();
+        try(var runtime=new ClassroomRuntime(dir,id->true,failure->{throw new AssertionError(failure);});
+            var a=runtime.listenProgress(actor,classroom::equals,progress::add);var b=runtime.listenActivityCatalog(actor,classroom::equals,catalog::add)) {
+            runtime.learningChanged(classroom);runtime.submissionsChanged(UUID.randomUUID());assertTrue(progress.isEmpty());
+            runtime.activitiesChanged(classroom);runtime.submissionsChanged(classroom);runtime.assessmentsChanged(classroom);
+            assertEquals(List.of(classroom,classroom,classroom),progress);assertEquals(List.of(classroom),catalog);
+            runtime.forget(actor);runtime.submissionsChanged(classroom);assertEquals(3,progress.size());
+        }
+    }
     @Test void catalogInvalidationIsScopedAndDoesNotReachMessagesOrAuthorization() throws Exception {
         UUID actor=UUID.randomUUID(),classroom=UUID.randomUUID(),other=UUID.randomUUID();
         var catalog=new ArrayList<UUID>();var learning=new ArrayList<UUID>();

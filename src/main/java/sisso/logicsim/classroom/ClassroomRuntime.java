@@ -39,31 +39,37 @@ public final class ClassroomRuntime implements AutoCloseable {
     public boolean teaching(UUID actor) { return canTeach.test(actor); }
     public SubmissionFiles submissionFiles() { return submissionFiles; }
     public <T> CompletableFuture<T> learn(Function<LearningStore,T> operation) { return submit(ignored->operation.apply(learning)); }
-    private record LearningListener(UUID owner,boolean catalogOnly,Predicate<UUID> interested,Consumer<UUID> callback) { }
+    public enum LearningChange { CATALOG, SUBMISSION, ASSESSMENT, OTHER }
+    private record LearningListener(UUID owner,Set<LearningChange> kinds,Predicate<UUID> interested,Consumer<UUID> callback) { }
     private final java.util.Map<UUID,LearningListener> learningListeners=new ConcurrentHashMap<>();
     public AutoCloseable listenLearning(UUID owner,Consumer<UUID> callback) {
-        return listenLearning(owner,false,id->true,callback);
+        return listenLearning(owner,java.util.EnumSet.allOf(LearningChange.class),id->true,callback);
     }
     public AutoCloseable listenActivityCatalog(UUID owner,Predicate<UUID> interested,Consumer<UUID> callback) {
-        return listenLearning(owner,true,interested,callback);
+        return listenLearning(owner,java.util.EnumSet.of(LearningChange.CATALOG),interested,callback);
     }
-    private AutoCloseable listenLearning(UUID owner,boolean catalogOnly,Predicate<UUID> interested,Consumer<UUID> callback) {
+    public AutoCloseable listenProgress(UUID owner,Predicate<UUID> interested,Consumer<UUID> callback) {
+        return listenLearning(owner,java.util.EnumSet.of(LearningChange.CATALOG,LearningChange.SUBMISSION,LearningChange.ASSESSMENT),interested,callback);
+    }
+    private AutoCloseable listenLearning(UUID owner,Set<LearningChange> kinds,Predicate<UUID> interested,Consumer<UUID> callback) {
         java.util.Objects.requireNonNull(owner);java.util.Objects.requireNonNull(callback);UUID token=UUID.randomUUID();
         java.util.Objects.requireNonNull(interested);
-        if(!closed)learningListeners.put(token,new LearningListener(owner,catalogOnly,interested,callback));
+        if(!closed)learningListeners.put(token,new LearningListener(owner,Set.copyOf(kinds),interested,callback));
         if(closed)learningListeners.remove(token);
         return ()->learningListeners.remove(token);
     }
     /** Learning metadata does not invalidate administrative screens, MOTD delivery or review authorization. */
     public void learningChanged(UUID classroom) {
-        learningChanged(classroom,false);
+        learningChanged(classroom,LearningChange.OTHER);
     }
     /** Committed catalog changes also invalidate role-filtered counts, without touching presence/MOTD. */
-    public void activitiesChanged(UUID classroom) { learningChanged(classroom,true); }
-    private void learningChanged(UUID classroom,boolean catalog) {
+    public void activitiesChanged(UUID classroom) { learningChanged(classroom,LearningChange.CATALOG); }
+    public void submissionsChanged(UUID classroom) { learningChanged(classroom,LearningChange.SUBMISSION); }
+    public void assessmentsChanged(UUID classroom) { learningChanged(classroom,LearningChange.ASSESSMENT); }
+    private void learningChanged(UUID classroom,LearningChange kind) {
         if(closed)return;
         learningListeners.values().forEach(listener->{try{
-            if((catalog || !listener.catalogOnly()) && listener.interested().test(classroom))listener.callback().accept(classroom);
+            if(listener.kinds().contains(kind) && listener.interested().test(classroom))listener.callback().accept(classroom);
         }catch(RuntimeException failure){log.accept(failure);}});
     }
     public record Change(UUID classroom, UUID player, boolean directory) { }
@@ -159,6 +165,9 @@ public final class ClassroomRuntime implements AutoCloseable {
     }
     public CompletableFuture<Home> home(UUID actor) { return submit(service -> service.home(actor)); }
     public CompletableFuture<Screen> screen(UUID actor, Kind kind, String query, int page) { return submit(service -> service.screen(actor, kind, query, page)); }
+    public CompletableFuture<Screen> screen(UUID actor,Kind kind,String query,int page,UUID member,int activityPage) {
+        return submit(service->service.screen(actor,kind,query,page,member,activityPage));
+    }
     public CompletableFuture<Void> remember(UUID actor, String name) {
         return mutation(service -> { service.remember(actor, name); return null; }, value -> new Change(null, actor, true));
     }

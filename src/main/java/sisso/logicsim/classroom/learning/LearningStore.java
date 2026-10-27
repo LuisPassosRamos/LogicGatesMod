@@ -4,6 +4,7 @@ import sisso.logicsim.classroom.domain.ClassroomException;
 import sisso.logicsim.classroom.domain.ClassroomReadPolicy;
 import sisso.logicsim.classroom.domain.ClassroomViews.Page;
 import sisso.logicsim.classroom.persistence.SqliteAccess;
+import sisso.logicsim.classroom.persistence.LearningProgress;
 import static sisso.logicsim.classroom.persistence.SqliteAccess.*;
 import sisso.logicsim.classroom.learning.LearningViews.*;
 import java.nio.file.Path;
@@ -81,10 +82,36 @@ public final class LearningStore {
     public Activity create(UUID actor) {
         return write(c -> {
             var ctx = context(c, actor);
-            teacher(ctx);
-            UUID id = UUID.randomUUID();
-            execute(c, "INSERT INTO learning_activities(id,classroom_id,draft_value) VALUES(?,?,1000)", id, ctx.classroom());
-            return activity(c, ctx, id);
+            return create(c,ctx);
+        });
+    }
+    private Activity create(Connection c,Context ctx) throws SQLException {
+        teacher(ctx);
+        UUID id=UUID.randomUUID();
+        execute(c,"INSERT INTO learning_activities(id,classroom_id,draft_value) VALUES(?,?,1000)",id,ctx.classroom());
+        return activity(c,ctx,id);
+    }
+    /** First explicit save/publication is atomic: failed publication cannot leave a blank activity. */
+    public Activity create(UUID actor,Draft draft,boolean publish) {
+        Objects.requireNonNull(draft);
+        return write(c->{var ctx=context(c,actor);var created=create(c,ctx);
+            var saved=save(c,ctx,created.id(),created.revision(),draft);
+            return publish?publish(c,ctx,saved.id(),saved.revision()):saved;});
+    }
+    public Catalog catalog(UUID actor,Filter filter,int number) {
+        ClassroomReadPolicy.page(number);
+        return read(c->{
+            var ctx=context(c,actor);
+            String state=!ctx.teacher()?" AND a.archived=0 AND a.current_version IS NOT NULL":switch(filter){
+                case ALL->"";case PUBLISHED->" AND a.archived=0 AND a.current_version IS NOT NULL";
+                case DRAFT->" AND a.archived=0 AND a.has_draft=1";case ARCHIVED->" AND a.archived=1";};
+            var progress=new HashMap<UUID,sisso.logicsim.classroom.domain.ClassroomViews.ActivityProgress>();
+            String select=ACTIVITY.replace("FROM learning_activities",", "+LearningProgress.COLUMNS+" FROM learning_activities");
+            var rows=page(c,select+LearningProgress.JOINS+" WHERE a.classroom_id=?"+state+" ORDER BY coalesce(v.title,a.draft_title),a.id LIMIT 21 OFFSET ?",
+                r->{var item=activity(r,ctx.teacher());var status=LearningProgress.activity(r);if(status!=null)progress.put(item.id(),status);return item;},
+                number,actor,ctx.classroom(),number*PAGE_SIZE);
+            var counts=LearningProgress.counts(c,ctx.classroom(),actor,ctx.teacher());
+            return new Catalog(rows,progress,counts.overview(),counts.students());
         });
     }
 
@@ -177,6 +204,17 @@ public final class LearningStore {
                     r.getString("id")==null?null:submission(r)),page,activity,ctx.classroom(),page*PAGE_SIZE);
         });
     }
+    /** Metadata for a directly opened student outside the visible roster page. */
+    public Student student(UUID actor,UUID student) {
+        return read(c->{var ctx=context(c,actor);teacher(ctx);
+            return one(c,"""
+                SELECT m.player_uuid,coalesce(p.name,m.player_uuid) AS name,m.enrollment,m.active
+                FROM classroom_memberships m LEFT JOIN classroom_players p ON p.uuid=m.player_uuid
+                WHERE m.classroom_id=? AND m.player_uuid=? AND m.role='STUDENT'
+                ORDER BY m.joined_at DESC,m.id DESC LIMIT 1
+                """,r->new Student(id(r,"player_uuid"),r.getString("name"),r.getString("enrollment"),r.getInt("active")==1,null),ctx.classroom(),student).orElse(null);
+        });
+    }
     public Page<Submission> submissions(UUID actor,UUID activity,UUID student,int page) {
         ClassroomReadPolicy.page(page);
         return read(c->{ var ctx=context(c,actor); activity(c,ctx,activity);
@@ -233,6 +271,19 @@ public final class LearningStore {
     }
     /** Internal recovery ledger, never exposed directly to a client. */
     public List<Review> reviews() { return read(c->query(c,REVIEWS,LearningStore::review)); }
+    /** Only the authorized owner can see the context of a temporary correction copy. */
+    public ReviewInfo reviewInfo(UUID actor,UUID review) {
+        return read(c->{var ctx=context(c,actor);teacher(ctx);
+            return query(c,"""
+                    SELECT v.title,coalesce(p.name,s.student_id) student,s.revision
+                    FROM learning_reviews r JOIN learning_submissions s ON s.id=r.submission_id
+                    JOIN learning_versions v ON v.activity_id=s.activity_id AND v.number=s.publication
+                    JOIN learning_activities a ON a.id=s.activity_id
+                    LEFT JOIN classroom_players p ON p.uuid=s.student_id
+                    WHERE r.id=? AND r.teacher_id=? AND a.classroom_id=?
+                    """,r->new ReviewInfo(r.getString("title"),r.getString("student"),r.getInt("revision")),review,actor,ctx.classroom()).stream().findFirst().orElse(null);
+        });
+    }
     public Set<UUID> contentIds() { return read(c->Set.copyOf(query(c,"SELECT content_id FROM learning_submissions",r->id(r,"content_id")))); }
     public void removedReview(UUID id) { write(c->{execute(c,"DELETE FROM learning_reviews WHERE id=?",id); return null;}); }
 

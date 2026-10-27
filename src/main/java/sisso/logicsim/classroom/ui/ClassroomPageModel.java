@@ -15,7 +15,9 @@ final class ClassroomPageModel {
     Object selected;
     long editRevision;
     boolean confirming;
-    void revoked() { screen = null; selected = null; confirming = false; editRevision = 0; }
+    int activityPage;
+    boolean managing,technical;
+    void revoked() { screen = null; selected = null; confirming = false; managing=false;technical=false;activityPage=0;editRevision = 0; }
     boolean teacher() { return screen != null && screen.home().member() != null && screen.home().member().role() == Role.TEACHER; }
     boolean interested(Change change, UUID actor) {
         return interested(screen,kind,change,actor);
@@ -37,10 +39,12 @@ final class ClassroomPageModel {
                 || row instanceof Intake i && (i.studentId().equals(change.player()) || i.classroomId().equals(change.classroom())));
     }
     boolean apply(Screen next, boolean reset) {
+        boolean lostStudent=screen!=null && screen.studentDetail()!=null && next.studentDetail()==null && selected instanceof Member;
         boolean contextChanged = screen == null || next.kind() != screen.kind()
                 || !Objects.equals(classroomId(screen), classroomId(next)) || !Objects.equals(membershipId(screen), membershipId(next));
-        if (contextChanged) { selected = null; confirming = false; reset = true; }
+        if (contextChanged) { selected = null; confirming = false; managing=false;technical=false;activityPage=0;reset = true; }
         screen = next; kind = next.kind(); page = next.rows().number();
+        if(lostStudent){selected=null;managing=false;technical=false;confirming=false;activityPage=0;}
         if (selected instanceof Intake previous) {
             var latest=next.rows().items().stream().filter(row->row instanceof Intake i && i.id().equals(previous.id()))
                     .map(Intake.class::cast).findFirst().orElse(null);
@@ -66,9 +70,9 @@ final class ClassroomPageModel {
         try { uuid = UUID.fromString(target); } catch (IllegalArgumentException invalid) { return false; }
         var row = screen.rows().items().stream().filter(value -> id(value).equals(uuid)).findFirst();
         if (row.isEmpty()) return false;
-        selected = row.get(); confirming = false; return true;
+        selected = row.get(); confirming = false; managing=false;technical=false;activityPage=0;return true;
     }
-    void navigate(Kind kind) { this.kind = kind; query = ""; page = 0; selected = null; confirming = false; }
+    void navigate(Kind kind) { this.kind = kind; query = ""; page = 0;activityPage=0;selected = null;confirming = false;managing=false;technical=false; }
     static UUID id(Object value) {
         return switch (value) {
             case Summary s -> s.id(); case Member m -> m.id(); case Intake i -> i.id(); case Profile p -> p.id();

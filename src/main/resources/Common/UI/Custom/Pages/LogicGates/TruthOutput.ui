@@ -1,0 +1,13 @@
+$C = "../../Common.ui";
+Group {
+  LayoutMode: Top;
+  Anchor: (Width: 110, Right: 8, Bottom: 4);
+  Label #OutputName { Anchor: (Height: 22); Style: (FontSize: 16, TextColor: #c8d3e0); }
+  $C.@DropdownBox #Value {
+    Anchor: (Height: 38);
+    Style: (...$C.@DefaultDropdownBoxStyle,
+      LabelStyle: (...$C.@DefaultDropdownBoxLabelStyle, FontSize: 18),
+      EntryLabelStyle: (...$C.@DefaultDropdownBoxEntryLabelStyle, FontSize: 18),
+      SelectedEntryLabelStyle: (...$C.@DefaultDropdownBoxEntryLabelStyle, FontSize: 18));
+  }
+}

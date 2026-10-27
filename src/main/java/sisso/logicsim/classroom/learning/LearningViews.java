@@ -1,5 +1,7 @@
 package sisso.logicsim.classroom.learning;
 
+import sisso.logicsim.classroom.domain.ClassroomViews.Page;
+
 import java.time.*;
 import java.time.format.*;
 import java.math.BigDecimal;
@@ -40,7 +42,12 @@ public final class LearningViews {
                              UUID content,String checksum,long bytes,int width,int height,int depth,long value,Assessment assessment) { }
     public record Student(UUID id,String name,String enrollment,boolean active,Submission latest) { }
     public record Context(UUID classroom,UUID membership,boolean teacher,String name) { }
+    public record Catalog(Page<Activity> rows,Map<UUID,sisso.logicsim.classroom.domain.ClassroomViews.ActivityProgress> progress,
+                          sisso.logicsim.classroom.domain.ClassroomViews.Overview overview,int students) {
+        public Catalog { progress=Map.copyOf(progress); }
+    }
     public record VerificationContext(Submission submission,Publication publication) { }
+    public record ReviewInfo(String activity,String student,int revision) { }
     public record Review(UUID id,UUID teacher,UUID submission,UUID classroom,UUID world,int x,int y,int z,int width,int height,int depth) {
         public boolean contains(UUID world,int x,int y,int z) {
             return this.world.equals(world) && x>=this.x && y>=this.y && z>=this.z

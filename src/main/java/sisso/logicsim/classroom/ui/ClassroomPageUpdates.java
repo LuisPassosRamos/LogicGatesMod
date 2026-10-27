@@ -40,7 +40,9 @@ final class ClassroomPageUpdates {
                 // Reload/revocation must overwrite locally edited text even when the last server value was identical.
                 if(!command.selector.endsWith(".Value") && Objects.equals(previous,command.data)) continue;
             } else if(!rowStructure) {
-                properties.clear(); rowsKnown=false;
+                if(command.selector!=null && (command.type==CustomUICommandType.Clear || command.type==CustomUICommandType.Append)) {
+                    if(command.type==CustomUICommandType.Clear)properties.keySet().removeIf(selector->selector.startsWith(command.selector+"["));
+                } else { properties.clear(); rowsKnown=false; }
             }
             changed.add(command);
         }

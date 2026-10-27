@@ -56,6 +56,10 @@ public final class ClassroomService {
         identity(actor);
         return repository.readScreen(actor,requested,query,page,canTeach.test(actor));
     }
+    public Screen screen(UUID actor,Kind requested,String query,int page,UUID selectedMember,int activityPage) {
+        identity(actor);
+        return repository.readScreen(actor,requested,query,page,canTeach.test(actor),selectedMember,activityPage);
+    }
 
     public void remember(UUID actor, String username) {
         identity(actor);

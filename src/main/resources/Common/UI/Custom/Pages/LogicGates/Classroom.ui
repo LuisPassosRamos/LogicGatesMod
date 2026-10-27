@@ -11,6 +11,7 @@ $C.@Container {
       LayoutMode: LeftWrap;
       Anchor: (Bottom: 8);
       $C.@SecondaryTextButton #NavClass { @Text = %server.logicgates.classroom.nav.class; Anchor: (Width: 240, Right: 8, Height: 48); }
+      $C.@SecondaryTextButton #Activities { @Text = %server.logicgates.learning.activities; Anchor: (Width: 190, Right: 8, Height: 48); Visible: false; }
       $C.@SecondaryTextButton #NavIntakes { @Text = %server.logicgates.classroom.nav.intakes; Anchor: (Width: 240, Right: 8, Height: 48); }
       $C.@SecondaryTextButton #NavInvite { @Text = %server.logicgates.classroom.invite; Anchor: (Width: 240, Right: 8, Height: 48); Visible: false; }
       $C.@SecondaryTextButton #NavSettings { @Text = %server.logicgates.classroom.nav.settings; Anchor: (Width: 240, Height: 48); Visible: false; }
@@ -58,9 +59,23 @@ $C.@Container {
           FlexWeight: 1;
           LayoutMode: TopScrolling;
           ScrollbarStyle: $C.@DefaultScrollbarStyle;
+          Group #Overview {
+            Visible: false;
+            LayoutMode: Top;
+            Anchor: (Bottom: 20);
+            Label { Text: %server.logicgates.progress.overview; Anchor: (Bottom: 10); Style: (FontSize: 22, TextColor: #ffffff); }
+            Group {
+              LayoutMode: LeftWrap;
+              Label #SummaryPublished { Anchor: (Width: 260, Height: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #SummaryDelivered { Anchor: (Width: 260, Height: 76, Right: 12, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+              Label #SummaryPending { Anchor: (Width: 260, Height: 76, Bottom: 10); Padding: (Full: 14); Background: (Color: #233047); Style: (FontSize: 20, Wrap: true, TextColor: #c8d3e0); }
+            }
+            Label #OverviewHint { Anchor: (Bottom: 8); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+          }
           Group #View {
             LayoutMode: Top;
             Label #DetailTitle { Anchor: (Bottom: 8); Style: (FontSize: 28, Wrap: true, TextColor: #ffffff); }
+            Label #ProfileProgress { Visible: false; Anchor: (Bottom: 12); Style: (FontSize: 20, Wrap: true, TextColor: #7cb7ee); }
             Label #MetaTeacher { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
             Label #MetaState { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
             Label #MetaEnrollment { Visible: false; Anchor: (Bottom: 4); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
@@ -80,8 +95,17 @@ $C.@Container {
               Label #MessageText { Anchor: (Bottom: 12); Style: (FontSize: 19, Wrap: true, TextColor: #c8d3e0); }
             }
           }
+          Group #StudentActivities {
+            Visible: false;
+            LayoutMode: Top;
+            Anchor: (Top: 16);
+            Label { Text: %server.logicgates.progress.studentActivities; Anchor: (Bottom: 10); Style: (FontSize: 22, Wrap: true, TextColor: #ffffff); }
+            Label #StudentActivitiesEmpty { Text: %server.logicgates.progress.noActivities; Anchor: (Bottom: 10); Style: (FontSize: 18, Wrap: true, TextColor: #9daec2); }
+            Group #StudentActivityRows { LayoutMode: Top; }
+          }
           Group #Form {
             Visible: false;
+            Anchor: (Left: 0, MaxWidth: 1200);
             LayoutMode: Top;
             Label { Anchor: (Bottom: 6); Text: %server.logicgates.classroom.name; Style: (FontSize: 18, Wrap: true, TextColor: #ffffff); }
             $C.@TextField #Name { Anchor: (Bottom: 12, Height: 46); Style: (...$C.@DefaultInputFieldStyle, FontSize: 18); MaxLength: 64; }
@@ -99,6 +123,18 @@ $C.@Container {
         Group #ActionDock {
           LayoutMode: Top;
           Anchor: (Top: 8);
+          Group #StudentPages {
+            Visible: false;
+            LayoutMode: LeftWrap;
+            $C.@SecondaryTextButton #ActivityPrevious { @Text = %server.logicgates.classroom.previous; Anchor: (Width: 152, Right: 8, Bottom: 6, Height: 48); }
+            Label #ActivityPage { Anchor: (Width: 130, Height: 48, Right: 8); Style: (FontSize: 16, HorizontalAlignment: Center, VerticalAlignment: Center, TextColor: #9daec2); }
+            $C.@SecondaryTextButton #ActivityNext { @Text = %server.logicgates.classroom.next; Anchor: (Width: 152, Bottom: 6, Height: 48); }
+          }
+          Group {
+            LayoutMode: LeftWrap;
+            $C.@SecondaryTextButton #ManageMember { @Text = %server.logicgates.progress.manageStudent; Anchor: (Width: 270, Right: 8, Bottom: 6, Height: 48); Visible: false; }
+            $C.@SecondaryTextButton #Technical { @Text = %server.logicgates.progress.details; Anchor: (Width: 210, Bottom: 6, Height: 48); Visible: false; }
+          }
           Group #EnrollmentForm {
             Visible: false;
             LayoutMode: Top;
@@ -109,7 +145,7 @@ $C.@Container {
             LayoutMode: Top;
             $C.@TextButton #Primary { @Text = %server.logicgates.classroom.request; Anchor: (Bottom: 6, Height: 48); Visible: false; }
             $C.@SecondaryTextButton #Secondary { @Text = %server.logicgates.classroom.cancel; Anchor: (Bottom: 6, Height: 48); Visible: false; }
-            $C.@CancelTextButton #Danger { @Text = %server.logicgates.classroom.remove; Anchor: (Bottom: 6, Height: 48); Visible: false; }
+            $C.@CancelTextButton #Danger { @Text = %server.logicgates.classroom.remove; Anchor: (Width: 320, Left: 0, Bottom: 6, Height: 48); Visible: false; }
             $C.@SecondaryTextButton #CancelConfirm { @Text = %server.logicgates.classroom.cancel; Anchor: (Bottom: 6, Height: 48); Visible: false; }
           }
           Group #SettingsActions {
@@ -130,7 +166,6 @@ $C.@Container {
         LayoutMode: LeftWrap;
         $C.@SecondaryTextButton #Reload { @Text = %server.logicgates.classroom.reload; Anchor: (Width: 180, Right: 10, Height: 48); }
         $C.@CancelTextButton #Close { @Text = %server.logicgates.classroom.probe.close; Anchor: (Width: 156, Right: 12, Height: 48); }
-        $C.@SecondaryTextButton #Activities { @Text = %server.logicgates.learning.activities; Anchor: (Width: 190, Right: 12, Height: 48); Visible: false; }
       }
       Label #Build { Anchor: (Top: 6); Style: (FontSize: 12, Wrap: true, TextColor: #9daec2); }
     }

@@ -35,6 +35,21 @@ class LearningStoreTest {
     Activity published() { var a=store.create(teacher);a=store.save(teacher,a.id(),a.revision(),new Draft("A","Statement",clock.millis()+60000,1000L));return store.publish(teacher,a.id(),a.revision()); }
     AreaSnapshot snapshot() { return new AreaSnapshot(1,2,1,1,List.of(new AreaSnapshot.Block(0,0,0,"Rock_Stone",0,0,null))); }
     Submission submit(Activity a) { return store.submit(student,a.id(),a.published().number(),membership,UUID.randomUUID(),files.write(snapshot())); }
+    @Test void firstExplicitSaveAndPublicationAreAtomicAndCatalogKeepsStudentMetadataPrivate() {
+        var invalid=new Draft("New","Statement",clock.millis()-1,1000L);
+        assertThrows(LearningException.class,()->store.create(teacher,invalid,true));
+        assertTrue(store.activities(teacher,LearningStore.Filter.ALL,0).items().isEmpty());
+        var privateDraft=store.create(teacher,Draft.empty(),false);
+        assertNotNull(privateDraft.draft());assertNull(privateDraft.published());
+        var published=store.create(teacher,new Draft("Published","D",clock.millis()+60000,1000L),true);
+        var sent=submit(published);store.grade(teacher,sent.id(),0,0,"Feedback");
+        var teacherCatalog=store.catalog(teacher,LearningStore.Filter.ALL,0);
+        assertEquals(2,teacherCatalog.rows().items().size());assertEquals(1,teacherCatalog.overview().published());assertEquals(1,teacherCatalog.overview().drafts());
+        var studentCatalog=store.catalog(student,LearningStore.Filter.DRAFT,0);
+        assertEquals(1,studentCatalog.rows().items().size());assertEquals(0,studentCatalog.overview().drafts());
+        assertEquals(1,studentCatalog.overview().delivered());assertEquals(0L,studentCatalog.progress().get(published.id()).score());
+        assertThrows(ClassroomException.class,()->store.create(student,Draft.empty(),false));
+    }
     @Test void verificationCriteriaArePrivateVersionedAndUseTheDeliveredPublicationAfterRestart(){
         var rules=new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.AND,1,sisso.logicsim.circuit.CircuitNode.Kind.LEVER,2),SubmissionVerifierTest.AND);
         var a=store.create(teacher);a=store.saveAndPublish(teacher,a.id(),a.revision(),new Draft("Logic","AND",clock.millis()+60000,1000L,rules));
@@ -125,10 +140,15 @@ class LearningStoreTest {
         assertEquals(5,store.activities(teacher,LearningStore.Filter.ALL,1).items().size());
         var a=published(); var s=submit(a); classes.end(student,membership,0,false);
         var rows=store.students(teacher,a.id(),0).items();assertEquals(1,rows.size());assertFalse(rows.getFirst().active()); assertEquals(s,rows.getFirst().latest());
+        assertEquals(student,store.student(teacher,student).id());assertFalse(store.student(teacher,student).active());
+        assertNull(store.student(teacher,other));assertThrows(ClassroomException.class,()->store.student(student,student));
     }
     @Test void reservationIsDurableExclusiveAndRemovedSeparatelyFromTheSubmission() {
         var a=published(); var s=submit(a); UUID world=UUID.randomUUID();
         var r=store.reserve(teacher,s.id(),world,0,64,0); assertEquals(List.of(r),store.reviews());
+        var info=store.reviewInfo(teacher,r.id());assertEquals(a.published().title(),info.activity());assertEquals(s.revision(),info.revision());
+        assertThrows(ClassroomException.class,()->store.reviewInfo(student,r.id()));
+        assertNull(store.reviewInfo(teacher,UUID.randomUUID()));
         assertThrows(LearningException.class,()->store.reserve(teacher,s.id(),world,20,64,20));
         store.removedReview(r.id()); assertTrue(store.reviews().isEmpty());assertNotNull(store.submission(student,s.id()));
     }

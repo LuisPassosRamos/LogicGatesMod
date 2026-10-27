@@ -16,6 +16,33 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Transport/codec regression, not a substitute for testing the native client. */
 class LearningPageTest {
     private static final UUID CLASSROOM=UUID.randomUUID(),ACTIVITY=UUID.randomUUID(),STUDENT=UUID.randomUUID();
+    @Test void directStudentOutsideVisiblePageKeepsIdentityAndDeliveredStudentsStillSeeCurrentCriteria() throws Exception {
+        var rules=new VerificationRules(Map.of(sisso.logicsim.circuit.CircuitNode.Kind.AND,1),"");
+        var publication=new Publication(ACTIVITY,1,"Activity","Statement",System.currentTimeMillis()+86_400_000,1000,1,rules);
+        var activity=new Activity(ACTIVITY,CLASSROOM,1,false,null,publication);
+        var teacher=page(true,true,activity,null);set(teacher,"rows",new Page<>(List.of(),0,true));
+        set(teacher,"selectedStudent",new Student(STUDENT,"Selected outside page","007",true,null));
+        var c=new UICommandBuilder();teacher.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#StudentInfo.TextSpans").toString().contains("Selected outside page"));
+        var submission=new Submission(UUID.randomUUID(),ACTIVITY,1,STUDENT,UUID.randomUUID(),1,1,false,UUID.randomUUID(),"checksum",1,1,1,1,1000,null);
+        var student=page(false,false,activity,submission);c=new UICommandBuilder();student.render(c,new UIEventBuilder(),true,null,false);
+        assertTrue(value(c,"#ReadRequirements.Visible").asBoolean().getValue());
+        set(student,"submission",null);set(student,"showDelivery",true);c=new UICommandBuilder();student.render(c,new UIEventBuilder(),false,null,false);
+        assertTrue(value(c,"#NoSubmission.Visible").asBoolean().getValue());
+    }
+    @Test void newFormHasNoStoredIdentityAndNativeDismissalCannotBypassDirtyLeaveControls() throws Exception {
+        var page=page(true,false,null,null);var start=LearningPage.class.getDeclaredMethod("startCreating");start.setAccessible(true);start.invoke(page);
+        var c=new UICommandBuilder();var e=new UIEventBuilder();page.render(c,e,true,null,false);
+        var id=LearningPage.class.getDeclaredField("activityId");id.setAccessible(true);assertNull(id.get(page));
+        assertTrue(page.editingActivity());assertEquals(com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime.CantClose,page.getLifetime());
+        assertFalse(value(c,"#ListPanel.Visible").asBoolean().getValue());
+        assertFalse(value(c,"#Pagination.Visible").asBoolean().getValue());
+        page.build(null,new UICommandBuilder(),e,null);
+        for(String action:List.of("#Close","#Back","#Activities","#Reload")) {
+            var binding=Arrays.stream(e.getEvents()).filter(b->action.equals(b.selector)).findFirst().orElseThrow();
+            assertTrue(BsonDocument.parse(binding.data).containsKey("@Title"));assertTrue(BsonDocument.parse(binding.data).containsKey("@TruthTable"));
+        }
+    }
 
     @Test void everyBoundControlExistsAndNoPartialAnchorOrClientAuthorityIsSent() throws Exception {
         var page=new LearningPage(null,null,null,null,null);var commands=new UICommandBuilder();var events=new UIEventBuilder();page.build(null,commands,events,null);
@@ -51,7 +78,7 @@ class LearningPageTest {
                 var report=new SubmissionVerifier().verify(rules,Map.of());set(page,"verificationId",submission.id());set(page,"verificationReport",report);
                 c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);assertWidgetProperties(c);
                 assertTrue(value(c,"#VerificationResults.Visible").asBoolean().getValue());
-                assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+                assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
                 assertFalse(value(c,"#ReadTable.Visible").asBoolean().getValue());
                 assertTrue(value(c,"#SubmissionRules.TextSpans").toString().contains("11 -> 1"));
                 set(page,"verificationId",UUID.randomUUID());c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
@@ -78,7 +105,7 @@ class LearningPageTest {
             for(boolean reset:new boolean[]{true,false}) {
                 var commands=new UICommandBuilder();page.render(commands,new UIEventBuilder(),reset,null,false);
                 assertWidgetProperties(commands);
-                if(!reset)assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value")),"Background refresh must preserve drafts: "+scenario);
+                if(!reset)assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value") && !c.selector.equals("#Filter.Value")),"Background refresh must preserve drafts: "+scenario);
                 if(reset && editing)
                     assertTrue(Arrays.stream(commands.getCommands()).anyMatch(c->"#TitleField.Value".equals(c.selector)));
                 if(reset && scenario.teacher && scenario.submission!=null) {
@@ -126,7 +153,7 @@ class LearningPageTest {
             assertTrue(value(c,"#Discard.Visible").asBoolean().getValue());
             assertEquals(260,value(c,"#DescriptionField.Anchor").asDocument().getInt32("Height").getValue());
             assertTrue(value(c,"#Activities.TextSpans").toString().contains("backToActivities"));
-            if(saved)assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+            if(saved)assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
         }
         page.saved(true);var c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);
         assertTrue(value(c,"#ListPanel.Visible").asBoolean().getValue());assertTrue(value(c,"#Archive.Visible").asBoolean().getValue());
@@ -143,7 +170,7 @@ class LearningPageTest {
         assertTrue(value(c,"#Read.Visible").asBoolean().getValue());assertFalse(value(c,"#Editor.Visible").asBoolean().getValue());
         assertTrue(value(c,"#Edit.Visible").asBoolean().getValue());assertFalse(value(c,"#ActivityActions.Visible").asBoolean().getValue());
         assertTrue(value(c,"#ReadTitle.TextSpans").toString().contains("Saved title"));
-        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+        assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
         assertTrue(page.beginEditing());assertFalse(page.beginEditing());
         c=new UICommandBuilder();page.render(c,new UIEventBuilder(),true,null,false);assertWidgetProperties(c);
         assertTrue(value(c,"#Editor.Visible").asBoolean().getValue());assertFalse(value(c,"#Read.Visible").asBoolean().getValue());
@@ -151,7 +178,7 @@ class LearningPageTest {
         assertEquals("Saved title",value(c,"#TitleField.Value").asString().getValue());
         set(page,"activity",new Activity(ACTIVITY,CLASSROOM,5,false,new Draft("Remote edit","Remote statement",publication.deadline(),1000L),publication));
         c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
-        assertTrue(page.editingActivity());assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value")));
+        assertTrue(page.editingActivity());assertTrue(Arrays.stream(c.getCommands()).noneMatch(x->x.selector!=null && x.selector.endsWith(".Value") && !x.selector.equals("#Filter.Value")));
         var revision=LearningPage.class.getDeclaredField("editRevision");revision.setAccessible(true);assertEquals(4,revision.getLong(page));
         assertTrue(page.viewActivity());assertFalse(page.viewActivity());
         c=new UICommandBuilder();page.render(c,new UIEventBuilder(),false,null,false);
@@ -192,7 +219,7 @@ class LearningPageTest {
 
     private static void assertOperationState(UICommandBuilder commands,boolean busy) throws Exception {
         assertWidgetProperties(commands);
-        assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value")));
+        assertTrue(Arrays.stream(commands.getCommands()).noneMatch(c->c.selector!=null && c.selector.endsWith(".Value") && !c.selector.equals("#Filter.Value")));
         var disabled=Arrays.stream(commands.getCommands()).filter(c->c.selector!=null && c.selector.endsWith(".Disabled")).toList();
         assertFalse(disabled.isEmpty());
         for(var command:disabled)assertEquals(busy,BsonDocument.parse(command.data).getBoolean("0").getValue(),command.selector);
@@ -218,6 +245,7 @@ class LearningPageTest {
                 case "Disabled"->assertTrue(type.endsWith("Button"),"Disabled is not a TextField/MultilineTextField property: "+command.selector);
                 case "Value"->assertTrue(Set.of("TextField","MultilineTextField","DropdownBox").contains(type),command.selector);
                 case "Entries"->assertEquals("DropdownBox",type,command.selector);
+                case "Text"->assertTrue(type.endsWith("Button"),command.selector);
                 case "TextSpans"->assertTrue(type.equals("Label") || type.endsWith("Button"),command.selector);
                 case "Visible","Anchor"->{ }
                 default->fail("Unreviewed native widget property: "+command.selector);
