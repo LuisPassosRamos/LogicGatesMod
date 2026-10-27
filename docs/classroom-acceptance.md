@@ -19,12 +19,12 @@ Capturas, relatos e resultados automatizados permanecem como evidências datadas
 
 ## Estado atual
 
-**Candidata 1.4.0-rc.19 em preparação; 11 ajustes implementados, reteste de cliente pendente.** Hytale **0.7.4**, SQLite **v6**. Identidade final e resultados completos serão registrados após a rodada final; a evidência visual disponível ainda pertence à rc.18.
+**Candidata 1.4.0-rc.19 pronta para reteste; 11 ajustes implementados e automação aprovada.** Hytale **0.7.4**, SQLite **v6**. Build **`1.4.0-rc.19+a15a278adf4c`**, revisão de produção **`4048f8f6b341003d1f796ed7a11bb3ae91b2b877`**, compilação com `dirty=false`. A evidência visual disponível ainda pertence à rc.18; o aceite de cliente da rc.19 continua pendente.
 
-| Arquivo testado | SHA-256 preservado |
+| Arquivo entregue para teste | SHA-256 / identificação |
 | --- | --- |
-| `build/libs/LogicGates-1.4.0-rc.19.jar` | A registrar após a rodada final |
-| `build/releases/LogicGates-1.4.0-rc.19.zip` | A registrar após o empacotamento final |
+| `build/libs/LogicGates-1.4.0-rc.19.jar` | `2ef952bddde211103c78698524a8c4507f38ba442d66b0e58cbf3bbaa3a104ad` |
+| `build/releases/LogicGates-1.4.0-rc.19.zip` | Contém o mesmo JAR testado, com documentação final. Checksum externo em `LogicGates-1.4.0-rc.19.zip.sha256`, ao lado do ZIP; o hash não é embutido no próprio pacote. |
 
 A rc.19 preserva os artefatos rc.18 e o esquema/dados existentes. Não atribuir à nova candidata os resultados de cliente da anterior. A instalação de teste usa o JAR final identificado aqui, sem misturar versões em mods.
 
@@ -38,13 +38,13 @@ A rc.19 preserva os artefatos rc.18 e o esquema/dados existentes. Não atribuir 
 | Atividade, entrega e correção com duas contas | [Fluxo principal rc.12](evidence/classroom/2026-10-26-rc12-client.md); [polimento rc.14 por relato](evidence/classroom/2026-10-26-rc14-client.md) | Histórico confirmado no escopo descrito. Novos critérios/progresso e casos complementares não são aprovados por esses relatos. |
 | Aluno, progresso, critérios e relatório atuais | Últimos lotes mostram zero alunos e zero entregas; usuário não dispõe de aluno neste momento | Testes com aluno, dados reais e verificação assistida continuam pendentes. Indisponibilidade de conta não é reprovação do recurso. |
 | Resolução e escala | Ambos os lotes rc.18: **1280×720 relatados**, escala de interface/SO não informada | Outros tamanhos, escala padrão/máxima e ocupação útil não medidos. Dimensões físicas dos PNGs não provam viewport ou escala. |
-| Automação da rc.18 | 922 Java, 41 Python, 90 verificações nativas; CI Windows/Linux aprovada | Aprovada nas camadas exercitadas. Não executa renderização/cliques do cliente nem valida idioma resolvido. |
+| Automação da rc.19 | 927 Java, 44 Python, 90 verificações nativas; CI Windows/Linux aprovada | Aprovada nas camadas exercitadas. Não executa renderização/cliques do cliente nem valida idioma resolvido. |
 
 Os 32 originais e seus hashes estão nos manifestos [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr/manifest.json) e [jogo em inglês](evidence/classroom/2026-10-27-rc18-en/manifest.json). Os lotes foram recebidos do computador secundário do trabalho. Variação de contagens entre imagens não comprova registro fantasma, nova gravação ou atualização correta após cada operação.
 
 ## Correções e melhorias abertas
 
-Os **11 ajustes estão implementados na rc.19**. Permanecem abertos para aceite até o reteste dos casos indicados no cliente. A suíte direcionada de UI passou com 67 testes; a rodada completa e a identidade final serão registradas abaixo. IDs e evidências rc.18 são preservados.
+Os **11 ajustes estão implementados na rc.19**. Permanecem abertos para aceite até o reteste dos casos indicados no cliente. A suíte direcionada de UI passou com 67 testes e a rodada completa foi aprovada conforme registro abaixo. IDs e evidências rc.18 são preservados.
 
 | ID / prioridade | Trabalho registrado | Critério para encerrar / casos | Implementação rc.19 / reteste |
 | --- | --- | --- | --- |
@@ -238,15 +238,17 @@ A massa serve para UI/paginação, não estimativa de jogadores suportados nem p
 
 ## Verificação automatizada
 
-**rc.19:** 67 testes direcionados de UI passaram, sem falhas/erros; log `build/tmp/rc19-ui.log`. Verificador de projeto passou com 370 chaves em cada idioma e seis documentos UI. Rodada final completa ainda pendente; não é aceite do cliente.
+**rc.19:** `fullCheck` aprovado em **3 min 5 s**, com **927 testes Java** (zero falhas, erros ou ignorados), **44 Python** e **90 verificações nativas** (63 criação + 27 após reinício real em outro processo). Projeto e distribuição aprovados: **370 chaves em cada um dos dois idiomas**, seis documentos UI e verificações de assets/ZIP. [Registro integral](evidence/classroom/2026-10-27-rc19-server.json); log local `build/tmp/rc19-fullCheck-final.log`; relatório `build/reports/server-integration/20261027-123118-0576c3/summary.json`.
 
-Base histórica de produção, **rc.18**: `fullCheck` aprovado em **2 min 48 s**, **922 testes Java**, **41 Python**, **90 verificações nativas** (63 criação + 27 após reinício real), **361 chaves por idioma e seis documentos UI**. [Registro integral](evidence/classroom/2026-10-27-rc18-server.json); log local `build/tmp/rc18-fullCheck.log`; relatório `build/reports/server-integration/20261027-084831-8be856/summary.json`. CI Windows/Linux aprovada na revisão de produção acima: [run 40498835944](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40498835944).
+CI aprovada em **Windows e Linux** para a revisão de produção `4048f8f6b341003d1f796ed7a11bb3ae91b2b877`: [run 40531924972](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40531924972). A rodada direcionada anterior passou com 67 testes de UI; a revisão de compatibilidade passou com oito testes de markup e 14 de empacotamento. Logs locais `build/tmp/rc19-ui.log` e `build/tmp/rc19-build-tools.log`.
 
 O novo guard recusou o alinhamento Right no JAR rc.17 preservado e aprovou End na fonte/JAR rc.18; aceita literais Start/Center/End. As regressões também verificam propriedades compatíveis, codecs/bindings, privacidade, contagem distinta, nota zero/ausente/revisão, criação com rollback, tabelas incompletas/legadas, até oito linhas/32 células visuais e preservação de controles. Não há parser completo de Custom UI: fonte/transporte/chaves não validam renderização ou tradução resolvida no cliente, como demonstra I18N-01.
 
 Orçamentos preservados por testes: lista docente de membros com uma conexão/até três SELECTs; quatro com ficha no mesmo snapshot. Sem arquivo de circuito para contar progresso ou consulta por aluno; seções/tabela/data são locais. Sem polling, MOTD extra ou varredura periódica. As comparações rc.9/rc.10 e rc.16/rc.17 continuam em [desempenho](performance.md) e [evidência rc.17](evidence/classroom/2026-10-27-rc17-performance.json); não certificam capacidade de jogadores/latência com muitas entregas.
 
-O fingerprint empacotado rc.18 confere com as fontes de produção commitadas. `dirty=true` nos metadados da compilação foi estado transitório do índice do manifest, sem diferença do conteúdo; os bytes do JAR testado foram conservados. A evidência JSON é histórica: seu campo client pendente antecede as capturas posteriores, já conciliadas neste documento.
+O fingerprint empacotado da rc.19 é `a15a278adf4c735148a5f8afdead9f0f30c902029a5d0bd5cb88e3010debd0a9` e confere com as fontes de produção commitadas; `dirty=false`. Os bytes do JAR testado são preservados no empacotamento da documentação final, sem recompilação. A atualização documental posterior não altera essa identidade de produção.
+
+Os artefatos rc.18 foram preservados e seus hashes reconferidos: JAR `2ddb1af75d6b9c27d64ec0ed892ca50ada9857cede976cd3141b9832889d4630`, ZIP `c281791b2f4473d1d93849bb95f98e3bdc6b178c7a71ba68770c30cab8f1317f`. Seu [registro automatizado](evidence/classroom/2026-10-27-rc18-server.json) permanece histórico; o campo client pendente antecede as capturas posteriores, já conciliadas neste documento. O `dirty=true` daquele registro foi um estado transitório do índice, sem diferença no conteúdo das fontes.
 
 Para futuras correções, executar testes proporcionais ao código alterado e os casos de cliente atingidos. Rodada final de `fullCheck` quando a candidata de produção estiver pronta, conforme [desenvolvimento](development.md#verificação-proporcional-à-alteração), sem repetir baterias por atualização apenas documental. Atualizar este bloco com a nova identidade/resultado; manter evidências anteriores datadas. A consolidação anterior foi documental; a rodada rc.19 executa os testes identificados neste bloco, sem inferir renderização do cliente.
 
@@ -269,7 +271,7 @@ Critérios para fechar a candidata:
 - [ ] Retestar I18N-01/UI-01 e os demais ajustes implementados na rc.19; registrar evidência por caso e decisão explícita para qualquer adiamento. Implementação não fecha o aceite visual.
 - [ ] Completar os novos fluxos de criação/saída, tabela, progresso e verificação assistida; executar regressão breve com professor/aluno, revisão/nota correta e dados preservados.
 - [ ] Registrar cada combinação visual executada e os complementos de autorização/concorrência/persistência; identificar claramente o que não pôde ser testado, sem declarar matriz completa.
-- [ ] Associar resultados à build/JAR exatos, rodar verificações proporcionais e preservar evidências/checksums do arquivo entregue.
+- [x] Associar a automação à build/JAR exatos, rodar verificações proporcionais e preservar evidências/checksums do arquivo entregue. Resultados futuros de cliente devem identificar o JAR efetivamente instalado.
 - [ ] Obter decisão explícita sobre aceite estável. Tag, merge e publicação são marcos próprios; a consolidação não os realiza.
 
 ## Trabalho futuro fora do aceite atual
@@ -302,5 +304,6 @@ Os antigos `classroom-rc6-acceptance.md` a `classroom-rc18-acceptance.md` foram 
 | [Automação rc.15](evidence/classroom/2026-10-26-rc15-server.json), [rc.16](evidence/classroom/2026-10-27-rc16-server.json) | Critérios/avaliação isolada e manutenção técnica automatizados | Interação dos critérios/relatório ainda precisa de aceite; nota continua manual. |
 | [rc.17 automatizada](evidence/classroom/2026-10-27-rc17-server.json), [falha de cliente](evidence/classroom/2026-10-27-rc17-client.md) | Progresso/editor/tabela implementados; log comprovou alinhamento Right inválido | Automação aprovada não evitou bloqueio de carregamento. |
 | [rc.18 automatizada](evidence/classroom/2026-10-27-rc18-server.json), [pt-BR](evidence/classroom/2026-10-27-rc18-ptbr-client.md), [jogo em inglês](evidence/classroom/2026-10-27-rc18-en-client.md) | End corrigiu bloqueio nesta sessão; 32 capturas documentam apresentação e novos estados da tabela | Inglês reprovado por mistura, onze achados abertos; sem aluno ou outra resolução/escala registrada. |
+| [rc.19 automatizada](evidence/classroom/2026-10-27-rc19-server.json) | I18N-01 e UI-01–UI-10 implementados; 927 Java, 44 Python, 90 verificações nativas e CI Windows/Linux aprovados | Reteste do cliente nos dois idiomas, limites de tela/escala e casos com aluno continuam pendentes. |
 
 A coleta e a consolidação anteriores foram documentais. A rc.19 implementa os 11 ajustes acima, mantendo o banco e os artefatos anteriores; confirmações históricas não aprovam sua renderização.
