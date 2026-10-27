@@ -31,8 +31,10 @@ A estrutura de autoria permanece em `assets/`; recursos necessários ao jogo fic
 
 - [Inventário e fabricação](crafting.md): categoria criativa, bancada e receitas.
 
-A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preservava o esquema v4; a rc.11 acrescenta v5 e arquivos de conteúdo. [Roteiro atual](classroom-rc12-acceptance.md).
+A rc.9 permite ao professor encerrar a turma com confirmação, preservando histórico e liberando participantes. Inclui migração SQLite v4 com backup. Encerramento confirmado por relato, com aceite parcial. A rc.10 preservava o esquema v4; a rc.11 acrescenta v5 e arquivos de conteúdo. [Roteiro atual](classroom-rc15-acceptance.md).
 
 A [revisão de otimização e testes de 25/10/2026](reviews/2026-10-25-optimization-and-verification.md) distingue ajustes de runtime, código sem chamadas internas e execução proporcional das verificações. O [relato rc.9](evidence/classroom/2026-10-25-rc9-client-report.md) confirma o encerramento da turma, mantendo pendências sem confirmação individual.
 
 A [validação breve rc.10](evidence/classroom/2026-10-26-rc10-client.md) distingue as duas capturas dos cinco resultados relatados. A [análise de logging](reviews/2026-10-26-logging-feasibility.md) recomenda ampliar falhas operacionais com volume limitado e diagnóstico temporário, ainda sem implementação.
+
+A rc.15 acrescenta critérios versionados de quantidade/tabela verdade e verificação assistida, mantendo nota manual. [Uso](classroom-learning.md#critérios-e-verificação-assistida--rc15) e [aceite](classroom-rc15-acceptance.md). SQLite v6 migra critérios com backup, preservando dados pedagógicos v5.

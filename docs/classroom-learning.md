@@ -1,6 +1,6 @@
 # Classroom — atividades, entregas de áreas e avaliação
 
-Implementação candidata em **1.4.0-rc.14**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc14-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. As proporções e o fluxo de edição rc.14 ainda exigem reteste no cliente.
+Implementação candidata em **1.4.0-rc.15**, para Hytale **0.7.4**. O [roteiro da candidata](classroom-rc15-acceptance.md) distingue verificações no servidor de seleção, preview e interação que exigem cliente. O [fluxo principal da rc.12](evidence/classroom/2026-10-26-rc12-client.md) foi confirmado com professor e aluno; as [capturas rc.13](evidence/classroom/2026-10-26-rc13-client.md) confirmam a apresentação nessa configuração. O [polimento rc.14 foi aprovado por relato](evidence/classroom/2026-10-26-rc14-client.md); as novas interações de critérios/verificação rc.15 exigem aceite no cliente.
 
 ## Atividades
 
@@ -63,11 +63,11 @@ Uma fila separada executa uma operação pesada por vez e admite oito aguardando
 
 ## Persistência e recuperação
 
-SQLite **v5**, com backup consistente automático antes da migração. As tabelas novas guardam atividades/versões, metadados de revisões, avaliações e reservas; IDs e regras administrativas anteriores permanecem. Conteúdo privado em `submissions/<UUID>.json.gz`, com formato versionado e SHA-256 dos bytes comprimidos. A gravação força o arquivo temporário em disco, publica por movimento atômico e só depois confirma os metadados em transação. Leitura verifica checksum e limite de expansão.
+SQLite **v6**, com backup consistente automático antes da migração. As tabelas pedagógicas introduzidas na v5 guardam atividades/versões, metadados de revisões, avaliações e reservas; IDs e regras administrativas anteriores permanecem. Conteúdo privado em `submissions/<UUID>.json.gz`, com formato versionado e SHA-256 dos bytes comprimidos. A gravação força o arquivo temporário em disco, publica por movimento atômico e só depois confirma os metadados em transação. Leitura verifica checksum e limite de expansão.
 
 Falha anterior ao commit não oferece a revisão ao professor. No início, a recuperação remove apenas arquivos próprios reconhecidos sem referência e temporários, preservando arquivos referenciados, nomes desconhecidos e diretórios. Falha incerta durante encerramento conserva o arquivo para resolver a referência na próxima inicialização. Ausência/corrupção de conteúdo é erro explícito, sem substituir a entrega por uma área vazia.
 
-Faça backup **do banco e da pasta `submissions` juntos**, com servidor parado, e conserve a configuração. O backup automático pré-migração conserva o banco anterior; para voltar à rc.10, restaure esse banco v4. Não abra o banco v5 em versões antigas. Mundos/circuitos não são migrados por esta entrega.
+Faça backup **do banco e da pasta `submissions` juntos**, com servidor parado, e conserve a configuração. O backup automático pré-migração conserva o banco anterior; para voltar à rc.10, restaure esse banco v4. Não abra o banco v6 em versões antigas; para voltar à rc.14, restaure o banco v5 do backup. Mundos/circuitos não são migrados por esta entrega.
 
 Pontuação automática, proteção permanente das bancadas, logging ampliado e publicação estável permanecem posteriores.
 

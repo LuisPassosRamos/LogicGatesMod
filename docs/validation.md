@@ -222,3 +222,15 @@ Durante a edição, a suíte direcionada `sisso.logicsim.classroom.ui.*` foi apr
 
 
 Build final **1.4.0-rc.14+5485651dd6e3**, revisão de produção `4e1722060e14`, compilação limpa. JAR SHA-256 `5cbeaa10090437eb4192223f34cb69526ff95ef3919de5e100f48675ff78a03e`. A [evidência final](evidence/classroom/2026-10-26-rc14-server.json) registra **887 testes JUnit**, zero falhas/erros/ignorados, **38 testes Python**, **269 chaves por idioma**, quatro documentos UI e **89 verificações nativas** (62 criação, 27 após reinício real). A documentação final é incorporada ao ZIP preservando os bytes do JAR testado. CI Windows/Linux é conferida separadamente; os artefatos rc.13 conservam os checksums originais. Proporções, escalas e interação rc.14 continuam pendentes no cliente; nenhuma aprovação estável, tag ou merge é inferida.
+
+## Critérios e verificação assistida — rc.15
+
+A [rc.14 foi aprovada por relato](evidence/classroom/2026-10-26-rc14-client.md), sem discriminar matriz de escalas/idiomas. A rc.15 acrescenta quantidades exatas opcionais, tabela completa de alavancas/lâmpadas e verificação explícita da revisão salva; nota e feedback continuam manuais. Critérios pertencem à publicação entregue e são preservados após republicação. Migração v5→v6 com backup/rollback conserva atividades, revisões, matrícula e notas.
+
+Build **1.4.0-rc.15+d57974299eb7**, revisão de produção `cc8da1b18d88`, compilação limpa. JAR SHA-256 `14f00c9b0b9776b4283123d87ff2fdbb825d019cd60c5b9b5fd25d8784da3213`. A [evidência](evidence/classroom/2026-10-26-rc15-server.json) registra **903 JUnit**, zero falhas/erros/ignorados, **38 Python**, **296 chaves por idioma** e **90 verificações nativas** (63 criação, 27 após reinício real). A prova nativa confrontou as sete portas em quatro orientações com a topologia do mundo e verificou casos sobre conteúdo salvo sem alterar intenção das alavancas. Regressões de UI conferem campos/bindings, propriedades compatíveis e relatório sem reposição de nota/feedback; não substituem o cliente.
+
+Uma rodada final de `fullCheck` aprovada, log `build/tmp/rc15-fullCheck.log`; testes direcionados anteriores em `build/tmp/rc15-classroom.log` e `build/tmp/rc15-classroom-final.log`. Medição offline em três rodadas: circuito pequeno de 7 componentes/4 casos entre 0,489 e 0,755 ms; limite de 2048 componentes/64 casos entre 149,844 e 160,516 ms. Cerca de 67,4 MB de alocação cumulativa por análise máxima, não memória retida nem pico. Executa sob demanda na fila pesada existente, fora do contexto do mundo; não certifica capacidade de jogadores ou latência do cliente.
+
+Os [testes de cliente rc.15](classroom-rc15-acceptance.md) continuam pendentes. JAR/ZIP rc.14 preservados; documentação posterior empacotada sem recompilar o JAR verificado. Tags, merge e publicação estável permanecem explícitos.
+
+CI Windows/Linux do commit de produção `cc8da1b18d8847a20b9291043282987b9003fe0f` aprovada: [execução](https://github.com/LuisPassosRamos/LogicGatesMod/actions/runs/40427580938). O fechamento posterior apenas de documentação/evidências não repete essa bateria nem recompila o JAR testado.

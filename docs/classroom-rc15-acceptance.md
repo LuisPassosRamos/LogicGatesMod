@@ -1,6 +1,6 @@
 # Classroom — aceite da 1.4.0-rc.15
 
-Candidata de critérios e verificação assistida sobre Hytale 0.7.4. Build ID, checksum e execução automatizada serão registrados após a revisão final. A [rc.14 foi aprovada por relato](evidence/classroom/2026-10-26-rc14-client.md); isso não comprova as novas interações da rc.15.
+Candidata de critérios e verificação assistida sobre Hytale 0.7.4. Build **1.4.0-rc.15+d57974299eb7**, revisão de produção `cc8da1b18d88`, JAR SHA-256 `14f00c9b0b9776b4283123d87ff2fdbb825d019cd60c5b9b5fd25d8784da3213`. [Evidência automatizada](evidence/classroom/2026-10-26-rc15-server.json): 903 testes Java, 38 Python e 90 verificações nativas aprovados (63 criação + 27 após reinício real). Isso não comprova renderização. A [rc.14 foi aprovada por relato](evidence/classroom/2026-10-26-rc14-client.md); isso não comprova as novas interações da rc.15.
 
 ## Instalação e dados
 

@@ -153,3 +153,13 @@ A cópia densa respondeu ao acionamento nos ticks reais e foi descartada. O delt
 Áreas máximas podem causar picos que ultrapassam um tick; tamanho, estado do JIT, disco e simulação alteram o custo. O ensaio de primitivas não inclui latência do jogador nem o custo de todos os eventos de plugins externos de proteção. A fila mantém uma operação pesada ativa + oito aguardando; regressões de rajada verificam serialização, recusa de duplicata/saturação e encerramento de pedidos, sem estimar jogadores suportados. Metadados pedagógicos usam canal separado para não recarregar a administração/MOTD a cada nota/entrega.
 
 Começar o aceite por uma área pequena. Os limites de dimensão, bytes e cota são configuráveis; reduzi-los é uma opção para servidores com uso intenso. Se os testes reais indicarem picos frequentes, o próximo refinamento é fracionar colagem/descarte com revalidação, preservando reserva e recuperação. O arquivo de entrega permanece imutável. A prova não autoriza afirmar “sem lag” ou aumentar os limites com base apenas no tamanho comprimido.
+
+## Verificação assistida — rc.15
+
+`SubmissionVerifierCostTest` mede trabalho puro sobre a topologia entregue, em três rodadas no mesmo processo/JVM. Relatório regenerável `build/reports/submission-verification.json`; cópia histórica na [evidência da candidata](evidence/classroom/2026-10-26-rc15-server.json). Build `1.4.0-rc.15+d57974299eb7`, SHA-256 `14f00c9b0b9776b4283123d87ff2fdbb825d019cd60c5b9b5fd25d8784da3213`.
+
+- Pequeno: 7 componentes lógicos, 4 combinações, 0,489–0,755 ms.
+- Limite comportamental: 2048 componentes lógicos, 6 alavancas/4 lâmpadas, 64 combinações, 149,844–160,516 ms; aproximadamente 67,4 MB alocados cumulativamente por operação, sem medir memória retida/pico.
+- Contagem sem tabela não roda o avaliador. Simulação acima do limite retorna erro explícito, mantendo entrega/correção manual.
+
+São amostras locais, sem limiar artificial, não medição de rede, cliente, espera na fila ou capacidade de jogadores. A execução real inclui leitura limitada do arquivo/checksum, resolução de assets e revalidação de autorização antes/depois. Usa o único trabalhador pesado existente com fila de oito; não roda a cada atualização da UI, em ticks ou ao salvar nota. Não acrescenta SELECTs à montagem do resumo administrativo. A CI portável também executa a regressão de custo, mas suas máquinas/arquivos não substituem a identidade desta medição.
