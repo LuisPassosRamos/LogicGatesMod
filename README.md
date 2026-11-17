@@ -1,5 +1,7 @@
 # LogicGates
 
+> **TCC em desenvolvimento no IFBA.** [Conheça o case no portfólio](https://luispassosramos.github.io/LuisPortifolio/projetos/logicgates/), com as decisões técnicas e a distinção entre o mod implementado e a pesquisa educacional planejada.
+
 Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.3.3**. Adiciona alavanca, cabo, lâmpada e portas AND, OR, NOT, NAND, NOR, XOR e XNOR, com orientação pelo olhar e conexões visuais automáticas.
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
