@@ -14,6 +14,8 @@ Para experimentar XOR, ligue duas alavancas às entradas e uma lâmpada à saíd
 - [EnergyPropagationSystem](src/main/java/sisso/logicsim/systems/EnergyPropagationSystem.java) conecta a avaliação ao estado dos blocos do jogo.
 - [Testes do avaliador](src/test/java/sisso/logicsim/circuit) cobrem orientação, portas, propagação e ciclos. O [guia de ensino](docs/teaching.md) mostra como usar os componentes em atividades.
 
+Para rodar esses testes com JDK 25, use `.\gradlew.bat -p checks/circuit test` no Windows ou `bash ./gradlew -p checks/circuit test` no Linux/macOS. Essa verificação compila o mesmo avaliador Java usado pelo mod e precisa apenas das dependências do JUnit. O build do mod também precisa resolver o servidor Hytale 0.7.4.
+
 ## Compilar e instalar
 
 Requisitos: **JDK 25**, **Python 3.10+** (somente biblioteca padrão) e internet na primeira resolução das dependências. O Gradle 9.2.0 é fornecido pelo wrapper.
