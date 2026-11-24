@@ -6,6 +6,14 @@ Mod educacional de circuitos para **Hytale 0.7.4**, versão **1.3.3**. Adiciona 
 
 As conexões são horizontais. As portas têm três entradas opcionais e uma saída frontal; NOT aceita somente a entrada traseira. Entradas vazias são ignoradas e, sem nenhuma entrada conectada, todas as portas ficam desligadas. Cada entrada física conta separadamente para XOR/XNOR. Somente a intenção da alavanca é persistida; os sinais são reconstruídos ao carregar o mundo.
 
+## Do circuito ao código
+
+Para experimentar XOR, ligue duas alavancas às entradas e uma lâmpada à saída. A lâmpada acende com uma única alavanca ligada e apaga quando as duas estão ligadas. Use `/logichelp --gate=XOR --inputs=2` para conferir a tabela verdade ou `/logicinspect x y z` para ver o estado das entradas de uma porta no mundo.
+
+- [CircuitEvaluator](src/main/java/sisso/logicsim/circuit/CircuitEvaluator.java) calcula os sinais a partir dos blocos do circuito. As regras podem ser executadas fora do Hytale.
+- [EnergyPropagationSystem](src/main/java/sisso/logicsim/systems/EnergyPropagationSystem.java) conecta a avaliação ao estado dos blocos do jogo.
+- [Testes do avaliador](src/test/java/sisso/logicsim/circuit) cobrem orientação, portas, propagação e ciclos. O [guia de ensino](docs/teaching.md) mostra como usar os componentes em atividades.
+
 ## Compilar e instalar
 
 Requisitos: **JDK 25**, **Python 3.10+** (somente biblioteca padrão) e internet na primeira resolução das dependências. O Gradle 9.2.0 é fornecido pelo wrapper.
